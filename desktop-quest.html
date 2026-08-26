@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desktop Quest — Mouse &amp; Keyboard Lab</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#0d1017; --panel:#1b2130; --panel2:#232c40; --line:#36445f;
+  --accent:#3ea6ff; --accent2:#7c5cff; --good:#3ddc84; --warn:#ffb020; --bad:#ff6b6b;
+  --star:#ffd54a; --text:#eef3ff; --muted:#9fb0cc;
+  --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+  --hudw:330px;
+}
+html,body{height:100%;margin:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden;
+     -webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+.hidden{display:none !important}
+button{font-family:var(--font);cursor:pointer}
+#app{display:flex;height:100vh;width:100vw}
+#stage{flex:1;position:relative;min-width:0}
+
+/* ---------------- LOGIN ---------------- */
+#loginScreen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 700px at 30% 20%,#20304d 0%,#0e1420 60%,#080b12 100%)}
+.login-card{width:min(560px,92%);background:var(--panel);border:3px solid var(--line);border-radius:22px;
+  padding:26px 30px 30px;box-shadow:0 30px 70px rgba(0,0,0,.55);text-align:center}
+.lg-logo{font-size:60px;line-height:1}
+.login-card h1{margin:6px 0 18px;font-size:28px;letter-spacing:.5px}
+.login-card label{display:block;font-size:18px;margin:14px 0 8px;color:var(--text)}
+.login-card input{width:100%;padding:16px 18px;font-size:24px;border-radius:14px;border:3px solid var(--line);
+  background:#0f1420;color:var(--text);text-align:center;outline:none}
+.login-card input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(62,166,255,.22)}
+.lg-user{display:flex;align-items:center;justify-content:center;gap:10px;font-size:22px;margin-bottom:6px}
+.lg-user span:first-child{font-size:38px}
+.lg-privacy{margin-top:10px;font-size:15px;color:var(--warn);background:rgba(255,176,32,.1);
+  border:2px dashed rgba(255,176,32,.4);border-radius:12px;padding:8px 10px}
+.lg-msg{min-height:24px;margin-top:8px;font-size:17px;color:var(--bad)}
+.btn{margin-top:16px;background:var(--accent);color:#04121f;border:none;border-radius:14px;
+  padding:14px 24px;font-size:20px;font-weight:bold;box-shadow:0 5px 0 #1f6fb0}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1f6fb0}
+.btn.small{font-size:14px;padding:9px 12px;box-shadow:0 4px 0 #1f6fb0;margin:0}
+.btn.ghost{background:var(--panel2);color:var(--text);box-shadow:0 4px 0 #101725}
+.btn.good{background:var(--good);color:#052414;box-shadow:0 5px 0 #219a5b}
+
+/* ---------------- DESKTOP SHELL ---------------- */
+#desktopScreen{position:absolute;inset:0;display:flex;flex-direction:column}
+#topbar{height:38px;flex:none;background:rgba(8,12,20,.92);border-bottom:2px solid #000;
+  display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:15px}
+.tb-btn{background:transparent;border:2px solid transparent;color:var(--text);font-size:15px;
+  padding:4px 12px;border-radius:9px}
+.tb-btn:hover{background:rgba(255,255,255,.12)}
+.tb-mid{color:var(--muted);font-size:14px}
+#desk{flex:1;position:relative;overflow:hidden;
+  background:
+   radial-gradient(900px 600px at 20% 15%, #2c4f6e 0%, transparent 60%),
+   radial-gradient(800px 600px at 85% 80%, #3b2f6b 0%, transparent 60%),
+   linear-gradient(160deg,#12324a 0%,#101a2c 55%,#0b1120 100%)}
+#iconLayer{position:absolute;inset:0;padding:16px;display:grid;
+  grid-template-columns:repeat(auto-fill,112px);grid-auto-rows:112px;gap:6px;align-content:start;justify-content:start}
+.icon{width:112px;height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;border-radius:14px;border:3px solid transparent;background:transparent;color:#fff;text-align:center}
+.icon .em{font-size:46px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.icon .nm{font-size:14px;text-shadow:0 2px 4px #000;padding:0 4px;line-height:1.15}
+.icon:hover{background:rgba(255,255,255,.10)}
+.icon.sel{background:rgba(62,166,255,.30);border-color:var(--accent)}
+.icon.pulse{animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,213,74,.85)}50%{box-shadow:0 0 0 12px rgba(255,213,74,0)}}
+#dock{height:66px;flex:none;background:rgba(8,12,20,.92);border-top:2px solid #000;display:flex;
+  align-items:center;gap:10px;padding:0 12px}
+.dock-launch{display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3ea6ff,#2b7fd0);
+  color:#04121f;border:none;border-radius:14px;padding:10px 16px;font-size:17px;font-weight:bold;box-shadow:0 4px 0 #17588f}
+.dock-launch:active{transform:translateY(2px);box-shadow:0 2px 0 #17588f}
+#taskbtns{display:flex;gap:8px;flex:1;overflow:hidden}
+.taskbtn{background:var(--panel2);border:2px solid var(--line);color:var(--text);border-radius:10px;
+  padding:8px 12px;font-size:14px;white-space:nowrap}
+.dock-right{color:var(--muted);font-size:15px}
+
+/* launcher + menus */
+#launcher{position:absolute;left:0;right:0;bottom:0;top:0;background:rgba(8,12,20,.88);
+  padding:40px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:60}
+#launcher h2{margin:0;font-size:26px}
+.lch-grid{display:grid;grid-template-columns:repeat(4,130px);gap:14px}
+.lch{background:var(--panel2);border:3px solid var(--line);border-radius:16px;padding:14px 8px;color:var(--text);
+  display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px}
+.lch:hover{border-color:var(--accent);background:#2b3854}
+.lch .em{font-size:38px}
+#sysmenu{position:absolute;right:10px;top:8px;width:250px;background:var(--panel);border:3px solid var(--line);
+  border-radius:16px;padding:14px;z-index:70;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+#sysmenu .row{display:flex;justify-content:space-between;padding:8px 4px;font-size:16px;border-bottom:1px solid var(--line)}
+#sysmenu .row:last-child{border:none}
+#ctxmenu{position:absolute;z-index:90;background:var(--panel);border:3px solid var(--line);border-radius:12px;
+  padding:6px;min-width:180px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+#ctxmenu button{display:block;width:100%;text-align:left;background:transparent;border:none;color:var(--text);
+  padding:10px 12px;font-size:16px;border-radius:8px}
+#ctxmenu button:hover{background:var(--accent);color:#04121f}
+
+/* windows */
+.win{position:absolute;background:var(--panel);border:3px solid var(--line);border-radius:14px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden;z-index:20}
+.win-bar{height:44px;flex:none;display:flex;align-items:center;
+  justify-content:space-between;padding:0 8px 0 14px;cursor:grab;background:#2a3550;border-bottom:2px solid #161e2e}
+.win-bar b{font-size:16px}
+.win-x{width:34px;height:34px;border-radius:9px;border:none;background:#b23b3b;color:#fff;font-size:18px;font-weight:bold}
+.win-x:hover{background:#e04b4b}
+.win-body{flex:1;overflow:auto;position:relative;background:#151b28}
+
+/* coach + spotlight */
+#coach{position:absolute;left:16px;bottom:82px;max-width:520px;display:flex;gap:12px;align-items:flex-end;z-index:80}
+.coach-face{font-size:44px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
+.coach-bub{background:#fffbe8;color:#1a1a1a;border:3px solid var(--star);border-radius:18px;padding:12px 16px;
+  font-size:19px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.coach-bub .pics{display:flex;gap:10px;margin-top:8px;align-items:center}
+#spot{position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(0,0,0,.55);pointer-events:none;z-index:75;
+  border:4px solid var(--star);transition:all .18s ease}
+
+/* ---------------- HUD ---------------- */
+#hud{width:var(--hudw);flex:none;background:var(--panel);border-left:4px solid var(--line);
+  display:flex;flex-direction:column;padding:14px;gap:10px;overflow:auto}
+.hud-title{font-size:22px;font-weight:bold}
+.hud-sub{color:var(--muted);font-size:15px}
+.hud-part{background:var(--accent2);color:#fff;border-radius:12px;padding:9px 12px;font-size:16px;font-weight:bold}
+.hud-stars{font-size:26px;color:var(--star);font-weight:bold}
+.hud-now{background:var(--panel2);border:3px solid var(--accent);border-radius:14px;padding:10px 12px}
+.hud-now .lbl{font-size:12px;letter-spacing:1.5px;color:var(--accent);font-weight:bold}
+#hudTask{font-size:18px;margin-top:6px;line-height:1.3}
+#questList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#questList li{font-size:15px;padding:8px 10px;border-radius:10px;background:#161d2c;border-left:5px solid var(--line);color:var(--muted)}
+#questList li.cur{border-left-color:var(--accent);color:var(--text);background:#1d2740}
+#questList li.done{border-left-color:var(--good);color:var(--good);text-decoration:line-through}
+.hud-badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{background:#20304a;border:2px solid var(--good);border-radius:20px;padding:5px 10px;font-size:13px}
+.hud-btns{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+
+/* mouse pictograms */
+.mouse-pic{display:inline-flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:#333}
+svg.ms{width:34px;height:48px}
+.ms .body{fill:#fff;stroke:#333;stroke-width:4}
+.ms .btn{fill:#dfe6f0;stroke:#333;stroke-width:3}
+.ms .on{fill:#ff5f5f}
+.ms .wheel{fill:#333}
+
+/* helper sheet */
+#helper{position:fixed;right:calc(var(--hudw) + 10px);bottom:16px;width:min(420px,52vw);max-height:78vh;overflow:auto;background:#fffbe8;color:#1a1a1a;
+  border:4px solid var(--star);border-radius:18px;padding:16px;z-index:200;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+#helper h3{margin:0 0 10px;font-size:22px}
+.hp-row{display:flex;align-items:center;gap:12px;padding:8px 6px;border-bottom:2px dashed #e2d5a5}
+.hp-row:last-child{border:none}
+.hp-em{font-size:32px;width:44px;text-align:center}
+.hp-tx b{font-size:18px}
+.hp-tx div{font-size:14px;color:#4a4636}
+
+/* modal / teacher / certificate */
+#modal{position:fixed;inset:0;background:rgba(5,8,14,.78);display:flex;align-items:center;justify-content:center;z-index:300}
+.modal-card{width:min(620px,92%);background:var(--panel);border:4px solid var(--star);border-radius:22px;padding:26px;text-align:center}
+.modal-card h2{margin:0 0 10px;font-size:30px}
+.modal-card p{font-size:19px;line-height:1.4}
+#teacher{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,94%);max-height:86vh;overflow:auto;
+  background:var(--panel);border:4px solid var(--accent);border-radius:20px;padding:20px;z-index:310}
+#teacher h3{margin:0 0 8px}
+#teacher table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+#teacher td,#teacher th{border:1px solid var(--line);padding:6px 8px;text-align:left}
+.tch-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+#certificate{position:fixed;inset:0;background:#0b1020;display:flex;align-items:center;justify-content:center;z-index:320;padding:20px}
+.cert{width:min(820px,96%);background:#fffdf4;color:#1a1a1a;border:14px double #b8952f;border-radius:10px;padding:34px;text-align:center}
+.cert h1{font-size:38px;margin:6px 0}
+.cert .nm{font-size:44px;color:#123;border-bottom:3px solid #b8952f;display:inline-block;padding:0 30px 6px;margin:12px 0}
+.cert ul{text-align:left;display:inline-block;font-size:18px;line-height:1.7}
+@media print{ body *{visibility:hidden} #certificate,#certificate *{visibility:visible}
+  #certificate{position:absolute;inset:0;background:#fff} .noprint{display:none !important} }
+
+/* picture (support) mode */
+body.support .icon .nm{font-size:16px;font-weight:bold;background:rgba(0,0,0,.45);border-radius:8px}
+body.support .coach-bub{font-size:22px}
+body.support #hudTask{font-size:21px}
+.picrow{display:flex;gap:8px;align-items:center;margin-top:8px}
+.tag{background:#0f1726;border:2px solid var(--line);border-radius:8px;padding:2px 8px;font-size:13px;color:var(--muted)}
+
+/* smaller lab screens */
+@media (max-width:1180px){
+  :root{--hudw:264px}
+  .icon{width:96px;height:96px} .icon .em{font-size:38px} .icon .nm{font-size:13px}
+  #iconLayer{grid-template-columns:repeat(auto-fill,96px);grid-auto-rows:96px}
+  .hud-title{font-size:19px} #hudTask{font-size:16px} #questList li{font-size:13.5px}
+  #coach{max-width:400px} .coach-bub{font-size:17px}
+}
+@media (max-width:920px){
+  :root{--hudw:224px}
+  .lch-grid{grid-template-columns:repeat(3,120px)}
+  #coach{max-width:330px} .coach-bub{font-size:15px} svg.ms{width:28px;height:40px}
+}
+
+/* game bits */
+.game-wrap{position:absolute;inset:0;display:flex;flex-direction:column}
+.game-head{flex:none;padding:8px 12px;background:#1c2436;border-bottom:2px solid var(--line);display:flex;
+  justify-content:space-between;align-items:center;font-size:16px;gap:10px}
+.game-area{flex:1;position:relative;overflow:hidden;background:#101725}
+.balloon{position:absolute;width:74px;height:74px;border-radius:50%;border:4px solid rgba(255,255,255,.5);
+  font-size:34px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.balloon:active{transform:scale(.92)}
+.shape{position:absolute;width:88px;height:88px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:40px;border:4px solid transparent;background:#26324c}
+.shape.sel{border-color:var(--accent);background:#2f4a74}
+.shape.open{border-color:var(--good);background:#1f4a35}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.sq-page{position:relative;padding:20px 26px;font-size:18px;line-height:1.6;color:#cdd9ee}
+.sq-star{position:absolute;font-size:40px;background:transparent;border:none;filter:drop-shadow(0 0 8px var(--star))}
+.kb{display:flex;flex-direction:column;gap:6px;align-items:center;padding:10px}
+.kb-row{display:flex;gap:6px}
+.key{min-width:44px;height:46px;border-radius:9px;background:#26324c;border:3px solid #3b4a6b;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;padding:0 10px}
+.key.wide{min-width:100px}.key.xwide{min-width:170px}
+.key.hot{background:var(--star);color:#231a00;border-color:#fff;animation:pulse 1s infinite}
+.key.hit{background:var(--good);color:#04210f}
+.prompt-big{font-size:26px;text-align:center;padding:10px}
+.type-box{width:92%;margin:8px auto;display:block;font-size:26px;padding:12px;border-radius:12px;
+  border:3px solid var(--line);background:#0f1420;color:#fff;text-align:center}
+.hunt-list{list-style:none;margin:0;padding:12px;display:flex;flex-direction:column;gap:8px}
+.hunt-list li{font-size:17px;background:#1a2233;border-left:6px solid var(--line);padding:10px 12px;border-radius:10px;color:var(--muted)}
+.hunt-list li.done{border-left-color:var(--good);color:var(--good)}
+.paint-tools{flex:none;display:flex;gap:8px;padding:8px;background:#1c2436;border-bottom:2px solid var(--line);align-items:center}
+.swatch{width:34px;height:34px;border-radius:50%;border:3px solid #fff}
+.swatch.on{outline:4px solid var(--star)}
+.filelist{padding:6px}
+.filerow{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;font-size:17px}
+.filerow:hover{background:#1e293c}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+
+    <section id="loginScreen">
+      <div class="login-card">
+        <div class="lg-logo">🐧</div>
+        <h1>Computer Lab Login</h1>
+        <div id="lgStep1">
+          <label>1. Click the box, then type your first name.</label>
+          <input id="lgName" maxlength="14" autocomplete="off" placeholder="type here">
+          <button id="lgNext" class="btn">Next ▶</button>
+        </div>
+        <div id="lgStep2" class="hidden">
+          <div class="lg-user"><span>🙂</span><span id="lgUser"></span></div>
+          <label>2. Type the class password: <b id="lgWord" style="color:var(--star)">star</b> then press <b>Enter</b>.</label>
+          <input id="lgPass" type="password" autocomplete="off" placeholder="••••">
+          <div class="lg-privacy">🔒 Your password shows as dots. A password is <b>private</b> — we do not share it.</div>
+          <button id="lgLogin" class="btn">Log In ⏎</button>
+          <div id="lgMsg" class="lg-msg"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="desktopScreen" class="hidden">
+      <div id="topbar">
+        <button id="btnLauncherTop" class="tb-btn">☰ Activities</button>
+        <div class="tb-mid" id="tbTitle">🐧 Linux Lab — Desktop</div>
+        <button id="btnSys" class="tb-btn">📶 🔊 🔋 <span id="clock">--:--</span> ▾</button>
+      </div>
+      <div id="desk">
+        <div id="iconLayer"></div>
+        <div id="windows"></div>
+        <div id="launcher" class="hidden"></div>
+        <div id="sysmenu" class="hidden"></div>
+        <div id="ctxmenu" class="hidden"></div>
+      </div>
+      <div id="dock">
+        <button id="btnLauncher" class="dock-launch">🚀 <span>App Launcher</span></button>
+        <div id="taskbtns"></div>
+        <div class="dock-right" id="deskLabel">🖥️ This is the Desktop</div>
+      </div>
+    </section>
+
+    <div id="coach" class="hidden">
+      <div class="coach-face">🤖</div>
+      <div class="coach-bub">
+        <div id="coachText">Hi!</div>
+        <div class="pics" id="coachPics"></div>
+        <button id="coachNext" class="btn small hidden" style="margin-top:8px">Got it ▶</button>
+      </div>
+    </div>
+    <div id="spot" class="hidden"></div>
+  </div>
+
+  <aside id="hud">
+    <div>
+      <div class="hud-title">🖥️ Desktop Quest</div>
+      <div class="hud-sub" id="hudName">Player</div>
+    </div>
+    <div class="hud-part" id="hudPart">Part 1 — Login &amp; Warm-Up</div>
+    <div class="hud-stars"><span id="starCount">0</span> ⭐ stars</div>
+    <div class="hud-now">
+      <div class="lbl">YOUR JOB RIGHT NOW</div>
+      <div id="hudTask">Log in to start.</div>
+      <div class="picrow" id="hudPics"></div>
+    </div>
+    <ol id="questList"></ol>
+    <div class="hud-badges" id="badges"></div>
+    <div class="hud-btns">
+      <button id="btnHelper" class="btn small ghost">📖 Helper Sheet</button>
+      <button id="btnSupport" class="btn small ghost">🖼️ Picture Mode: OFF</button>
+      <button id="btnSound" class="btn small ghost">🔊 Sound: ON</button>
+      <button id="btnTeacher" class="btn small ghost">👩‍🏫 Teacher</button>
+    </div>
+  </aside>
+</div>
+
+<div id="helper" class="hidden"></div>
+<div id="teacher" class="hidden"></div>
+<div id="modal" class="hidden"></div>
+<div id="certificate" class="hidden"></div>
+
+<script>
+/* =====================================================================
+   DESKTOP QUEST — computer navigation + mouse/keyboard control game
+   Single file, no network. Open in any browser.
+   ===================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[rnd(0,a.length-1)];
+
+const state={
+  name:'Friend', support:false, sound:true,
+  part:0, stars:0, badges:[],
+  quests:[], qi:0, mode:'seq',
+  exit:{mouse:null,key:null}
+};
+
+/* ---------- sound ---------- */
+let actx=null;
+function beep(kind){
+  if(!state.sound) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain();
+    const map={good:[660,880],star:[784,1175],bad:[200,150],pop:[520,700],key:[440,520]};
+    const [f1,f2]=map[kind]||map.good;
+    o.type='triangle'; o.frequency.setValueAtTime(f1,actx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(f2,actx.currentTime+.12);
+    g.gain.setValueAtTime(.12,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.25);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+.26);
+  }catch(e){}
+}
+
+/* ---------- mouse pictograms (for ELL / picture mode) ---------- */
+function mousePic(type,label){
+  const on={left:'',right:'',wheel:''};
+  if(type==='click'||type==='double') on.left='on';
+  if(type==='right') on.right='on';
+  if(type==='scroll') on.wheel='on';
+  const badge = type==='double' ? '<text x="46" y="20" font-size="18" fill="#ff5f5f" font-weight="bold">x2</text>' : '';
+  const svg=`<svg class="ms" viewBox="0 0 70 96">
+    <rect class="body" x="8" y="6" width="48" height="84" rx="24"/>
+    <path class="btn ${on.left}" d="M8 30 L8 30 A24 24 0 0 1 32 6 L32 30 Z"/>
+    <path class="btn ${on.right}" d="M32 6 A24 24 0 0 1 56 30 L32 30 Z"/>
+    <rect class="wheel ${on.wheel?'on':''}" x="29" y="34" width="6" height="16" rx="3"/>
+    ${type==='scroll'?'<text x="44" y="30" font-size="20" fill="#ff5f5f">↕</text>':''}
+    ${badge}</svg>`;
+  return `<span class="mouse-pic">${svg}<span>${label||''}</span></span>`;
+}
+function keyPic(label){
+  return `<span class="mouse-pic"><span style="font-size:30px">⌨️</span><span>${label||''}</span></span>`;
+}
+const PIC={
+  click:()=>mousePic('click','click'),
+  double:()=>mousePic('double','double-click'),
+  right:()=>mousePic('right','right-click'),
+  scroll:()=>mousePic('scroll','scroll'),
+  key:l=>keyPic(l||'keyboard')
+};
+
+/* =====================================================================
+   QUEST ENGINE
+   ===================================================================== */
+function setQuests(list,mode='seq'){
+  state.quests=list.map(q=>({...q,done:false}));
+  state.qi=0; state.mode=mode;
+  renderQuests(); showCoach();
+}
+function currentQuest(){
+  if(state.mode==='any') return state.quests.find(q=>!q.done);
+  return state.quests[state.qi];
+}
+function fire(action,data={}){
+  const match=q=>!q.done&&q.on===action&&(!q.match||q.match(data));
+  let q=null;
+  if(state.mode==='any') q=state.quests.find(match);
+  else { const c=state.quests[state.qi]; if(c&&match(c)) q=c; }
+  if(!q) return false;
+  q.done=true; state.stars++; beep('star'); updateStars();
+  if(state.mode==='seq') state.qi++;
+  renderQuests();
+  if(state.quests.every(x=>x.done)){ clearSpot(); setTimeout(()=>partComplete(),450); }
+  else { setTimeout(showCoach,120); }
+  return true;
+}
+function renderQuests(){
+  const ol=$('#questList'); ol.innerHTML='';
+  const cur=currentQuest();
+  state.quests.forEach(q=>{
+    const li=document.createElement('li');
+    li.textContent=(q.done?'✔ ':'• ')+q.short;
+    if(q.done) li.className='done'; else if(q===cur) li.className='cur';
+    ol.appendChild(li);
+  });
+}
+function updateStars(){ $('#starCount').textContent=state.stars; }
+function showCoach(){
+  const q=currentQuest();
+  $('#coach').classList.remove('hidden');
+  if(!q){ $('#coachText').textContent='Nice work!'; $('#coachPics').innerHTML=''; $('#coachNext').classList.add('hidden'); clearSpot(); return; }
+  $('#coachText').innerHTML=q.text;
+  $('#hudTask').innerHTML=q.text;
+  const pics=(q.pics||[]).map(p=>typeof p==='function'?p():p).join('');
+  $('#coachPics').innerHTML=pics;
+  $('#hudPics').innerHTML=pics;
+  $('#coachNext').classList.toggle('hidden',q.on!=='next');
+  // never dim the screen while an app window is open — the student is working inside it
+  if(q.spot&&Object.keys(openWins).length===0) setTimeout(()=>{
+      if(Object.keys(openWins).length===0&&currentQuest()===q) spotlight(q.spot);
+    },60);
+  else clearSpot();
+}
+$('#coachNext').onclick=()=>fire('next');
+
+/* spotlight */
+let spotTarget=null;
+function spotlight(sel){
+  const t=typeof sel==='string'?$(sel):sel;
+  if(!t){clearSpot();return;}
+  spotTarget=t;
+  const r=t.getBoundingClientRect(), pad=8, s=$('#spot');
+  s.classList.remove('hidden');
+  s.style.left=(r.left-pad)+'px'; s.style.top=(r.top-pad)+'px';
+  s.style.width=(r.width+pad*2)+'px'; s.style.height=(r.height+pad*2)+'px';
+  $$('.pulse').forEach(e=>e.classList.remove('pulse'));
+  t.classList.add('pulse');
+}
+function clearSpot(){ $('#spot').classList.add('hidden'); if(spotTarget){spotTarget.classList.remove('pulse');spotTarget=null;} }
+window.addEventListener('resize',()=>{ if(spotTarget) spotlight(spotTarget); });
+
+/* modal */
+function modal(html){
+  const m=$('#modal'); m.classList.remove('hidden');
+  m.innerHTML=`<div class="modal-card">${html}</div>`;
+  return m;
+}
+function closeModal(){ $('#modal').classList.add('hidden'); $('#modal').innerHTML=''; }
+
+/* =====================================================================
+   LOGIN
+   ===================================================================== */
+$('#lgNext').onclick=()=>{
+  const v=$('#lgName').value.trim();
+  if(!v){ $('#lgName').focus(); return; }
+  state.name=v.charAt(0).toUpperCase()+v.slice(1);
+  $('#hudName').textContent=state.name;
+  $('#lgUser').textContent=state.name;
+  $('#lgStep1').classList.add('hidden');
+  $('#lgStep2').classList.remove('hidden');
+  $('#lgWord').textContent=state.support?'cat':'star';
+  $('#lgPass').focus(); beep('good');
+};
+$('#lgName').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lgNext').click(); });
+function tryLogin(){
+  const want=$('#lgWord').textContent;
+  if($('#lgPass').value.toLowerCase().trim()===want){
+    beep('star');
+    $('#loginScreen').classList.add('hidden');
+    $('#desktopScreen').classList.remove('hidden');
+    startPart1();
+  } else {
+    $('#lgMsg').textContent='Not quite. Type the word: '+want+'  (Backspace erases.)';
+    beep('bad'); $('#lgPass').focus();
+  }
+}
+$('#lgLogin').onclick=tryLogin;
+$('#lgPass').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();tryLogin();} });
+
+/* =====================================================================
+   DESKTOP SHELL
+   ===================================================================== */
+const APPS=[
+  {id:'files',    name:'Files',        em:'📁'},
+  {id:'textedit', name:'Text Editor',  em:'📝'},
+  {id:'paint',    name:'Paint',        em:'🎨'},
+  {id:'mouse',    name:'Mouse Master', em:'🖱️'},
+  {id:'scroll',   name:'Scroll Quest', em:'⭐'},
+  {id:'keys',     name:'Key Hunt',     em:'⌨️'},
+  {id:'trash',    name:'Trash',        em:'🗑️'}
+];
+function appById(id){ return APPS.find(a=>a.id===id); }
+
+function buildIcons(){
+  const layer=$('#iconLayer'); layer.innerHTML='';
+  APPS.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='icon'; d.dataset.id=a.id; d.id='icon-'+a.id;
+    d.innerHTML=`<div class="em">${a.em}</div><div class="nm">${a.name}</div>`;
+    d.addEventListener('click',()=>{ selectIcon(a.id); fire('icon:click',{id:a.id}); });
+    d.addEventListener('dblclick',()=>{ fire('icon:dblclick',{id:a.id}); openApp(a.id); });
+    d.addEventListener('contextmenu',e=>{ e.preventDefault(); showCtx(e.clientX,e.clientY,a.id); fire('icon:rightclick',{id:a.id}); });
+    layer.appendChild(d);
+  });
+}
+function selectIcon(id){
+  $$('.icon').forEach(i=>i.classList.toggle('sel',i.dataset.id===id));
+}
+$('#desk').addEventListener('mousedown',e=>{
+  if(e.target.id==='desk'||e.target.id==='iconLayer'){ selectIcon(null); hideCtx(); fire('desktop:click'); }
+});
+document.addEventListener('contextmenu',e=>{ if(e.target.closest('#app')&&!e.target.matches('input,textarea')) e.preventDefault(); });
+
+/* context menu */
+function showCtx(x,y,id){
+  const m=$('#ctxmenu'); const a=appById(id);
+  const deskRect=$('#desk').getBoundingClientRect();
+  m.innerHTML='';
+  [['Open',()=>{hideCtx();openApp(id);fire('ctx:open',{id});}],
+   ['Rename',()=>{hideCtx();toast('Rename is not for today 🙂');}],
+   ['Properties',()=>{hideCtx();toast(a.name+' — an application icon.');}]
+  ].forEach(([label,fn])=>{
+    const b=document.createElement('button'); b.textContent=label; b.onclick=fn; m.appendChild(b);
+  });
+  m.style.left=(x-deskRect.left)+'px'; m.style.top=(y-deskRect.top)+'px';
+  m.classList.remove('hidden');
+  m.style.left=Math.max(2,Math.min(x-deskRect.left,deskRect.width-m.offsetWidth-6))+'px';
+  m.style.top=Math.max(2,Math.min(y-deskRect.top,deskRect.height-m.offsetHeight-6))+'px';
+}
+function hideCtx(){ $('#ctxmenu').classList.add('hidden'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#ctxmenu')) hideCtx(); });
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fffbe8;color:#222;'+
+    'padding:10px 18px;border-radius:12px;border:3px solid var(--star);font-size:18px;z-index:120';
+  $('#desk').appendChild(t);
+  setTimeout(()=>t.remove(),1900);
+}
+
+/* launcher */
+function buildLauncher(){
+  const l=$('#launcher');
+  l.innerHTML=`<h2>🚀 App Launcher — all your apps live here</h2>
+    <div class="lch-grid">${APPS.map(a=>`<button class="lch" data-id="${a.id}"><span class="em">${a.em}</span>${a.name}</button>`).join('')}</div>
+    <button class="btn ghost" id="lchClose">✖ Close the Launcher</button>`;
+  $$('.lch',l).forEach(b=>b.onclick=()=>{ toggleLauncher(false); openApp(b.dataset.id); });
+  $('#lchClose').onclick=()=>toggleLauncher(false);
+}
+function toggleLauncher(force){
+  const l=$('#launcher');
+  const wasOpen=!l.classList.contains('hidden');
+  const open = force!==undefined ? force : !wasOpen;
+  if(open===wasOpen) return;
+  l.classList.toggle('hidden',!open);
+  if(open){ beep('pop'); fire('launcher:open'); } else { beep('good'); fire('launcher:close'); }
+}
+$('#btnLauncher').onclick=()=>toggleLauncher();
+$('#btnLauncherTop').onclick=()=>toggleLauncher();
+
+/* system menu */
+function buildSys(){
+  $('#sysmenu').innerHTML=`
+    <div class="row"><span>📶 Wi-Fi</span><span>Connected</span></div>
+    <div class="row"><span>🔊 Volume</span><span>60%</span></div>
+    <div class="row"><span>🔋 Battery</span><span>92%</span></div>
+    <div class="row"><span>🕐 Clock</span><span id="sysClock">--:--</span></div>
+    <div class="row"><span>⏻ Power / Log Out</span><span>—</span></div>
+    <button class="btn small ghost" id="sysClose" style="width:100%;margin-top:10px">Close menu</button>`;
+  $('#sysClose').onclick=()=>toggleSys(false);
+}
+function toggleSys(force){
+  const s=$('#sysmenu');
+  const wasOpen=!s.classList.contains('hidden');
+  const open= force!==undefined ? force : !wasOpen;
+  if(open===wasOpen) return;
+  s.classList.toggle('hidden',!open);
+  if(open){ beep('pop'); fire('sysmenu:open'); } else { beep('good'); fire('sysmenu:close'); }
+}
+$('#btnSys').onclick=()=>toggleSys();
+
+function tick(){
+  const d=new Date();
+  const t=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  $('#clock').textContent=t; const sc=$('#sysClock'); if(sc) sc.textContent=t;
+}
+setInterval(tick,1000); tick();
+
+/* =====================================================================
+   WINDOW MANAGER
+   ===================================================================== */
+const openWins={}; let zTop=20;
+// the Helper Sheet floats over the right side of the desk — keep things out from under it
+function usableW(){
+  const d=$('#desk');
+  const h=$('#helper');
+  return h.classList.contains('hidden') ? d.clientWidth : Math.max(320,d.clientWidth-h.offsetWidth-30);
+}
+function openApp(id){
+  const a=appById(id); if(!a) return;
+  if(openWins[id]){ focusWin(id); return; }
+  const w=document.createElement('div');
+  w.className='win'; w.id='win-'+id;
+  const big=['mouse','scroll','keys','paint'].includes(id);
+  const W=big?640:460, H=big?450:340;
+  const deskR=$('#desk').getBoundingClientRect();
+  const useW=usableW();
+  w.style.width=Math.min(W,useW-30)+'px';
+  w.style.height=Math.min(H,deskR.height-30)+'px';
+  w.style.left=Math.max(10,rnd(20,Math.max(40,useW-W-30)))+'px';
+  w.style.top=Math.max(10,rnd(20,Math.max(40,deskR.height-H-60)))+'px';
+  w.style.zIndex=++zTop;
+  w.innerHTML=`<div class="win-bar"><b>${a.em} ${a.name}</b>
+      <button class="win-x" title="Close">✕</button></div>
+    <div class="win-body"></div>`;
+  $('#windows').appendChild(w);
+  openWins[id]=w;
+  $('.win-x',w).onclick=()=>closeApp(id);
+  w.addEventListener('mousedown',()=>focusWin(id));
+  dragify(w,$('.win-bar',w));
+  buildAppBody(id,$('.win-body',w));
+  refreshTaskbar();
+  clearSpot();
+  beep('pop');
+  fire('app:open',{id});
+}
+function closeApp(id){
+  const w=openWins[id]; if(!w) return;
+  w.remove(); delete openWins[id];
+  refreshTaskbar(); beep('good');
+  fire('app:close',{id});
+  if(Object.keys(openWins).length===0) fire('desktop:clear');
+}
+function focusWin(id){ const w=openWins[id]; if(w) w.style.zIndex=++zTop; }
+function refreshTaskbar(){
+  const t=$('#taskbtns'); t.innerHTML='';
+  Object.keys(openWins).forEach(id=>{
+    const a=appById(id);
+    const b=document.createElement('button'); b.className='taskbtn';
+    b.innerHTML=a.em+' '+a.name; b.onclick=()=>focusWin(id);
+    t.appendChild(b);
+  });
+}
+function dragify(win,handle){
+  let sx,sy,ox,oy,drag=false;
+  handle.addEventListener('mousedown',e=>{
+    if(e.target.closest('.win-x')) return;
+    drag=true; sx=e.clientX; sy=e.clientY;
+    ox=parseInt(win.style.left); oy=parseInt(win.style.top);
+    handle.style.cursor='grabbing'; e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!drag) return;
+    const deskR=$('#desk').getBoundingClientRect();
+    let nx=ox+e.clientX-sx, ny=oy+e.clientY-sy;
+    nx=Math.max(0,Math.min(nx,deskR.width-win.offsetWidth));
+    ny=Math.max(0,Math.min(ny,deskR.height-win.offsetHeight));
+    win.style.left=nx+'px'; win.style.top=ny+'px';
+    if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>60) fire('win:drag',{});
+  });
+  window.addEventListener('mouseup',()=>{ drag=false; handle.style.cursor='grab'; });
+}
+
+/* =====================================================================
+   APP CONTENT
+   ===================================================================== */
+function buildAppBody(id,body){
+  ({files:appFiles,textedit:appText,paint:appPaint,trash:appTrash,
+    mouse:gameMouse,scroll:gameScroll,keys:gameKeys}[id]||appPlain)(body);
+}
+function appPlain(b){ b.innerHTML='<div style="padding:20px;font-size:18px">This app is empty. Close it with the ✕ button.</div>'; }
+
+const FILE_NAMES=['my-story.txt','dog.png','math-notes.txt','beach.jpg','song.mp3','robot.png','homework.txt',
+ 'cat.jpg','rocket.png','recipe.txt','map.png','science.txt','puzzle.jpg','letters.txt','space.png','soccer.jpg',
+ 'colors.png','poem.txt','tree.jpg','clouds.png','game.txt','snack.jpg','bus.png','list.txt','stars.png'];
+function appFiles(b){
+  b.innerHTML=`<div class="filelist">
+    <div style="padding:8px 10px;color:var(--muted);font-size:15px">📁 Home — ${FILE_NAMES.length} files. Use the mouse wheel to scroll down.</div>
+    ${FILE_NAMES.map(n=>`<div class="filerow">${n.endsWith('.txt')?'📄':n.endsWith('.mp3')?'🎵':'🖼️'} ${n}</div>`).join('')}
+    <div class="filerow" style="color:var(--good)">🏁 You reached the bottom of the list!</div></div>`;
+  b.addEventListener('scroll',()=>{ if(b.scrollTop>120) fire('scroll:files',{}); });
+}
+function appTrash(b){
+  b.innerHTML='<div style="padding:24px;font-size:19px;text-align:center">🗑️<br><br>The Trash is empty.<br>'+
+  '<span style="color:var(--muted);font-size:16px">Deleted files wait here. Ask your teacher before emptying it.</span></div>';
+}
+function appText(b){
+  b.innerHTML=`<div style="padding:10px;height:100%;display:flex;flex-direction:column">
+   <div style="color:var(--muted);font-size:15px;padding-bottom:6px">📝 Type here. Try Shift for a CAPITAL letter, Space, Backspace, and Enter.</div>
+   <textarea style="flex:1;font-size:22px;padding:12px;border-radius:10px;border:3px solid var(--line);background:#0f1420;color:#fff"
+     placeholder="Type your name..."></textarea></div>`;
+  const ta=$('textarea',b);
+  ta.addEventListener('keydown',e=>{ if(e.key.length===1||['Backspace','Enter'].includes(e.key)) fire('type:any',{}); });
+}
+function appPaint(b){
+  b.innerHTML=`<div class="game-wrap">
+    <div class="paint-tools">
+      <span style="font-size:15px">Hold the left button and drag to draw:</span>
+      <span class="swatch on" data-c="#ff5f5f" style="background:#ff5f5f"></span>
+      <span class="swatch" data-c="#3ea6ff" style="background:#3ea6ff"></span>
+      <span class="swatch" data-c="#3ddc84" style="background:#3ddc84"></span>
+      <span class="swatch" data-c="#ffd54a" style="background:#ffd54a"></span>
+      <button class="btn small ghost" id="pClear">Clear</button>
+    </div>
+    <div class="game-area" style="background:#fff"><canvas id="pCanvas" style="position:absolute;inset:0"></canvas></div>
+  </div>`;
+  const cv=$('#pCanvas',b), area=$('.game-area',b);
+  const fit=()=>{ cv.width=area.clientWidth; cv.height=area.clientHeight; };
+  setTimeout(fit,30);
+  const ctx=cv.getContext('2d'); let drawing=false,color='#ff5f5f',dist=0,fired=false,lx=0,ly=0;
+  $$('.swatch',b).forEach(s=>s.onclick=()=>{ $$('.swatch',b).forEach(x=>x.classList.remove('on')); s.classList.add('on'); color=s.dataset.c; });
+  $('#pClear',b).onclick=()=>ctx.clearRect(0,0,cv.width,cv.height);
+  const pos=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
+  cv.addEventListener('mousedown',e=>{ drawing=true; const[x,y]=pos(e); lx=x; ly=y; ctx.beginPath(); ctx.moveTo(x,y); });
+  cv.addEventListener('mousemove',e=>{
+    if(!drawing) return;
+    const[x,y]=pos(e);
+    ctx.strokeStyle=color; ctx.lineWidth=6; ctx.lineCap='round'; ctx.lineTo(x,y); ctx.stroke();
+    dist+=Math.hypot(x-lx,y-ly); lx=x; ly=y;
+    if(dist>90&&!fired){ fired=true; fire('paint:draw',{}); }
+  });
+  window.addEventListener('mouseup',()=>drawing=false);
+}
+
+/* =====================================================================
+   GAME 1 — MOUSE MASTER  (click / select / double-click / right-click)
+   ===================================================================== */
+function gameMouse(b){
+  const N=state.support?{pop:5,sel:3,dbl:3,rc:1}:{pop:8,sel:3,dbl:5,rc:2};
+  b.innerHTML=`<div class="game-wrap">
+    <div class="game-head"><span id="mmTitle">Round 1</span><span id="mmScore"></span></div>
+    <div class="game-area" id="mmArea"></div></div>`;
+  const area=$('#mmArea',b), title=$('#mmTitle',b), score=$('#mmScore',b);
+  let misses=0, round=0;
+  const AW=()=>area.clientWidth-100, AH=()=>area.clientHeight-100;
+  const place=el=>{ el.style.left=rnd(10,Math.max(20,AW()))+'px'; el.style.top=rnd(10,Math.max(20,AH()))+'px'; };
+  area.addEventListener('click',e=>{
+    if(e.target===area){ misses++; if(misses%3===0) coachSay('Slow down 🐢 — put the arrow ON the picture, then click.'); }
+  });
+
+  function head(t,s){ title.innerHTML=t; score.innerHTML=s; }
+
+  function r1(){ // single click
+    let got=0; head('Round 1 of 4 — SINGLE CLICK '+PIC.click(), `Popped: <b>0/${N.pop}</b>`);
+    coachSay('Pop the balloons with <b>one click</b>.',[PIC.click]);
+    area.innerHTML='';
+    for(let i=0;i<N.pop;i++){
+      const el=document.createElement('button');
+      el.className='balloon'; el.textContent='🎈';
+      el.style.background=pick(['#e05b6a','#4a8fe0','#4bb87a','#c58ae0','#e0a54b']);
+      place(el);
+      el.onclick=ev=>{ ev.stopPropagation(); el.remove(); got++; beep('pop');
+        head('Round 1 of 4 — SINGLE CLICK '+PIC.click(),`Popped: <b>${got}/${N.pop}</b>`);
+        if(got===N.pop) done(r2); };
+      area.appendChild(el);
+    }
+  }
+  function r2(){ // select
+    let sel=0; head('Round 2 of 4 — SELECT with one click '+PIC.click(),`Chosen: <b>0/${N.sel}</b>`);
+    coachSay('<b>One click chooses</b> a thing. Click each shape one time — it turns blue.',[PIC.click]);
+    area.innerHTML='';
+    for(let i=0;i<N.sel;i++){
+      const el=document.createElement('button');
+      el.className='shape'; el.textContent=pick(['🔺','🟩','🟦','⬛','🟣']); place(el);
+      el.onclick=ev=>{ ev.stopPropagation();
+        if(el.classList.contains('sel')) return;
+        el.classList.add('sel'); sel++; beep('good');
+        head('Round 2 of 4 — SELECT with one click '+PIC.click(),`Chosen: <b>${sel}/${N.sel}</b>`);
+        if(sel===N.sel) done(r3); };
+      area.appendChild(el);
+    }
+  }
+  function r3(){ // double click
+    let op=0; head('Round 3 of 4 — DOUBLE-CLICK to open '+PIC.double(),`Opened: <b>0/${N.dbl}</b>`);
+    coachSay('<b>Two fast clicks</b> opens a thing. Double-click every box!',[PIC.double]);
+    area.innerHTML='';
+    for(let i=0;i<N.dbl;i++){
+      const el=document.createElement('button');
+      el.className='shape'; el.textContent='📦'; place(el);
+      el.onclick=ev=>{ ev.stopPropagation();
+        if(el.classList.contains('open')) return;
+        el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),320);
+        coachSay('One click only <b>chooses</b>. Click <b>two times fast</b> to open!',[PIC.double]); };
+      el.ondblclick=ev=>{ ev.stopPropagation();
+        if(el.classList.contains('open')) return;
+        el.classList.add('open'); el.textContent='🎁'; op++; beep('star');
+        head('Round 3 of 4 — DOUBLE-CLICK to open '+PIC.double(),`Opened: <b>${op}/${N.dbl}</b>`);
+        if(op===N.dbl) done(r4); };
+      area.appendChild(el);
+    }
+  }
+  function r4(){ // right click
+    let got=0; head('Round 4 of 4 — RIGHT-CLICK for the menu '+PIC.right(),`Menus: <b>0/${N.rc}</b>`);
+    coachSay('Press the <b>right</b> mouse button on the folder. A menu appears — then click <b>Open</b>.',[PIC.right]);
+    area.innerHTML='';
+    for(let i=0;i<N.rc;i++){
+      const el=document.createElement('button');
+      el.className='shape'; el.textContent='📁'; place(el);
+      el.oncontextmenu=ev=>{ ev.preventDefault(); ev.stopPropagation(); popMenu(ev,el); };
+      el.onclick=ev=>{ ev.stopPropagation(); coachSay('That is the LEFT button. Use the <b>RIGHT</b> button here.',[PIC.right]); };
+      area.appendChild(el);
+    }
+    function popMenu(ev,el){
+      $$('.mini-menu',area).forEach(m=>m.remove());
+      const r=area.getBoundingClientRect();
+      const m=document.createElement('div'); m.className='mini-menu';
+      m.style.cssText='position:absolute;background:#1b2130;border:3px solid #36445f;border-radius:10px;padding:6px;z-index:5';
+      m.style.left=(ev.clientX-r.left)+'px'; m.style.top=(ev.clientY-r.top)+'px';
+      ['Open','Copy','Rename'].forEach(lab=>{
+        const bt=document.createElement('button');
+        bt.textContent=lab;
+        bt.style.cssText='display:block;width:150px;text-align:left;background:transparent;border:none;color:#eef3ff;font-size:16px;padding:8px';
+        bt.onmouseenter=()=>bt.style.background='#3ea6ff'; bt.onmouseleave=()=>bt.style.background='transparent';
+        bt.onclick=e2=>{ e2.stopPropagation(); m.remove();
+          if(lab==='Open'){ el.classList.add('open'); el.textContent='📂'; el.oncontextmenu=null; got++; beep('star');
+            head('Round 4 of 4 — RIGHT-CLICK for the menu '+PIC.right(),`Menus: <b>${got}/${N.rc}</b>`);
+            if(got===N.rc) done(null);
+          } else coachSay('Almost! In the menu, click <b>Open</b>.',[PIC.right]);
+        };
+        m.appendChild(bt);
+      });
+      area.appendChild(m);
+      m.style.left=Math.max(2,Math.min(parseFloat(m.style.left),area.clientWidth-m.offsetWidth-4))+'px';
+      m.style.top=Math.max(2,Math.min(parseFloat(m.style.top),area.clientHeight-m.offsetHeight-4))+'px';
+      beep('pop');
+    }
+  }
+  function done(next){
+    if(next){ area.innerHTML='<div style="padding:30px;text-align:center;font-size:24px">⭐ Round complete! ⭐</div>'; setTimeout(next,900); }
+    else{
+      area.innerHTML=`<div style="padding:30px;text-align:center">
+        <div style="font-size:52px">🏅</div>
+        <div style="font-size:24px;margin:10px 0">Mouse Master finished!</div>
+        <div style="font-size:17px;color:var(--muted)">Click • Select • Double-click • Right-click</div></div>`;
+      head('Finished 🎉','');
+      awardBadge('🖱️ Mouse Master'); fire('game:done',{id:'mouse'});
+    }
+  }
+  setTimeout(r1,80);
+}
+
+/* =====================================================================
+   GAME 2 — SCROLL QUEST
+   ===================================================================== */
+function gameScroll(b){
+  const tops=state.support?[520,1050,1580]:[460,940,1420,1900,2380];
+  const H=tops[tops.length-1]+420;
+  const para=[
+    '<b>The desktop</b> is the main screen of the computer. It is like the top of your school desk.',
+    '<b>Icons</b> are small pictures. Each icon stands for an app, a file, or a folder.',
+    'The <b>App Launcher</b> holds every app on the computer. Click it to see them all.',
+    '<b>Files</b> keeps your work. Folders hold files, the way a binder holds papers.',
+    'The <b>system menu</b> is in the top corner. It shows Wi-Fi, volume, battery, and the clock.',
+    '<b>One click</b> chooses. <b>Two fast clicks</b> opens. The <b>right button</b> shows a menu.',
+    '<b>Scrolling</b> moves the page up and down. Roll the wheel in the middle of the mouse.',
+    'To <b>close</b> an app, click the ✕ button in the corner of its window.',
+    'Careful hands: rest your hand on the mouse. Do not squeeze it or bang the keys.',
+    'You are doing great. Keep scrolling — more stars are hiding below!'
+  ];
+  b.innerHTML=`<div class="game-wrap">
+    <div class="game-head"><span>⭐ Scroll Quest ${PIC.scroll()}</span><span id="sqScore">Stars: <b>0/${tops.length}</b></span></div>
+    <div class="game-area" style="overflow:auto" id="sqScroll">
+      <div class="sq-page" id="sqPage" style="height:${H}px">
+        ${para.map((p,i)=>`<p style="position:absolute;top:${140+i*(H-260)/para.length}px;left:26px;right:26px">${p}</p>`).join('')}
+        <div style="position:absolute;top:20px;left:26px;font-size:22px">⬇️ Roll the wheel to scroll DOWN and find the stars.</div>
+        <div style="position:absolute;top:${H-70}px;left:26px;font-size:20px;color:var(--good)">🏁 Bottom of the page!</div>
+      </div>
+    </div></div>`;
+  const page=$('#sqPage',b), sc=$('#sqScroll',b), out=$('#sqScore',b);
+  let got=0;
+  coachSay('Roll the mouse wheel to <b>scroll down</b>. Click every ⭐ you find.',[PIC.scroll,PIC.click]);
+  tops.forEach(t=>{
+    const s=document.createElement('button');
+    s.className='sq-star'; s.textContent='⭐';
+    s.style.top=t+'px'; s.style.left=rnd(40,Math.max(60,page.clientWidth-120))+'px';
+    s.onclick=()=>{ s.remove(); got++; beep('star'); out.innerHTML=`Stars: <b>${got}/${tops.length}</b>`;
+      if(got===tops.length) finish(); };
+    page.appendChild(s);
+  });
+  function finish(){
+    const home=document.createElement('button');
+    home.className='sq-star'; home.textContent='🏠'; home.style.top='70px'; home.style.left='60px';
+    home.onclick=()=>{
+      home.remove(); beep('star');
+      $('#sqPage',b).innerHTML='<div style="position:absolute;top:40px;left:0;right:0;text-align:center">'+
+        '<div style="font-size:52px">🏅</div><div style="font-size:24px">Scroll Quest finished!</div>'+
+        '<div style="color:var(--muted);font-size:17px">You scrolled down AND up.</div></div>';
+      $('#sqPage',b).style.height='auto'; sc.scrollTop=0;
+      awardBadge('⭐ Scroll Star'); fire('game:done',{id:'scroll'});
+    };
+    page.appendChild(home);
+    coachSay('All stars found! Now <b>scroll UP</b> to the very top and click the 🏠 house.',[PIC.scroll]);
+    out.innerHTML='Now scroll <b>UP</b> ⬆️';
+  }
+}
+
+/* =====================================================================
+   GAME 3 — KEY HUNT
+   ===================================================================== */
+let keyGame=null;
+const KEY_ROWS=[
+  ['1','2','3','4','5','6','7','8','9','0'],
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['Z','X','C','V','B','N','M']
+];
+function keyLabel(t){
+  return {SPACE:'Space bar',ENTER:'Enter ⏎',BACKSPACE:'Backspace ⌫',SHIFT:'Shift ⇧',
+    ARROWLEFT:'← Left arrow',ARROWRIGHT:'→ Right arrow',ARROWUP:'↑ Up arrow',ARROWDOWN:'↓ Down arrow'}[t]||t;
+}
+function tokenOf(e){ return e.key===' '?'SPACE':e.key.toUpperCase(); }
+function gameKeys(b){
+  const letters=[], L=state.support?3:5, D=state.support?1:2;
+  const pool='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  while(letters.length<L){ const c=pick(pool); if(!letters.includes(c)) letters.push(c); }
+  const digits=[]; while(digits.length<D){ const c=String(rnd(0,9)); if(!digits.includes(c)) digits.push(c); }
+  const extras=state.support?['SPACE','ENTER','BACKSPACE','ARROWLEFT','ARROWRIGHT']
+                            :['SPACE','ENTER','BACKSPACE','SHIFT','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'];
+  const seq=[...letters,...digits,...extras];
+  b.innerHTML=`<div class="game-wrap">
+    <div class="game-head"><span id="khTitle">⌨️ Key Hunt</span><span id="khScore">0/${seq.length}</span></div>
+    <div style="flex:none" id="khPrompt" class="prompt-big">Get ready…</div>
+    <div class="game-area" style="overflow:auto" id="khArea"></div></div>`;
+  const area=$('#khArea',b), prompt=$('#khPrompt',b), score=$('#khScore',b);
+  area.innerHTML=`<div class="kb" id="khBoard">
+    ${KEY_ROWS.map(r=>`<div class="kb-row">${r.map(k=>`<div class="key" data-k="${k}">${k}</div>`).join('')}</div>`).join('')}
+    <div class="kb-row">
+      <div class="key wide" data-k="SHIFT">⇧ Shift</div>
+      <div class="key xwide" data-k="SPACE">Space</div>
+      <div class="key wide" data-k="BACKSPACE">⌫ Backspace</div>
+      <div class="key wide" data-k="ENTER">⏎ Enter</div>
+    </div>
+    <div class="kb-row">
+      <div class="key" data-k="ARROWLEFT">←</div><div class="key" data-k="ARROWUP">↑</div>
+      <div class="key" data-k="ARROWDOWN">↓</div><div class="key" data-k="ARROWRIGHT">→</div>
+    </div></div>`;
+  let i=0, hintTimer=null;
+  coachSay('Look at the big word. Find that key on the real keyboard and press it.',[()=>PIC.key('press')]);
+  function ask(){
+    clearTimeout(hintTimer);
+    $$('.key',b).forEach(k=>k.classList.remove('hot'));
+    if(i>=seq.length){ return typingRound(); }
+    const t=seq[i];
+    prompt.innerHTML='Press &nbsp;<b style="color:var(--star)">'+keyLabel(t)+'</b>';
+    score.textContent=i+'/'+seq.length;
+    const hot=()=>{ const el=$(`.key[data-k="${t}"]`,b); if(el) el.classList.add('hot'); };
+    if(state.support) hot(); else hintTimer=setTimeout(hot,4000);
+  }
+  keyGame={ onKey(e){
+    if(!openWins.keys){ keyGame=null; return; }
+    if(i>=seq.length) return;
+    const t=tokenOf(e);
+    if(['SPACE','BACKSPACE','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'].includes(t)) e.preventDefault();
+    if(t===seq[i]){
+      const el=$(`.key[data-k="${t}"]`,b);
+      if(el){ el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),260); }
+      i++; beep('key'); ask();
+    } else if(t.length===1||['SHIFT','ENTER','BACKSPACE','SPACE'].includes(t)){
+      prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">not that one</span>');
+      setTimeout(ask,600);
+    }
+  }};
+  function typingRound(){
+    clearTimeout(hintTimer);
+    score.textContent='Typing';
+    $('#khTitle',b).textContent='⌨️ Key Hunt — Typing';
+    prompt.innerHTML='Type your <b>name</b>, then press <b>Enter</b>';
+    area.innerHTML=`<div style="padding:16px;text-align:center">
+      <input class="type-box" id="khType" placeholder="your name" autocomplete="off">
+      <div style="color:var(--muted);font-size:16px">Shift ⇧ + a letter = CAPITAL letter. Backspace ⌫ erases.</div></div>`;
+    const inp=$('#khType',b); setTimeout(()=>inp.focus(),50);
+    area.addEventListener('click',()=>inp.focus());
+    keyGame={onKey(){}};
+    inp.addEventListener('keydown',e=>{
+      if(e.key!=='Enter') return;
+      e.preventDefault();
+      if(inp.value.trim().length<1){ prompt.innerHTML='Type some letters first, then press <b>Enter</b>'; beep('bad'); return; }
+      beep('star'); fixRound(inp.value.trim());
+    });
+  }
+  function fixRound(typed){
+    prompt.innerHTML='The box should say <b>cat</b> — press <b>Backspace</b> ⌫ to fix it, then <b>Enter</b>';
+    area.innerHTML=`<div style="padding:16px;text-align:center">
+      <div style="font-size:20px;color:var(--good);margin-bottom:8px">Nice typing, ${typed}! One more.</div>
+      <input class="type-box" id="khFix" value="catt" autocomplete="off">
+      <div style="color:var(--muted);font-size:16px">Backspace ⌫ erases the letter before the blinking line.</div></div>`;
+    const inp=$('#khFix',b); setTimeout(()=>{inp.focus(); inp.setSelectionRange(4,4);},50);
+    const toEnd=()=>setTimeout(()=>inp.setSelectionRange(inp.value.length,inp.value.length),0);
+    inp.addEventListener('click',toEnd); inp.addEventListener('focus',toEnd);
+    area.addEventListener('click',()=>inp.focus());
+    inp.addEventListener('keydown',e=>{
+      if(e.key!=='Enter') return;
+      e.preventDefault();
+      if(inp.value.toLowerCase().trim()==='cat'){ beep('star'); finishKeys(); }
+      else { prompt.innerHTML='Not yet — make it say <b>cat</b> with Backspace ⌫, then Enter'; beep('bad'); }
+    });
+  }
+  function finishKeys(){
+    prompt.innerHTML='Finished! 🎉';
+    area.innerHTML=`<div style="padding:30px;text-align:center">
+      <div style="font-size:52px">🏅</div><div style="font-size:24px">Key Hunt finished!</div>
+      <div style="color:var(--muted);font-size:17px">Letters • Numbers • Space • Enter • Backspace • Shift • Arrows</div></div>`;
+    score.textContent='Done';
+    keyGame=null;
+    awardBadge('⌨️ Key Finder'); fire('game:done',{id:'keys'});
+  }
+  ask();
+}
+document.addEventListener('keydown',e=>{ if(keyGame&&keyGame.onKey) keyGame.onKey(e); });
+
+/* =====================================================================
+   COACH / BADGES
+   ===================================================================== */
+let coachTimer=null;
+function coachSay(html,pics){
+  clearTimeout(coachTimer);
+  $('#coach').classList.remove('hidden');
+  $('#coachText').innerHTML=html;
+  $('#coachPics').innerHTML=(pics||[]).map(p=>typeof p==='function'?p():p).join('');
+  $('#coachNext').classList.add('hidden');
+  coachTimer=setTimeout(showCoach,5000);
+}
+function awardBadge(name){
+  if(state.badges.includes(name)) return;
+  state.badges.push(name);
+  $('#badges').innerHTML=state.badges.map(b=>`<span class="badge">${b}</span>`).join('');
+}
+
+/* =====================================================================
+   PARTS
+   ===================================================================== */
+const PART_NAMES=['','Part 1 — Login &amp; Warm-Up','Part 2 — Teacher Modeling (Tour)',
+  'Part 3 — Mouse &amp; Keyboard Games','Part 4 — Desktop Scavenger Hunt'];
+function setPart(n){ state.part=n; $('#hudPart').innerHTML=PART_NAMES[n]; }
+
+function showDesktop(){
+  $('#loginScreen').classList.add('hidden');
+  $('#desktopScreen').classList.remove('hidden');
+  if(state.support) $('#helper').classList.remove('hidden');
+}
+
+/* ---- Part 1 ---- */
+function startPart1(){
+  showDesktop(); setPart(1); clearWarmup();
+  const bubbles=state.support?4:6;
+  makeWarmup(bubbles);
+  setQuests([
+    {short:'Pop the warm-up bubbles', on:'warmup:done',
+     text:`Welcome, <b>${state.name}</b>! Warm up your mouse hand: pop all <b>${bubbles}</b> bubbles with <b>one click</b> each.`,
+     pics:[PIC.click]},
+    {short:'Single-click the Files icon', on:'icon:click', match:d=>d.id==='files', spot:'#icon-files',
+     text:'<b>One click</b> on the <b>Files</b> icon. One click <b>chooses</b> — the icon turns blue.', pics:[PIC.click]},
+    {short:'Double-click Text Editor to open', on:'app:open', match:d=>d.id==='textedit', spot:'#icon-textedit',
+     text:'Now <b>double-click</b> the <b>Text Editor</b> icon — two fast clicks <b>opens</b> it.', pics:[PIC.double]},
+    {short:'Close Text Editor with ✕', on:'app:close', match:d=>d.id==='textedit',
+     text:'Close it: click the red <b>✕</b> in the corner of the window.', pics:[PIC.click]}
+  ]);
+}
+function makeWarmup(n){
+  const desk=$('#desk');
+  const wrap=document.createElement('div');
+  wrap.id='warmup'; wrap.style.cssText='position:absolute;inset:0;z-index:15;pointer-events:none';
+  let got=0;
+  for(let i=0;i<n;i++){
+    const b=document.createElement('button');
+    b.className='balloon'; b.textContent='🫧'; b.style.pointerEvents='auto';
+    b.style.left=rnd(110,Math.max(150,usableW()-150))+'px';
+    b.style.top=rnd(60,Math.max(100,desk.clientHeight-220))+'px';
+    b.style.background='rgba(62,166,255,.35)';
+    b.onclick=()=>{ b.remove(); got++; beep('pop'); if(got===n){ wrap.remove(); fire('warmup:done'); } };
+    wrap.appendChild(b);
+  }
+  desk.appendChild(wrap);
+}
+function clearWarmup(){ const w=$('#warmup'); if(w) w.remove(); }
+
+/* ---- Part 2 : guided tour ---- */
+function startPart2(){
+  showDesktop(); setPart(2); clearWarmup();
+  setQuests([
+    {short:'Meet the desktop', on:'next', spot:'#desk',
+     text:'This whole screen is the <b>DESKTOP</b>. It is like the top of your desk — your things sit here.'},
+    {short:'Meet the icons', on:'next', spot:'#iconLayer',
+     text:'These little pictures are <b>ICONS</b>. Each icon opens an app or a folder.'},
+    {short:'Open the App Launcher', on:'launcher:open', spot:'#btnLauncher',
+     text:'Click the <b>App Launcher</b> 🚀 at the bottom. Every app on the computer lives there.', pics:[PIC.click]},
+    {short:'Close the App Launcher', on:'launcher:close', spot:'#lchClose',
+     text:'Good! Now close the launcher with the <b>Close the Launcher</b> button.', pics:[PIC.click]},
+    {short:'Open the system menu', on:'sysmenu:open', spot:'#btnSys',
+     text:'Top right corner: click the <b>system menu</b> 📶🔊🔋. It shows Wi-Fi, volume, battery, and the clock.', pics:[PIC.click]},
+    {short:'Close the system menu', on:'sysmenu:close', spot:'#sysClose',
+     text:'Close the system menu with the <b>Close menu</b> button.', pics:[PIC.click]},
+    {short:'Single-click Files (choose)', on:'icon:click', match:d=>d.id==='files', spot:'#icon-files',
+     text:'<b>One click</b> on <b>Files</b>. Watch: it is only <b>chosen</b>, not opened.', pics:[PIC.click]},
+    {short:'Double-click Files (open)', on:'app:open', match:d=>d.id==='files', spot:'#icon-files',
+     text:'Now <b>two fast clicks</b> on <b>Files</b> to <b>open</b> it.', pics:[PIC.double]},
+    {short:'Scroll down in the file list', on:'scroll:files',
+     text:'Put the arrow inside the window and roll the mouse <b>wheel</b> to <b>scroll down</b> the file list.', pics:[PIC.scroll]},
+    {short:'Close Files with ✕', on:'app:close', match:d=>d.id==='files',
+     text:'Close the Files window with the red <b>✕</b>.', pics:[PIC.click]},
+    {short:'Return to the desktop', on:'desktop:click',
+     text:'Last one: click an <b>empty spot</b> on the desktop. You are back at the <b>desktop</b>! 🖥️', pics:[PIC.click]}
+  ]);
+}
+
+/* ---- Part 3 : the three games ---- */
+function startPart3(){
+  showDesktop(); setPart(3); clearWarmup();
+  setQuests([
+    {short:'Finish Mouse Master 🖱️', on:'game:done', match:d=>d.id==='mouse', spot:'#icon-mouse',
+     text:'<b>Double-click</b> the 🖱️ <b>Mouse Master</b> icon and finish all 4 rounds.', pics:[PIC.double]},
+    {short:'Finish Scroll Quest ⭐', on:'game:done', match:d=>d.id==='scroll', spot:'#icon-scroll',
+     text:'<b>Double-click</b> the ⭐ <b>Scroll Quest</b> icon and collect every star.', pics:[PIC.double,PIC.scroll]},
+    {short:'Finish Key Hunt ⌨️', on:'game:done', match:d=>d.id==='keys', spot:'#icon-keys',
+     text:'<b>Double-click</b> the ⌨️ <b>Key Hunt</b> icon and find the keys.', pics:[PIC.double,()=>PIC.key('keys')]}
+  ],'any');
+  coachSay('Three games are on the desktop. Do them in any order — <b>double-click</b> an icon to start.',[PIC.double]);
+}
+
+/* ---- Part 4 : scavenger hunt ---- */
+function startPart4(){
+  showDesktop(); setPart(4); clearWarmup();
+  Object.keys(openWins).forEach(closeApp);
+  setQuests([
+    {short:'Find the App Launcher', on:'launcher:open', text:'🔎 Find and open the <b>App Launcher</b>.', pics:[PIC.click]},
+    {short:'Find and open Files', on:'app:open', match:d=>d.id==='files', text:'🔎 Find and open the <b>Files</b> app.', pics:[PIC.double]},
+    {short:'Find the system menu', on:'sysmenu:open', text:'🔎 Find and open the <b>system menu</b> (top right).', pics:[PIC.click]},
+    {short:'Open the Paint app', on:'app:open', match:d=>d.id==='paint', text:'🔎 Open the assigned app: <b>Paint</b> 🎨.', pics:[PIC.double]},
+    {short:'Draw a line with the mouse', on:'paint:draw', text:'✏️ Hold the left button down and <b>drag</b> to draw in Paint.', pics:[PIC.click]},
+    {short:'Close Paint with ✕', on:'app:close', match:d=>d.id==='paint', text:'❌ Close <b>Paint</b> with the red ✕.', pics:[PIC.click]},
+    {short:'Show the desktop (close all)', on:'desktop:clear', text:'🖥️ Close every window so you can see the <b>desktop</b> again.', pics:[PIC.click]}
+  ],'any');
+  coachSay('Scavenger hunt! Find each item on the list. Any order is fine.',[PIC.click]);
+}
+
+/* ---- part transitions ---- */
+function partComplete(){
+  const p=state.part;
+  if(p===4){ exitTicket(); return; }
+  const msg={
+    1:['🎉 Part 1 done!','You logged in and warmed up your mouse hand.','Next: a tour of the desktop with your teacher.'],
+    2:['🎉 Part 2 done!','You found the desktop, icons, App Launcher, Files, and the system menu.','Next: three games!'],
+    3:['🎉 Part 3 done!','Click, double-click, right-click, scroll, and keyboard — all practiced.','Next: the scavenger hunt.']
+  }[p];
+  beep('star');
+  modal(`<h2>${msg[0]}</h2><p>${msg[1]}</p><p style="color:var(--star);font-size:24px">${'⭐'.repeat(Math.min(state.stars,12))}</p>
+    <p>${msg[2]}</p><button class="btn good" id="mNext">Continue ▶</button>`);
+  $('#mNext').onclick=()=>{ closeModal(); [null,startPart2,startPart3,startPart4][p](); };
+}
+
+/* ---- exit ticket + certificate ---- */
+function exitTicket(){
+  beep('star');
+  const mouseOpts=[['click','I can <b>click</b> to choose something.'],
+                   ['double','I can <b>double-click</b> to open an app.'],
+                   ['right','I can <b>right-click</b> to see a menu.'],
+                   ['scroll','I can <b>scroll</b> to move up and down.']];
+  const keyOpts=[['letters','I can find <b>letters</b> and type my name.'],
+                 ['space','I can press the <b>Space bar</b> to make a space.'],
+                 ['enter','I can press <b>Enter</b> to go.'],
+                 ['backspace','I can press <b>Backspace</b> to erase.']];
+  const row=(arr,g)=>arr.map(([v,t])=>`<button class="btn ghost small ex" data-g="${g}" data-v="${v}" style="text-align:left">${t}</button>`).join('');
+  modal(`<h2>🎟️ Exit Question</h2>
+    <p style="font-size:18px">Show me <b>one thing you can do with the mouse</b> and <b>one thing you can do with the keyboard</b>.</p>
+    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">🖱️ Pick ONE mouse job:</div>
+    <div style="display:grid;gap:6px;margin:6px 0">${row(mouseOpts,'mouse')}</div>
+    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">⌨️ Pick ONE keyboard job:</div>
+    <div style="display:grid;gap:6px;margin:6px 0">${row(keyOpts,'key')}</div>
+    <button class="btn good hidden" id="exDone">Finish ▶</button>`);
+  $$('.ex').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g;
+    $$(`.ex[data-g="${g}"]`).forEach(x=>{x.classList.add('ghost');x.classList.remove('good');});
+    b.classList.remove('ghost'); b.classList.add('good');
+    state.exit[g]=b.innerHTML; beep('good');
+    if(state.exit.mouse&&state.exit.key) $('#exDone').classList.remove('hidden');
+  });
+  $('#exDone').onclick=()=>{ closeModal(); certificate(); };
+}
+function certificate(){
+  state.stars+=2; updateStars();
+  const c=$('#certificate'); c.classList.remove('hidden');
+  c.innerHTML=`<div class="cert">
+    <div style="font-size:44px">🐧 🖱️ ⌨️</div>
+    <h1>Desktop Quest Certificate</h1>
+    <div>This certifies that</div>
+    <div class="nm">${state.name}</div>
+    <div style="font-size:20px">can navigate the Linux desktop and control the mouse and keyboard.</div>
+    <ul>
+      <li>✔ Logged in and kept the password private</li>
+      <li>✔ Found the desktop, icons, App Launcher, Files, and system menu</li>
+      <li>✔ Clicked, double-clicked, right-clicked, and scrolled</li>
+      <li>✔ Used letters, numbers, Space, Enter, Backspace, Shift, and arrows</li>
+      <li>✔ Opened and closed an application</li>
+    </ul>
+    <p style="font-size:19px">${state.exit.mouse||''}<br>${state.exit.key||''}</p>
+    <p style="font-size:22px;color:#b8952f">${'⭐'.repeat(Math.min(state.stars,15))} &nbsp; ${state.stars} stars</p>
+    <p style="font-size:16px">${new Date().toLocaleDateString()} &nbsp;•&nbsp; ${state.badges.join('  ')}</p>
+    <div class="noprint" style="margin-top:14px">
+      <button class="btn" onclick="window.print()">🖨️ Print</button>
+      <button class="btn ghost" id="again">🔄 Play again</button>
+    </div></div>`;
+  $('#again').onclick=()=>location.reload();
+  beep('star');
+}
+
+/* =====================================================================
+   HELPER SHEET (visual reference for SWIEP / ELL)
+   ===================================================================== */
+const HELP_ROWS=[
+  ['🖥️','Desktop','The main screen. Your icons live here.'],
+  ['🖼️','Icon','A small picture that opens an app or folder.'],
+  ['🚀','App Launcher','The button that shows all the apps.'],
+  ['📁','Files','The app that holds your work.'],
+  ['📶','System menu','Wi-Fi, sound, battery, clock (top right).'],
+  ['✕','Close','Closes the window / quits the app.']
+];
+function buildHelper(){
+  const h=$('#helper');
+  h.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;
+      background:#fffbe8;padding:4px 0 8px;margin:-4px 0 0"><h3 style="margin:0">📖 Helper Sheet</h3>
+      <button class="btn small" id="hpCloseTop">Close</button></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('click')}</span><span class="hp-tx"><b>Click</b><div>Press the LEFT button ONE time = choose.</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('double')}</span><span class="hp-tx"><b>Double-click</b><div>Press the LEFT button TWO times fast = open.</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('right')}</span><span class="hp-tx"><b>Right-click</b><div>Press the RIGHT button = a menu appears.</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('scroll')}</span><span class="hp-tx"><b>Scroll</b><div>Roll the wheel = the page moves up and down.</div></span></div>
+    ${HELP_ROWS.map(([e,t,d])=>`<div class="hp-row"><span class="hp-em">${e}</span><span class="hp-tx"><b>${t}</b><div>${d}</div></span></div>`).join('')}
+    <div class="hp-row"><span class="hp-em">⌨️</span><span class="hp-tx"><b>Keys</b><div>Space = space · Enter ⏎ = go · Backspace ⌫ = erase · Shift ⇧ = CAPITAL · ← ↑ ↓ → = move</div></span></div>
+    <button class="btn small" id="hpClose" style="margin-top:10px">Close</button>`;
+  $('#hpClose').onclick=()=>h.classList.add('hidden');
+  $('#hpCloseTop').onclick=()=>h.classList.add('hidden');
+}
+$('#btnHelper').onclick=()=>{ $('#helper').classList.toggle('hidden'); };
+
+/* =====================================================================
+   TOGGLES + TEACHER PANEL
+   ===================================================================== */
+$('#btnSupport').onclick=()=>{
+  state.support=!state.support;
+  document.body.classList.toggle('support',state.support);
+  $('#btnSupport').textContent='🖼️ Picture Mode: '+(state.support?'ON':'OFF');
+  // keep the sheet out of the way of the login card; it opens with the desktop
+  if(state.support&&!$('#desktopScreen').classList.contains('hidden')) $('#helper').classList.remove('hidden');
+  if(!state.support) $('#helper').classList.add('hidden');
+  try{ localStorage.setItem('dq_support',state.support?'1':'0'); }catch(e){}  // file:// may block storage
+  if($('#lgWord')) $('#lgWord').textContent=state.support?'cat':'star';
+};
+$('#btnSound').onclick=()=>{
+  state.sound=!state.sound;
+  $('#btnSound').textContent='🔊 Sound: '+(state.sound?'ON':'OFF');
+};
+$('#btnTeacher').onclick=()=>{ $('#teacher').classList.toggle('hidden'); };
+function buildTeacher(){
+  $('#teacher').innerHTML=`<h3>👩‍🏫 Teacher Panel</h3>
+    <p style="font-size:14px;color:var(--muted)">Objective: SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.</p>
+    <table>
+      <tr><th>Time</th><th>Part</th><th>In the game</th></tr>
+      <tr><td>0:00–0:08</td><td>Login &amp; Warm-Up</td><td>Login routine, bubble pop, click vs. double-click</td></tr>
+      <tr><td>0:08–0:18</td><td>Teacher Modeling</td><td>Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close</td></tr>
+      <tr><td>0:18–0:38</td><td>Mouse &amp; Keyboard Games</td><td>Mouse Master (4 rounds), Scroll Quest, Key Hunt</td></tr>
+      <tr><td>0:38–0:49</td><td>Scavenger Hunt / Closure</td><td>7-item hunt, exit question, certificate</td></tr>
+    </table>
+    <div class="tch-row">
+      <button class="btn small ghost" data-p="1">▶ Part 1</button>
+      <button class="btn small ghost" data-p="2">▶ Part 2</button>
+      <button class="btn small ghost" data-p="3">▶ Part 3</button>
+      <button class="btn small ghost" data-p="4">▶ Part 4</button>
+      <button class="btn small ghost" id="tchCert">▶ Exit ticket</button>
+    </div>
+    <p style="font-size:14px"><b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away,
+    Helper Sheet pinned open, shorter password (<i>cat</i>).</p>
+    <div class="tch-row">
+      <button class="btn small ghost" id="tchReset">🔄 Restart from login</button>
+      <button class="btn small" id="tchClose">Close panel</button>
+    </div>`;
+  $$('#teacher [data-p]').forEach(b=>b.onclick=()=>{
+    $('#teacher').classList.add('hidden'); closeModal();
+    Object.keys(openWins).forEach(closeApp);
+    [null,startPart1,startPart2,startPart3,startPart4][+b.dataset.p]();
+  });
+  $('#tchCert').onclick=()=>{ $('#teacher').classList.add('hidden'); exitTicket(); };
+  $('#tchReset').onclick=()=>location.reload();
+  $('#tchClose').onclick=()=>$('#teacher').classList.add('hidden');
+}
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+buildIcons(); buildLauncher(); buildSys(); buildHelper(); buildTeacher();
+try{ if(localStorage.getItem('dq_support')==='1') $('#btnSupport').click(); }catch(e){}
+$('#lgName').focus();
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ toggleLauncher(false); toggleSys(false); hideCtx(); } });
+</script>
+</body>
+</html>
