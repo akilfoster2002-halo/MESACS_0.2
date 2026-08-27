@@ -22,6 +22,22 @@ Best on a screen 1100px wide or more. Fullscreen with **F11**.
 - Jump to any part — useful for a class that starts late or for reteaching.
 - Restart from login, timing table, exit-ticket shortcut.
 
+## Español / English (🌐 button)
+The whole game runs in Spanish or English — login, coach, quest list, all three games,
+scavenger hunt, exit question, certificate, Helper Sheet, and the Teacher Panel.
+
+- Students pick 🇺🇸 English or 🇲🇽 Español on the login screen, or press the 🌐 button any time.
+- The teacher can also switch from the Teacher Panel.
+- The choice is remembered on that computer.
+- Switching mid-lesson re-labels everything immediately. A mini-game that is open restarts
+  in the new language, so switch between activities when you can.
+- **Key names stay in English** — `Enter`, `Backspace`, `Shift`, `Space` — because that is what
+  is printed on the lab keyboards. Spanish adds the meaning in parentheses,
+  e.g. `Backspace ⌫ (borrar)`, `Shift ⇧ (mayúsculas)`.
+- Class password: `star` in English, `luna` in Spanish (`cat` / `sol` in Picture Mode).
+- Spanish vocabulary taught: escritorio, icono, clic, doble clic, clic derecho, desplazar,
+  aplicación, ventana, teclado, contraseña.
+
 ## Picture Mode — SWIEP / ELL support (🖼️ button)
 - Pins the **Helper Sheet**: mouse pictograms (which button to press) + vocabulary with icons
   — click, double-click, right-click, scroll, desktop, icon, App Launcher, Files, system menu, close, keys.
@@ -31,7 +47,7 @@ Best on a screen 1100px wide or more. Fullscreen with **F11**.
 - The setting is remembered on that computer.
 
 ## Passwords
-Class password is `star` (or `cat` in Picture Mode). Nothing is transmitted or stored anywhere —
+Class password is `star` (`cat` in Picture Mode); in Spanish it is `luna` (`sol` in Picture Mode). Nothing is transmitted or stored anywhere —
 the login is a practice routine that also teaches that a password shows as dots and stays private.
 
 ## Coaching built in

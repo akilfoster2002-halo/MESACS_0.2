@@ -28,6 +28,11 @@ button{font-family:var(--font);cursor:pointer}
 .login-card{width:min(560px,92%);background:var(--panel);border:3px solid var(--line);border-radius:22px;
   padding:26px 30px 30px;box-shadow:0 30px 70px rgba(0,0,0,.55);text-align:center}
 .lg-logo{font-size:60px;line-height:1}
+.lg-lang{display:flex;gap:8px;justify-content:center;margin-bottom:6px}
+.langbtn{background:var(--panel2);border:3px solid var(--line);color:var(--text);border-radius:12px;
+  padding:8px 16px;font-size:17px}
+.langbtn:hover{border-color:var(--accent)}
+.langbtn.on{background:var(--accent);color:#04121f;border-color:#fff}
 .login-card h1{margin:6px 0 18px;font-size:28px;letter-spacing:.5px}
 .login-card label{display:block;font-size:18px;margin:14px 0 8px;color:var(--text)}
 .login-card input{width:100%;padding:16px 18px;font-size:24px;border-radius:14px;border:3px solid var(--line);
@@ -235,19 +240,23 @@ body.support #hudTask{font-size:21px}
 
     <section id="loginScreen">
       <div class="login-card">
+        <div class="lg-lang">
+          <button class="langbtn" data-lang="en">🇺🇸 English</button>
+          <button class="langbtn" data-lang="es">🇲🇽 Español</button>
+        </div>
         <div class="lg-logo">🐧</div>
-        <h1>Computer Lab Login</h1>
+        <h1 data-i18n="Computer Lab Login">Computer Lab Login</h1>
         <div id="lgStep1">
-          <label>1. Click the box, then type your first name.</label>
-          <input id="lgName" maxlength="14" autocomplete="off" placeholder="type here">
-          <button id="lgNext" class="btn">Next ▶</button>
+          <label data-i18n="1. Click the box, then type your first name.">1. Click the box, then type your first name.</label>
+          <input id="lgName" maxlength="14" autocomplete="off" data-i18n-ph="type here" placeholder="type here">
+          <button id="lgNext" class="btn" data-i18n="Next ▶">Next ▶</button>
         </div>
         <div id="lgStep2" class="hidden">
           <div class="lg-user"><span>🙂</span><span id="lgUser"></span></div>
-          <label>2. Type the class password: <b id="lgWord" style="color:var(--star)">star</b> then press <b>Enter</b>.</label>
+          <label id="lgPassLabel"></label>
           <input id="lgPass" type="password" autocomplete="off" placeholder="••••">
-          <div class="lg-privacy">🔒 Your password shows as dots. A password is <b>private</b> — we do not share it.</div>
-          <button id="lgLogin" class="btn">Log In ⏎</button>
+          <div class="lg-privacy" data-i18n="🔒 Your password shows as dots. A password is &lt;b&gt;private&lt;/b&gt; — we do not share it."></div>
+          <button id="lgLogin" class="btn" data-i18n="Log In ⏎">Log In ⏎</button>
           <div id="lgMsg" class="lg-msg"></div>
         </div>
       </div>
@@ -255,8 +264,8 @@ body.support #hudTask{font-size:21px}
 
     <section id="desktopScreen" class="hidden">
       <div id="topbar">
-        <button id="btnLauncherTop" class="tb-btn">☰ Activities</button>
-        <div class="tb-mid" id="tbTitle">🐧 Linux Lab — Desktop</div>
+        <button id="btnLauncherTop" class="tb-btn" data-i18n="☰ Activities">☰ Activities</button>
+        <div class="tb-mid" id="tbTitle" data-i18n="🐧 Linux Lab — Desktop">🐧 Linux Lab — Desktop</div>
         <button id="btnSys" class="tb-btn">📶 🔊 🔋 <span id="clock">--:--</span> ▾</button>
       </div>
       <div id="desk">
@@ -267,9 +276,9 @@ body.support #hudTask{font-size:21px}
         <div id="ctxmenu" class="hidden"></div>
       </div>
       <div id="dock">
-        <button id="btnLauncher" class="dock-launch">🚀 <span>App Launcher</span></button>
+        <button id="btnLauncher" class="dock-launch">🚀 <span data-i18n="App Launcher">App Launcher</span></button>
         <div id="taskbtns"></div>
-        <div class="dock-right" id="deskLabel">🖥️ This is the Desktop</div>
+        <div class="dock-right" id="deskLabel" data-i18n="🖥️ This is the Desktop">🖥️ This is the Desktop</div>
       </div>
     </section>
 
@@ -286,19 +295,20 @@ body.support #hudTask{font-size:21px}
 
   <aside id="hud">
     <div>
-      <div class="hud-title">🖥️ Desktop Quest</div>
+      <div class="hud-title" data-i18n="🖥️ Desktop Quest">🖥️ Desktop Quest</div>
       <div class="hud-sub" id="hudName">Player</div>
     </div>
     <div class="hud-part" id="hudPart">Part 1 — Login &amp; Warm-Up</div>
-    <div class="hud-stars"><span id="starCount">0</span> ⭐ stars</div>
+    <div class="hud-stars"><span id="starCount">0</span> ⭐ <span data-i18n="stars">stars</span></div>
     <div class="hud-now">
-      <div class="lbl">YOUR JOB RIGHT NOW</div>
-      <div id="hudTask">Log in to start.</div>
+      <div class="lbl" data-i18n="YOUR JOB RIGHT NOW">YOUR JOB RIGHT NOW</div>
+      <div id="hudTask" data-i18n="Log in to start.">Log in to start.</div>
       <div class="picrow" id="hudPics"></div>
     </div>
     <ol id="questList"></ol>
     <div class="hud-badges" id="badges"></div>
     <div class="hud-btns">
+      <button id="btnLang" class="btn small ghost" style="grid-column:1 / -1">🌐 Español / English</button>
       <button id="btnHelper" class="btn small ghost">📖 Helper Sheet</button>
       <button id="btnSupport" class="btn small ghost">🖼️ Picture Mode: OFF</button>
       <button id="btnSound" class="btn small ghost">🔊 Sound: ON</button>
@@ -323,11 +333,252 @@ const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=a=>a[rnd(0,a.length-1)];
 
 const state={
-  name:'Friend', support:false, sound:true,
+  name:'Friend', support:false, sound:true, lang:'en',
   part:0, stars:0, badges:[],
   quests:[], qi:0, mode:'seq',
   exit:{mouse:null,key:null}
 };
+
+/* =====================================================================
+   LANGUAGE / IDIOMA
+   English is the source text; ES holds the Spanish for each string.
+   t('English string', {placeholders}) returns the right one.
+   ===================================================================== */
+const ES={
+/* -- login -- */
+'Computer Lab Login':'Laboratorio de Computación',
+'1. Click the box, then type your first name.':'1. Haz clic en la casilla y escribe tu nombre.',
+'type here':'escribe aquí',
+'Next ▶':'Siguiente ▶',
+'2. Type the class password: {word} then press <b>Enter</b>.':'2. Escribe la contraseña de la clase: {word} y presiona <b>Enter</b>.',
+'🔒 Your password shows as dots. A password is <b>private</b> — we do not share it.':'🔒 Tu contraseña se ve como puntitos. Una contraseña es <b>privada</b> — no la compartimos.',
+'Log In ⏎':'Entrar ⏎',
+'Not quite. Type the word: {word}  (Backspace erases.)':'Casi. Escribe la palabra: {word}  (Backspace borra.)',
+'English':'English','Español':'Español','Language / Idioma':'Idioma / Language',
+'Desktop Quest — Mouse &amp; Keyboard Lab':'Aventura del Escritorio — Ratón y Teclado',
+/* -- desktop chrome -- */
+'☰ Activities':'☰ Actividades',
+'🐧 Linux Lab — Desktop':'🐧 Laboratorio Linux — Escritorio',
+'App Launcher':'Lanzador de Apps',
+'🖥️ This is the Desktop':'🖥️ Esto es el Escritorio',
+'🚀 App Launcher — all your apps live here':'🚀 Lanzador de Apps — aquí viven todas tus aplicaciones',
+'✖ Close the Launcher':'✖ Cerrar el Lanzador',
+'📶 Wi-Fi':'📶 Wi-Fi','Connected':'Conectado',
+'🔊 Volume':'🔊 Volumen','🔋 Battery':'🔋 Batería','🕐 Clock':'🕐 Reloj',
+'⏻ Power / Log Out':'⏻ Apagar / Cerrar sesión','Close menu':'Cerrar menú',
+'Open':'Abrir','Copy':'Copiar','Rename':'Cambiar nombre','Properties':'Propiedades',
+'Rename is not for today 🙂':'Cambiar el nombre no es para hoy 🙂',
+'{app} — an application icon.':'{app} — un icono de aplicación.',
+'Close':'Cerrar',
+/* -- app names -- */
+'Files':'Archivos','Text Editor':'Editor de Texto','Paint':'Pintura',
+'Mouse Master':'Maestro del Ratón','Scroll Quest':'Busca Estrellas','Key Hunt':'Caza de Teclas','Trash':'Papelera',
+/* -- HUD -- */
+'🖥️ Desktop Quest':'🖥️ Aventura del Escritorio','Player':'Jugador',
+'YOUR JOB RIGHT NOW':'TU TAREA AHORA','stars':'estrellas','Log in to start.':'Inicia sesión para empezar.',
+'📖 Helper Sheet':'📖 Hoja de Ayuda','🖼️ Picture Mode: ':'🖼️ Modo Dibujos: ','🔊 Sound: ':'🔊 Sonido: ',
+'👩‍🏫 Teacher':'👩‍🏫 Maestro','ON':'SÍ','OFF':'NO',
+'Part 1 — Login &amp; Warm-Up':'Parte 1 — Entrar y Calentamiento',
+'Part 2 — Teacher Modeling (Tour)':'Parte 2 — El Maestro Enseña (Recorrido)',
+'Part 3 — Mouse &amp; Keyboard Games':'Parte 3 — Juegos de Ratón y Teclado',
+'Part 4 — Desktop Scavenger Hunt':'Parte 4 — Búsqueda del Tesoro',
+'Nice work!':'¡Buen trabajo!',
+/* -- part 1 quests -- */
+'Pop the warm-up bubbles':'Revienta las burbujas',
+'Welcome, <b>{name}</b>! Warm up your mouse hand: pop all <b>{n}</b> bubbles with <b>one click</b> each.':'¡Hola, <b>{name}</b>! Calienta tu mano: revienta las <b>{n}</b> burbujas con <b>un clic</b> cada una.',
+'Single-click the Files icon':'Un clic en el icono Archivos',
+'<b>One click</b> on the <b>Files</b> icon. One click <b>chooses</b> — the icon turns blue.':'<b>Un clic</b> en el icono <b>Archivos</b>. Un clic <b>escoge</b> — el icono se pone azul.',
+'Double-click Text Editor to open':'Doble clic en Editor de Texto',
+'Now <b>double-click</b> the <b>Text Editor</b> icon — two fast clicks <b>opens</b> it.':'Ahora haz <b>doble clic</b> en el icono <b>Editor de Texto</b> — dos clics rápidos lo <b>abren</b>.',
+'Close Text Editor with ✕':'Cierra el Editor de Texto con ✕',
+'Close it: click the red <b>✕</b> in the corner of the window.':'Ciérralo: haz clic en la <b>✕</b> roja en la esquina de la ventana.',
+/* -- part 2 quests -- */
+'Meet the desktop':'Conoce el escritorio',
+'This whole screen is the <b>DESKTOP</b>. It is like the top of your desk — your things sit here.':'Toda esta pantalla es el <b>ESCRITORIO</b>. Es como la superficie de tu pupitre — aquí están tus cosas.',
+'Meet the icons':'Conoce los iconos',
+'These little pictures are <b>ICONS</b>. Each icon opens an app or a folder.':'Estos dibujitos son <b>ICONOS</b>. Cada icono abre una aplicación o una carpeta.',
+'Open the App Launcher':'Abre el Lanzador de Apps',
+'Click the <b>App Launcher</b> 🚀 at the bottom. Every app on the computer lives there.':'Haz clic en el <b>Lanzador de Apps</b> 🚀 de abajo. Ahí viven todas las aplicaciones de la computadora.',
+'Close the App Launcher':'Cierra el Lanzador de Apps',
+'Good! Now close the launcher with the <b>Close the Launcher</b> button.':'¡Bien! Ahora cierra el lanzador con el botón <b>Cerrar el Lanzador</b>.',
+'Open the system menu':'Abre el menú del sistema',
+'Top right corner: click the <b>system menu</b> 📶🔊🔋. It shows Wi-Fi, volume, battery, and the clock.':'Arriba a la derecha: haz clic en el <b>menú del sistema</b> 📶🔊🔋. Muestra el Wi-Fi, el volumen, la batería y el reloj.',
+'Close the system menu':'Cierra el menú del sistema',
+'Close the system menu with the <b>Close menu</b> button.':'Cierra el menú del sistema con el botón <b>Cerrar menú</b>.',
+'Single-click Files (choose)':'Un clic en Archivos (escoger)',
+'<b>One click</b> on <b>Files</b>. Watch: it is only <b>chosen</b>, not opened.':'<b>Un clic</b> en <b>Archivos</b>. Mira: solo queda <b>escogido</b>, no se abre.',
+'Double-click Files (open)':'Doble clic en Archivos (abrir)',
+'Now <b>two fast clicks</b> on <b>Files</b> to <b>open</b> it.':'Ahora <b>dos clics rápidos</b> en <b>Archivos</b> para <b>abrirlo</b>.',
+'Scroll down in the file list':'Baja por la lista de archivos',
+'Put the arrow inside the window and roll the mouse <b>wheel</b> to <b>scroll down</b> the file list.':'Pon la flecha dentro de la ventana y gira la <b>rueda</b> del ratón para <b>bajar</b> por la lista de archivos.',
+'Close Files with ✕':'Cierra Archivos con ✕',
+'Close the Files window with the red <b>✕</b>.':'Cierra la ventana de Archivos con la <b>✕</b> roja.',
+'Return to the desktop':'Regresa al escritorio',
+'Last one: click an <b>empty spot</b> on the desktop. You are back at the <b>desktop</b>! 🖥️':'La última: haz clic en un <b>lugar vacío</b> del escritorio. ¡Ya estás en el <b>escritorio</b>! 🖥️',
+/* -- part 3 quests -- */
+'Finish Mouse Master 🖱️':'Termina Maestro del Ratón 🖱️',
+'<b>Double-click</b> the 🖱️ <b>Mouse Master</b> icon and finish all 4 rounds.':'Haz <b>doble clic</b> en el icono 🖱️ <b>Maestro del Ratón</b> y termina las 4 rondas.',
+'Finish Scroll Quest ⭐':'Termina Busca Estrellas ⭐',
+'<b>Double-click</b> the ⭐ <b>Scroll Quest</b> icon and collect every star.':'Haz <b>doble clic</b> en el icono ⭐ <b>Busca Estrellas</b> y junta todas las estrellas.',
+'Finish Key Hunt ⌨️':'Termina Caza de Teclas ⌨️',
+'<b>Double-click</b> the ⌨️ <b>Key Hunt</b> icon and find the keys.':'Haz <b>doble clic</b> en el icono ⌨️ <b>Caza de Teclas</b> y encuentra las teclas.',
+'Three games are on the desktop. Do them in any order — <b>double-click</b> an icon to start.':'Hay tres juegos en el escritorio. Hazlos en el orden que quieras — <b>doble clic</b> en un icono para empezar.',
+/* -- part 4 quests -- */
+'Find the App Launcher':'Encuentra el Lanzador de Apps',
+'🔎 Find and open the <b>App Launcher</b>.':'🔎 Encuentra y abre el <b>Lanzador de Apps</b>.',
+'Find and open Files':'Encuentra y abre Archivos',
+'🔎 Find and open the <b>Files</b> app.':'🔎 Encuentra y abre la aplicación <b>Archivos</b>.',
+'Find the system menu':'Encuentra el menú del sistema',
+'🔎 Find and open the <b>system menu</b> (top right).':'🔎 Encuentra y abre el <b>menú del sistema</b> (arriba a la derecha).',
+'Open the Paint app':'Abre la aplicación Pintura',
+'🔎 Open the assigned app: <b>Paint</b> 🎨.':'🔎 Abre la aplicación asignada: <b>Pintura</b> 🎨.',
+'Draw a line with the mouse':'Dibuja una línea con el ratón',
+'✏️ Hold the left button down and <b>drag</b> to draw in Paint.':'✏️ Mantén presionado el botón izquierdo y <b>arrastra</b> para dibujar en Pintura.',
+'Close Paint with ✕':'Cierra Pintura con ✕',
+'❌ Close <b>Paint</b> with the red ✕.':'❌ Cierra <b>Pintura</b> con la ✕ roja.',
+'Show the desktop (close all)':'Muestra el escritorio (cierra todo)',
+'🖥️ Close every window so you can see the <b>desktop</b> again.':'🖥️ Cierra todas las ventanas para ver otra vez el <b>escritorio</b>.',
+'Scavenger hunt! Find each item on the list. Any order is fine.':'¡Búsqueda del tesoro! Encuentra cada cosa de la lista. En cualquier orden.',
+/* -- apps -- */
+'This app is empty. Close it with the ✕ button.':'Esta aplicación está vacía. Ciérrala con el botón ✕.',
+'📁 Home — {n} files. Use the mouse wheel to scroll down.':'📁 Mi carpeta — {n} archivos. Usa la rueda del ratón para bajar.',
+'🏁 You reached the bottom of the list!':'🏁 ¡Llegaste al final de la lista!',
+'The Trash is empty.':'La Papelera está vacía.',
+'Deleted files wait here. Ask your teacher before emptying it.':'Los archivos borrados esperan aquí. Pregúntale a tu maestro antes de vaciarla.',
+'📝 Type here. Try Shift for a CAPITAL letter, Space, Backspace, and Enter.':'📝 Escribe aquí. Prueba Shift para una MAYÚSCULA, Espacio, Backspace y Enter.',
+'Type your name...':'Escribe tu nombre...',
+'Hold the left button and drag to draw:':'Mantén el botón izquierdo y arrastra para dibujar:',
+'Clear':'Borrar',
+/* -- mouse master -- */
+'Slow down 🐢 — put the arrow ON the picture, then click.':'Más despacio 🐢 — pon la flecha SOBRE el dibujo y luego haz clic.',
+'Round 1 of 4 — SINGLE CLICK ':'Ronda 1 de 4 — UN CLIC ',
+'Round 2 of 4 — SELECT with one click ':'Ronda 2 de 4 — ESCOGER con un clic ',
+'Round 3 of 4 — DOUBLE-CLICK to open ':'Ronda 3 de 4 — DOBLE CLIC para abrir ',
+'Round 4 of 4 — RIGHT-CLICK for the menu ':'Ronda 4 de 4 — CLIC DERECHO para el menú ',
+'Popped:':'Reventados:','Chosen:':'Escogidas:','Opened:':'Abiertas:','Menus:':'Menús:',
+'Pop the balloons with <b>one click</b>.':'Revienta los globos con <b>un clic</b>.',
+'<b>One click chooses</b> a thing. Click each shape one time — it turns blue.':'<b>Un clic escoge</b> una cosa. Haz clic una vez en cada figura — se pone azul.',
+'<b>Two fast clicks</b> opens a thing. Double-click every box!':'<b>Dos clics rápidos</b> abren una cosa. ¡Haz doble clic en cada caja!',
+'One click only <b>chooses</b>. Click <b>two times fast</b> to open!':'Un clic solo <b>escoge</b>. ¡Haz clic <b>dos veces rápido</b> para abrir!',
+'Press the <b>right</b> mouse button on the folder. A menu appears — then click <b>Open</b>.':'Presiona el botón <b>derecho</b> del ratón sobre la carpeta. Aparece un menú — luego haz clic en <b>Abrir</b>.',
+'That is the LEFT button. Use the <b>RIGHT</b> button here.':'Ese es el botón IZQUIERDO. Aquí usa el botón <b>DERECHO</b>.',
+'Almost! In the menu, click <b>Open</b>.':'¡Casi! En el menú, haz clic en <b>Abrir</b>.',
+'⭐ Round complete! ⭐':'⭐ ¡Ronda completa! ⭐',
+'Mouse Master finished!':'¡Maestro del Ratón terminado!',
+'Click • Select • Double-click • Right-click':'Clic • Escoger • Doble clic • Clic derecho',
+'Finished 🎉':'Terminado 🎉',
+'🖱️ Mouse Master':'🖱️ Maestro del Ratón',
+/* -- scroll quest -- */
+'⭐ Scroll Quest ':'⭐ Busca Estrellas ','Stars:':'Estrellas:',
+'⬇️ Roll the wheel to scroll DOWN and find the stars.':'⬇️ Gira la rueda para BAJAR y encontrar las estrellas.',
+'🏁 Bottom of the page!':'🏁 ¡Final de la página!',
+'Roll the mouse wheel to <b>scroll down</b>. Click every ⭐ you find.':'Gira la rueda del ratón para <b>bajar</b>. Haz clic en cada ⭐ que encuentres.',
+'All stars found! Now <b>scroll UP</b> to the very top and click the 🏠 house.':'¡Las encontraste todas! Ahora <b>sube</b> hasta arriba del todo y haz clic en la casita 🏠.',
+'Now scroll <b>UP</b> ⬆️':'Ahora <b>SUBE</b> ⬆️',
+'Scroll Quest finished!':'¡Busca Estrellas terminado!',
+'You scrolled down AND up.':'Bajaste Y subiste.',
+'⭐ Scroll Star':'⭐ Campeón de la Rueda',
+'<b>The desktop</b> is the main screen of the computer. It is like the top of your school desk.':'<b>El escritorio</b> es la pantalla principal de la computadora. Es como la superficie de tu pupitre.',
+'<b>Icons</b> are small pictures. Each icon stands for an app, a file, or a folder.':'Los <b>iconos</b> son dibujos pequeños. Cada icono representa una aplicación, un archivo o una carpeta.',
+'The <b>App Launcher</b> holds every app on the computer. Click it to see them all.':'El <b>Lanzador de Apps</b> guarda todas las aplicaciones. Haz clic para verlas todas.',
+'<b>Files</b> keeps your work. Folders hold files, the way a binder holds papers.':'<b>Archivos</b> guarda tu trabajo. Las carpetas guardan archivos, como una carpeta guarda papeles.',
+'The <b>system menu</b> is in the top corner. It shows Wi-Fi, volume, battery, and the clock.':'El <b>menú del sistema</b> está en la esquina de arriba. Muestra el Wi-Fi, el volumen, la batería y el reloj.',
+'<b>One click</b> chooses. <b>Two fast clicks</b> opens. The <b>right button</b> shows a menu.':'<b>Un clic</b> escoge. <b>Dos clics rápidos</b> abren. El <b>botón derecho</b> muestra un menú.',
+'<b>Scrolling</b> moves the page up and down. Roll the wheel in the middle of the mouse.':'<b>Desplazar</b> mueve la página hacia arriba y hacia abajo. Gira la rueda que está en medio del ratón.',
+'To <b>close</b> an app, click the ✕ button in the corner of its window.':'Para <b>cerrar</b> una aplicación, haz clic en el botón ✕ en la esquina de su ventana.',
+'Careful hands: rest your hand on the mouse. Do not squeeze it or bang the keys.':'Manos con cuidado: apoya la mano sobre el ratón. No lo aprietes ni golpees las teclas.',
+'You are doing great. Keep scrolling — more stars are hiding below!':'Lo estás haciendo muy bien. Sigue bajando — ¡hay más estrellas escondidas!',
+/* -- key hunt -- */
+'⌨️ Key Hunt':'⌨️ Caza de Teclas','Get ready…':'Prepárate…',
+'Look at the big word. Find that key on the real keyboard and press it.':'Mira la palabra grande. Encuentra esa tecla en el teclado de verdad y presiónala.',
+'press':'presiona','keys':'teclas',
+'Press &nbsp;':'Presiona &nbsp;','not that one':'esa no','Typing':'Escribir','Done':'Listo',
+'⌨️ Key Hunt — Typing':'⌨️ Caza de Teclas — Escribir',
+'Type your <b>name</b>, then press <b>Enter</b>':'Escribe tu <b>nombre</b> y presiona <b>Enter</b>',
+'your name':'tu nombre',
+'Shift ⇧ + a letter = CAPITAL letter. Backspace ⌫ erases.':'Shift ⇧ + una letra = LETRA MAYÚSCULA. Backspace ⌫ borra.',
+'Type some letters first, then press <b>Enter</b>':'Escribe unas letras primero y luego presiona <b>Enter</b>',
+'The box should say <b>{word}</b> — press <b>Backspace</b> ⌫ to fix it, then <b>Enter</b>':'La casilla debe decir <b>{word}</b> — presiona <b>Backspace</b> ⌫ para arreglarla y luego <b>Enter</b>',
+'Nice typing, {name}! One more.':'¡Muy bien escrito, {name}! Una más.',
+'Backspace ⌫ erases the letter before the blinking line.':'Backspace ⌫ borra la letra que está antes de la rayita que parpadea.',
+'Not yet — make it say <b>{word}</b> with Backspace ⌫, then Enter':'Todavía no — haz que diga <b>{word}</b> con Backspace ⌫ y luego Enter',
+'Finished! 🎉':'¡Terminado! 🎉',
+'Key Hunt finished!':'¡Caza de Teclas terminada!',
+'Letters • Numbers • Space • Enter • Backspace • Shift • Arrows':'Letras • Números • Espacio • Enter • Backspace • Shift • Flechas',
+'⌨️ Key Finder':'⌨️ Detective de Teclas',
+'Space bar':'Barra espaciadora (Space)','Enter ⏎':'Enter ⏎','Backspace ⌫':'Backspace ⌫ (borrar)',
+'Shift ⇧':'Shift ⇧ (mayúsculas)','← Left arrow':'← Flecha izquierda','→ Right arrow':'→ Flecha derecha',
+'↑ Up arrow':'↑ Flecha arriba','↓ Down arrow':'↓ Flecha abajo',
+'⇧ Shift':'⇧ Shift','Space':'Espacio','⌫ Backspace':'⌫ Backspace','⏎ Enter':'⏎ Enter',
+/* -- part complete + exit + certificate -- */
+'🎉 Part 1 done!':'🎉 ¡Parte 1 terminada!','🎉 Part 2 done!':'🎉 ¡Parte 2 terminada!','🎉 Part 3 done!':'🎉 ¡Parte 3 terminada!',
+'You logged in and warmed up your mouse hand.':'Iniciaste sesión y calentaste tu mano del ratón.',
+'Next: a tour of the desktop with your teacher.':'Ahora: un recorrido por el escritorio con tu maestro.',
+'You found the desktop, icons, App Launcher, Files, and the system menu.':'Encontraste el escritorio, los iconos, el Lanzador de Apps, Archivos y el menú del sistema.',
+'Next: three games!':'Ahora: ¡tres juegos!',
+'Click, double-click, right-click, scroll, and keyboard — all practiced.':'Clic, doble clic, clic derecho, desplazar y teclado — todo practicado.',
+'Next: the scavenger hunt.':'Ahora: la búsqueda del tesoro.',
+'Continue ▶':'Continuar ▶',
+'🎟️ Exit Question':'🎟️ Pregunta de Salida',
+'Show me <b>one thing you can do with the mouse</b> and <b>one thing you can do with the keyboard</b>.':'Muéstrame <b>una cosa que puedes hacer con el ratón</b> y <b>una cosa que puedes hacer con el teclado</b>.',
+'🖱️ Pick ONE mouse job:':'🖱️ Escoge UNA cosa del ratón:',
+'⌨️ Pick ONE keyboard job:':'⌨️ Escoge UNA cosa del teclado:',
+'I can <b>click</b> to choose something.':'Puedo hacer <b>clic</b> para escoger algo.',
+'I can <b>double-click</b> to open an app.':'Puedo hacer <b>doble clic</b> para abrir una aplicación.',
+'I can <b>right-click</b> to see a menu.':'Puedo hacer <b>clic derecho</b> para ver un menú.',
+'I can <b>scroll</b> to move up and down.':'Puedo <b>desplazar</b> para subir y bajar.',
+'I can find <b>letters</b> and type my name.':'Puedo encontrar las <b>letras</b> y escribir mi nombre.',
+'I can press the <b>Space bar</b> to make a space.':'Puedo presionar la <b>barra espaciadora</b> para hacer un espacio.',
+'I can press <b>Enter</b> to go.':'Puedo presionar <b>Enter</b> para continuar.',
+'I can press <b>Backspace</b> to erase.':'Puedo presionar <b>Backspace</b> para borrar.',
+'Finish ▶':'Terminar ▶',
+'Desktop Quest Certificate':'Certificado de la Aventura del Escritorio',
+'This certifies that':'Esto certifica que',
+'can navigate the Linux desktop and control the mouse and keyboard.':'sabe navegar el escritorio de Linux y controlar el ratón y el teclado.',
+'✔ Logged in and kept the password private':'✔ Inició sesión y mantuvo su contraseña privada',
+'✔ Found the desktop, icons, App Launcher, Files, and system menu':'✔ Encontró el escritorio, los iconos, el Lanzador de Apps, Archivos y el menú del sistema',
+'✔ Clicked, double-clicked, right-clicked, and scrolled':'✔ Hizo clic, doble clic, clic derecho y desplazó la página',
+'✔ Used letters, numbers, Space, Enter, Backspace, Shift, and arrows':'✔ Usó letras, números, Espacio, Enter, Backspace, Shift y flechas',
+'✔ Opened and closed an application':'✔ Abrió y cerró una aplicación',
+'🖨️ Print':'🖨️ Imprimir','🔄 Play again':'🔄 Jugar otra vez',
+/* -- helper sheet -- */
+'Click':'Clic','Press the LEFT button ONE time = choose.':'Presiona el botón IZQUIERDO UNA vez = escoger.',
+'Double-click':'Doble clic','Press the LEFT button TWO times fast = open.':'Presiona el botón IZQUIERDO DOS veces rápido = abrir.',
+'Right-click':'Clic derecho','Press the RIGHT button = a menu appears.':'Presiona el botón DERECHO = aparece un menú.',
+'Scroll':'Desplazar','Roll the wheel = the page moves up and down.':'Gira la rueda = la página sube y baja.',
+'Desktop':'Escritorio','The main screen. Your icons live here.':'La pantalla principal. Aquí viven tus iconos.',
+'Icon':'Icono','A small picture that opens an app or folder.':'Un dibujo pequeño que abre una aplicación o carpeta.',
+'The button that shows all the apps.':'El botón que muestra todas las aplicaciones.',
+'The app that holds your work.':'La aplicación que guarda tu trabajo.',
+'System menu':'Menú del sistema','Wi-Fi, sound, battery, clock (top right).':'Wi-Fi, sonido, batería, reloj (arriba a la derecha).',
+'Closes the window / quits the app.':'Cierra la ventana / sale de la aplicación.',
+'Keys':'Teclas',
+'Space = space · Enter ⏎ = go · Backspace ⌫ = erase · Shift ⇧ = CAPITAL · ← ↑ ↓ → = move':'Space = espacio · Enter ⏎ = continuar · Backspace ⌫ = borrar · Shift ⇧ = MAYÚSCULA · ← ↑ ↓ → = mover',
+'click':'clic','double-click':'doble clic','right-click':'clic derecho','scroll':'desplazar','keyboard':'teclado',
+/* -- teacher panel -- */
+'👩‍🏫 Teacher Panel':'👩‍🏫 Panel del Maestro',
+'Objective: SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.':'Objetivo: los estudiantes identificarán las partes básicas del escritorio de Linux y demostrarán control preciso del ratón y el teclado.',
+'Time':'Hora','Part':'Parte','In the game':'En el juego',
+'Login &amp; Warm-Up':'Entrar y Calentamiento','Teacher Modeling':'El Maestro Enseña',
+'Mouse &amp; Keyboard Games':'Juegos de Ratón y Teclado','Scavenger Hunt / Closure':'Búsqueda del Tesoro / Cierre',
+'Login routine, bubble pop, click vs. double-click':'Rutina de inicio de sesión, reventar burbujas, clic vs. doble clic',
+'Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close':'Recorrido guiado: escritorio, iconos, lanzador, Archivos, menú del sistema, desplazar, abrir/cerrar',
+'Mouse Master (4 rounds), Scroll Quest, Key Hunt':'Maestro del Ratón (4 rondas), Busca Estrellas, Caza de Teclas',
+'7-item hunt, exit question, certificate':'Búsqueda de 7 cosas, pregunta de salida, certificado',
+'▶ Part 1':'▶ Parte 1','▶ Part 2':'▶ Parte 2','▶ Part 3':'▶ Parte 3','▶ Part 4':'▶ Parte 4','▶ Exit ticket':'▶ Pregunta de salida',
+'<b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away, Helper Sheet pinned open, shorter password ({word}).':'<b>Modo Dibujos</b> (SWIEP/ELL): menos objetivos, letras más grandes, pistas de teclas visibles de inmediato, Hoja de Ayuda siempre abierta, contraseña más corta ({word}).',
+'🔄 Restart from login':'🔄 Empezar desde el inicio de sesión','Close panel':'Cerrar panel'
+};
+function t(s,p){
+  let out=(state.lang==='es'&&ES[s]!==undefined)?ES[s]:s;
+  if(p) for(const k in p) out=out.split('{'+k+'}').join(p[k]);
+  return out;
+}
+function passWord(){
+  if(state.lang==='es') return state.support?'sol':'luna';
+  return state.support?'cat':'star';
+}
+function fixWord(){ return state.lang==='es'?'gato':'cat'; }
 
 /* ---------- sound ---------- */
 let actx=null;
@@ -366,11 +617,11 @@ function keyPic(label){
   return `<span class="mouse-pic"><span style="font-size:30px">⌨️</span><span>${label||''}</span></span>`;
 }
 const PIC={
-  click:()=>mousePic('click','click'),
-  double:()=>mousePic('double','double-click'),
-  right:()=>mousePic('right','right-click'),
-  scroll:()=>mousePic('scroll','scroll'),
-  key:l=>keyPic(l||'keyboard')
+  click:()=>mousePic('click',t('click')),
+  double:()=>mousePic('double',t('double-click')),
+  right:()=>mousePic('right',t('right-click')),
+  scroll:()=>mousePic('scroll',t('scroll')),
+  key:l=>keyPic(l||t('keyboard'))
 };
 
 /* =====================================================================
@@ -403,7 +654,7 @@ function renderQuests(){
   const cur=currentQuest();
   state.quests.forEach(q=>{
     const li=document.createElement('li');
-    li.textContent=(q.done?'✔ ':'• ')+q.short;
+    li.textContent=(q.done?'✔ ':'• ')+t(q.short);
     if(q.done) li.className='done'; else if(q===cur) li.className='cur';
     ol.appendChild(li);
   });
@@ -412,13 +663,14 @@ function updateStars(){ $('#starCount').textContent=state.stars; }
 function showCoach(){
   const q=currentQuest();
   $('#coach').classList.remove('hidden');
-  if(!q){ $('#coachText').textContent='Nice work!'; $('#coachPics').innerHTML=''; $('#coachNext').classList.add('hidden'); clearSpot(); return; }
-  $('#coachText').innerHTML=q.text;
-  $('#hudTask').innerHTML=q.text;
+  if(!q){ $('#coachText').textContent=t('Nice work!'); $('#coachPics').innerHTML=''; $('#coachNext').classList.add('hidden'); clearSpot(); return; }
+  $('#coachText').innerHTML=t(q.text,q.p);
+  $('#hudTask').innerHTML=t(q.text,q.p);
   const pics=(q.pics||[]).map(p=>typeof p==='function'?p():p).join('');
   $('#coachPics').innerHTML=pics;
   $('#hudPics').innerHTML=pics;
   $('#coachNext').classList.toggle('hidden',q.on!=='next');
+  $('#coachNext').textContent=t('Got it ▶');
   // never dim the screen while an app window is open — the student is working inside it
   if(q.spot&&Object.keys(openWins).length===0) setTimeout(()=>{
       if(Object.keys(openWins).length===0&&currentQuest()===q) spotlight(q.spot);
@@ -430,15 +682,15 @@ $('#coachNext').onclick=()=>fire('next');
 /* spotlight */
 let spotTarget=null;
 function spotlight(sel){
-  const t=typeof sel==='string'?$(sel):sel;
-  if(!t){clearSpot();return;}
-  spotTarget=t;
-  const r=t.getBoundingClientRect(), pad=8, s=$('#spot');
+  const el=typeof sel==='string'?$(sel):sel;
+  if(!el){clearSpot();return;}
+  spotTarget=el;
+  const r=el.getBoundingClientRect(), pad=8, s=$('#spot');
   s.classList.remove('hidden');
   s.style.left=(r.left-pad)+'px'; s.style.top=(r.top-pad)+'px';
   s.style.width=(r.width+pad*2)+'px'; s.style.height=(r.height+pad*2)+'px';
   $$('.pulse').forEach(e=>e.classList.remove('pulse'));
-  t.classList.add('pulse');
+  el.classList.add('pulse');
 }
 function clearSpot(){ $('#spot').classList.add('hidden'); if(spotTarget){spotTarget.classList.remove('pulse');spotTarget=null;} }
 window.addEventListener('resize',()=>{ if(spotTarget) spotlight(spotTarget); });
@@ -462,19 +714,24 @@ $('#lgNext').onclick=()=>{
   $('#lgUser').textContent=state.name;
   $('#lgStep1').classList.add('hidden');
   $('#lgStep2').classList.remove('hidden');
-  $('#lgWord').textContent=state.support?'cat':'star';
+  renderPassLabel();
   $('#lgPass').focus(); beep('good');
 };
 $('#lgName').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lgNext').click(); });
+function renderPassLabel(){
+  const el=$('#lgPassLabel'); if(!el) return;
+  el.innerHTML=t('2. Type the class password: {word} then press <b>Enter</b>.',
+    {word:'<b style="color:var(--star)">'+passWord()+'</b>'});
+}
 function tryLogin(){
-  const want=$('#lgWord').textContent;
+  const want=passWord();
   if($('#lgPass').value.toLowerCase().trim()===want){
     beep('star');
     $('#loginScreen').classList.add('hidden');
     $('#desktopScreen').classList.remove('hidden');
     startPart1();
   } else {
-    $('#lgMsg').textContent='Not quite. Type the word: '+want+'  (Backspace erases.)';
+    $('#lgMsg').innerHTML=t('Not quite. Type the word: {word}  (Backspace erases.)',{word:'<b>'+want+'</b>'});
     beep('bad'); $('#lgPass').focus();
   }
 }
@@ -500,7 +757,7 @@ function buildIcons(){
   APPS.forEach(a=>{
     const d=document.createElement('div');
     d.className='icon'; d.dataset.id=a.id; d.id='icon-'+a.id;
-    d.innerHTML=`<div class="em">${a.em}</div><div class="nm">${a.name}</div>`;
+    d.innerHTML=`<div class="em">${a.em}</div><div class="nm">${t(a.name)}</div>`;
     d.addEventListener('click',()=>{ selectIcon(a.id); fire('icon:click',{id:a.id}); });
     d.addEventListener('dblclick',()=>{ fire('icon:dblclick',{id:a.id}); openApp(a.id); });
     d.addEventListener('contextmenu',e=>{ e.preventDefault(); showCtx(e.clientX,e.clientY,a.id); fire('icon:rightclick',{id:a.id}); });
@@ -521,10 +778,10 @@ function showCtx(x,y,id){
   const deskRect=$('#desk').getBoundingClientRect();
   m.innerHTML='';
   [['Open',()=>{hideCtx();openApp(id);fire('ctx:open',{id});}],
-   ['Rename',()=>{hideCtx();toast('Rename is not for today 🙂');}],
-   ['Properties',()=>{hideCtx();toast(a.name+' — an application icon.');}]
+   ['Rename',()=>{hideCtx();toast(t('Rename is not for today 🙂'));}],
+   ['Properties',()=>{hideCtx();toast(t('{app} — an application icon.',{app:t(a.name)}));}]
   ].forEach(([label,fn])=>{
-    const b=document.createElement('button'); b.textContent=label; b.onclick=fn; m.appendChild(b);
+    const b=document.createElement('button'); b.textContent=t(label); b.onclick=fn; m.appendChild(b);
   });
   m.style.left=(x-deskRect.left)+'px'; m.style.top=(y-deskRect.top)+'px';
   m.classList.remove('hidden');
@@ -535,20 +792,20 @@ function hideCtx(){ $('#ctxmenu').classList.add('hidden'); }
 document.addEventListener('click',e=>{ if(!e.target.closest('#ctxmenu')) hideCtx(); });
 
 function toast(msg){
-  const t=document.createElement('div');
-  t.textContent=msg;
-  t.style.cssText='position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fffbe8;color:#222;'+
+  const el=document.createElement('div');
+  el.textContent=msg;
+  el.style.cssText='position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fffbe8;color:#222;'+
     'padding:10px 18px;border-radius:12px;border:3px solid var(--star);font-size:18px;z-index:120';
-  $('#desk').appendChild(t);
-  setTimeout(()=>t.remove(),1900);
+  $('#desk').appendChild(el);
+  setTimeout(()=>el.remove(),1900);
 }
 
 /* launcher */
 function buildLauncher(){
   const l=$('#launcher');
-  l.innerHTML=`<h2>🚀 App Launcher — all your apps live here</h2>
-    <div class="lch-grid">${APPS.map(a=>`<button class="lch" data-id="${a.id}"><span class="em">${a.em}</span>${a.name}</button>`).join('')}</div>
-    <button class="btn ghost" id="lchClose">✖ Close the Launcher</button>`;
+  l.innerHTML=`<h2>${t('🚀 App Launcher — all your apps live here')}</h2>
+    <div class="lch-grid">${APPS.map(a=>`<button class="lch" data-id="${a.id}"><span class="em">${a.em}</span>${t(a.name)}</button>`).join('')}</div>
+    <button class="btn ghost" id="lchClose">${t('✖ Close the Launcher')}</button>`;
   $$('.lch',l).forEach(b=>b.onclick=()=>{ toggleLauncher(false); openApp(b.dataset.id); });
   $('#lchClose').onclick=()=>toggleLauncher(false);
 }
@@ -566,12 +823,12 @@ $('#btnLauncherTop').onclick=()=>toggleLauncher();
 /* system menu */
 function buildSys(){
   $('#sysmenu').innerHTML=`
-    <div class="row"><span>📶 Wi-Fi</span><span>Connected</span></div>
-    <div class="row"><span>🔊 Volume</span><span>60%</span></div>
-    <div class="row"><span>🔋 Battery</span><span>92%</span></div>
-    <div class="row"><span>🕐 Clock</span><span id="sysClock">--:--</span></div>
-    <div class="row"><span>⏻ Power / Log Out</span><span>—</span></div>
-    <button class="btn small ghost" id="sysClose" style="width:100%;margin-top:10px">Close menu</button>`;
+    <div class="row"><span>${t('📶 Wi-Fi')}</span><span>${t('Connected')}</span></div>
+    <div class="row"><span>${t('🔊 Volume')}</span><span>60%</span></div>
+    <div class="row"><span>${t('🔋 Battery')}</span><span>92%</span></div>
+    <div class="row"><span>${t('🕐 Clock')}</span><span id="sysClock">--:--</span></div>
+    <div class="row"><span>${t('⏻ Power / Log Out')}</span><span>—</span></div>
+    <button class="btn small ghost" id="sysClose" style="width:100%;margin-top:10px">${t('Close menu')}</button>`;
   $('#sysClose').onclick=()=>toggleSys(false);
 }
 function toggleSys(force){
@@ -586,8 +843,8 @@ $('#btnSys').onclick=()=>toggleSys();
 
 function tick(){
   const d=new Date();
-  const t=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
-  $('#clock').textContent=t; const sc=$('#sysClock'); if(sc) sc.textContent=t;
+  const now=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  $('#clock').textContent=now; const sc=$('#sysClock'); if(sc) sc.textContent=now;
 }
 setInterval(tick,1000); tick();
 
@@ -615,8 +872,8 @@ function openApp(id){
   w.style.left=Math.max(10,rnd(20,Math.max(40,useW-W-30)))+'px';
   w.style.top=Math.max(10,rnd(20,Math.max(40,deskR.height-H-60)))+'px';
   w.style.zIndex=++zTop;
-  w.innerHTML=`<div class="win-bar"><b>${a.em} ${a.name}</b>
-      <button class="win-x" title="Close">✕</button></div>
+  w.innerHTML=`<div class="win-bar"><b>${a.em} ${t(a.name)}</b>
+      <button class="win-x" title="${t('Close')}">✕</button></div>
     <div class="win-body"></div>`;
   $('#windows').appendChild(w);
   openWins[id]=w;
@@ -638,12 +895,12 @@ function closeApp(id){
 }
 function focusWin(id){ const w=openWins[id]; if(w) w.style.zIndex=++zTop; }
 function refreshTaskbar(){
-  const t=$('#taskbtns'); t.innerHTML='';
+  const bar=$('#taskbtns'); bar.innerHTML='';
   Object.keys(openWins).forEach(id=>{
     const a=appById(id);
     const b=document.createElement('button'); b.className='taskbtn';
-    b.innerHTML=a.em+' '+a.name; b.onclick=()=>focusWin(id);
-    t.appendChild(b);
+    b.innerHTML=a.em+' '+t(a.name); b.onclick=()=>focusWin(id);
+    bar.appendChild(b);
   });
 }
 function dragify(win,handle){
@@ -673,39 +930,43 @@ function buildAppBody(id,body){
   ({files:appFiles,textedit:appText,paint:appPaint,trash:appTrash,
     mouse:gameMouse,scroll:gameScroll,keys:gameKeys}[id]||appPlain)(body);
 }
-function appPlain(b){ b.innerHTML='<div style="padding:20px;font-size:18px">This app is empty. Close it with the ✕ button.</div>'; }
+function appPlain(b){ b.innerHTML='<div style="padding:20px;font-size:18px">'+t('This app is empty. Close it with the ✕ button.')+'</div>'; }
 
-const FILE_NAMES=['my-story.txt','dog.png','math-notes.txt','beach.jpg','song.mp3','robot.png','homework.txt',
+const FILE_NAMES_EN=['my-story.txt','dog.png','math-notes.txt','beach.jpg','song.mp3','robot.png','homework.txt',
  'cat.jpg','rocket.png','recipe.txt','map.png','science.txt','puzzle.jpg','letters.txt','space.png','soccer.jpg',
  'colors.png','poem.txt','tree.jpg','clouds.png','game.txt','snack.jpg','bus.png','list.txt','stars.png'];
+const FILE_NAMES_ES=['mi-cuento.txt','perro.png','notas-mate.txt','playa.jpg','cancion.mp3','robot.png','tarea.txt',
+ 'gato.jpg','cohete.png','receta.txt','mapa.png','ciencias.txt','rompecabezas.jpg','letras.txt','espacio.png','futbol.jpg',
+ 'colores.png','poema.txt','arbol.jpg','nubes.png','juego.txt','merienda.jpg','autobus.png','lista.txt','estrellas.png'];
 function appFiles(b){
+  const FILE_NAMES=state.lang==='es'?FILE_NAMES_ES:FILE_NAMES_EN;
   b.innerHTML=`<div class="filelist">
-    <div style="padding:8px 10px;color:var(--muted);font-size:15px">📁 Home — ${FILE_NAMES.length} files. Use the mouse wheel to scroll down.</div>
+    <div style="padding:8px 10px;color:var(--muted);font-size:15px">${t('📁 Home — {n} files. Use the mouse wheel to scroll down.',{n:FILE_NAMES.length})}</div>
     ${FILE_NAMES.map(n=>`<div class="filerow">${n.endsWith('.txt')?'📄':n.endsWith('.mp3')?'🎵':'🖼️'} ${n}</div>`).join('')}
-    <div class="filerow" style="color:var(--good)">🏁 You reached the bottom of the list!</div></div>`;
+    <div class="filerow" style="color:var(--good)">${t('🏁 You reached the bottom of the list!')}</div></div>`;
   b.addEventListener('scroll',()=>{ if(b.scrollTop>120) fire('scroll:files',{}); });
 }
 function appTrash(b){
-  b.innerHTML='<div style="padding:24px;font-size:19px;text-align:center">🗑️<br><br>The Trash is empty.<br>'+
-  '<span style="color:var(--muted);font-size:16px">Deleted files wait here. Ask your teacher before emptying it.</span></div>';
+  b.innerHTML='<div style="padding:24px;font-size:19px;text-align:center">🗑️<br><br>'+t('The Trash is empty.')+'<br>'+
+  '<span style="color:var(--muted);font-size:16px">'+t('Deleted files wait here. Ask your teacher before emptying it.')+'</span></div>';
 }
 function appText(b){
   b.innerHTML=`<div style="padding:10px;height:100%;display:flex;flex-direction:column">
-   <div style="color:var(--muted);font-size:15px;padding-bottom:6px">📝 Type here. Try Shift for a CAPITAL letter, Space, Backspace, and Enter.</div>
+   <div style="color:var(--muted);font-size:15px;padding-bottom:6px">${t('📝 Type here. Try Shift for a CAPITAL letter, Space, Backspace, and Enter.')}</div>
    <textarea style="flex:1;font-size:22px;padding:12px;border-radius:10px;border:3px solid var(--line);background:#0f1420;color:#fff"
-     placeholder="Type your name..."></textarea></div>`;
+     placeholder="${t('Type your name...')}"></textarea></div>`;
   const ta=$('textarea',b);
   ta.addEventListener('keydown',e=>{ if(e.key.length===1||['Backspace','Enter'].includes(e.key)) fire('type:any',{}); });
 }
 function appPaint(b){
   b.innerHTML=`<div class="game-wrap">
     <div class="paint-tools">
-      <span style="font-size:15px">Hold the left button and drag to draw:</span>
+      <span style="font-size:15px">${t('Hold the left button and drag to draw:')}</span>
       <span class="swatch on" data-c="#ff5f5f" style="background:#ff5f5f"></span>
       <span class="swatch" data-c="#3ea6ff" style="background:#3ea6ff"></span>
       <span class="swatch" data-c="#3ddc84" style="background:#3ddc84"></span>
       <span class="swatch" data-c="#ffd54a" style="background:#ffd54a"></span>
-      <button class="btn small ghost" id="pClear">Clear</button>
+      <button class="btn small ghost" id="pClear">${t('Clear')}</button>
     </div>
     <div class="game-area" style="background:#fff"><canvas id="pCanvas" style="position:absolute;inset:0"></canvas></div>
   </div>`;
@@ -743,10 +1004,10 @@ function gameMouse(b){
     if(e.target===area){ misses++; if(misses%3===0) coachSay('Slow down 🐢 — put the arrow ON the picture, then click.'); }
   });
 
-  function head(t,s){ title.innerHTML=t; score.innerHTML=s; }
+  function head(ttl,sc){ title.innerHTML=ttl; score.innerHTML=sc; }
 
   function r1(){ // single click
-    let got=0; head('Round 1 of 4 — SINGLE CLICK '+PIC.click(), `Popped: <b>0/${N.pop}</b>`);
+    let got=0; head(t('Round 1 of 4 — SINGLE CLICK ')+PIC.click(), `${t('Popped:')} <b>0/${N.pop}</b>`);
     coachSay('Pop the balloons with <b>one click</b>.',[PIC.click]);
     area.innerHTML='';
     for(let i=0;i<N.pop;i++){
@@ -755,13 +1016,13 @@ function gameMouse(b){
       el.style.background=pick(['#e05b6a','#4a8fe0','#4bb87a','#c58ae0','#e0a54b']);
       place(el);
       el.onclick=ev=>{ ev.stopPropagation(); el.remove(); got++; beep('pop');
-        head('Round 1 of 4 — SINGLE CLICK '+PIC.click(),`Popped: <b>${got}/${N.pop}</b>`);
+        head(t('Round 1 of 4 — SINGLE CLICK ')+PIC.click(),`${t('Popped:')} <b>${got}/${N.pop}</b>`);
         if(got===N.pop) done(r2); };
       area.appendChild(el);
     }
   }
   function r2(){ // select
-    let sel=0; head('Round 2 of 4 — SELECT with one click '+PIC.click(),`Chosen: <b>0/${N.sel}</b>`);
+    let sel=0; head(t('Round 2 of 4 — SELECT with one click ')+PIC.click(),`${t('Chosen:')} <b>0/${N.sel}</b>`);
     coachSay('<b>One click chooses</b> a thing. Click each shape one time — it turns blue.',[PIC.click]);
     area.innerHTML='';
     for(let i=0;i<N.sel;i++){
@@ -770,13 +1031,13 @@ function gameMouse(b){
       el.onclick=ev=>{ ev.stopPropagation();
         if(el.classList.contains('sel')) return;
         el.classList.add('sel'); sel++; beep('good');
-        head('Round 2 of 4 — SELECT with one click '+PIC.click(),`Chosen: <b>${sel}/${N.sel}</b>`);
+        head(t('Round 2 of 4 — SELECT with one click ')+PIC.click(),`${t('Chosen:')} <b>${sel}/${N.sel}</b>`);
         if(sel===N.sel) done(r3); };
       area.appendChild(el);
     }
   }
   function r3(){ // double click
-    let op=0; head('Round 3 of 4 — DOUBLE-CLICK to open '+PIC.double(),`Opened: <b>0/${N.dbl}</b>`);
+    let op=0; head(t('Round 3 of 4 — DOUBLE-CLICK to open ')+PIC.double(),`${t('Opened:')} <b>0/${N.dbl}</b>`);
     coachSay('<b>Two fast clicks</b> opens a thing. Double-click every box!',[PIC.double]);
     area.innerHTML='';
     for(let i=0;i<N.dbl;i++){
@@ -789,13 +1050,13 @@ function gameMouse(b){
       el.ondblclick=ev=>{ ev.stopPropagation();
         if(el.classList.contains('open')) return;
         el.classList.add('open'); el.textContent='🎁'; op++; beep('star');
-        head('Round 3 of 4 — DOUBLE-CLICK to open '+PIC.double(),`Opened: <b>${op}/${N.dbl}</b>`);
+        head(t('Round 3 of 4 — DOUBLE-CLICK to open ')+PIC.double(),`${t('Opened:')} <b>${op}/${N.dbl}</b>`);
         if(op===N.dbl) done(r4); };
       area.appendChild(el);
     }
   }
   function r4(){ // right click
-    let got=0; head('Round 4 of 4 — RIGHT-CLICK for the menu '+PIC.right(),`Menus: <b>0/${N.rc}</b>`);
+    let got=0; head(t('Round 4 of 4 — RIGHT-CLICK for the menu ')+PIC.right(),`${t('Menus:')} <b>0/${N.rc}</b>`);
     coachSay('Press the <b>right</b> mouse button on the folder. A menu appears — then click <b>Open</b>.',[PIC.right]);
     area.innerHTML='';
     for(let i=0;i<N.rc;i++){
@@ -813,12 +1074,12 @@ function gameMouse(b){
       m.style.left=(ev.clientX-r.left)+'px'; m.style.top=(ev.clientY-r.top)+'px';
       ['Open','Copy','Rename'].forEach(lab=>{
         const bt=document.createElement('button');
-        bt.textContent=lab;
+        bt.textContent=t(lab);
         bt.style.cssText='display:block;width:150px;text-align:left;background:transparent;border:none;color:#eef3ff;font-size:16px;padding:8px';
         bt.onmouseenter=()=>bt.style.background='#3ea6ff'; bt.onmouseleave=()=>bt.style.background='transparent';
         bt.onclick=e2=>{ e2.stopPropagation(); m.remove();
           if(lab==='Open'){ el.classList.add('open'); el.textContent='📂'; el.oncontextmenu=null; got++; beep('star');
-            head('Round 4 of 4 — RIGHT-CLICK for the menu '+PIC.right(),`Menus: <b>${got}/${N.rc}</b>`);
+            head(t('Round 4 of 4 — RIGHT-CLICK for the menu ')+PIC.right(),`${t('Menus:')} <b>${got}/${N.rc}</b>`);
             if(got===N.rc) done(null);
           } else coachSay('Almost! In the menu, click <b>Open</b>.',[PIC.right]);
         };
@@ -831,13 +1092,13 @@ function gameMouse(b){
     }
   }
   function done(next){
-    if(next){ area.innerHTML='<div style="padding:30px;text-align:center;font-size:24px">⭐ Round complete! ⭐</div>'; setTimeout(next,900); }
+    if(next){ area.innerHTML='<div style="padding:30px;text-align:center;font-size:24px">'+t('⭐ Round complete! ⭐')+'</div>'; setTimeout(next,900); }
     else{
       area.innerHTML=`<div style="padding:30px;text-align:center">
         <div style="font-size:52px">🏅</div>
-        <div style="font-size:24px;margin:10px 0">Mouse Master finished!</div>
-        <div style="font-size:17px;color:var(--muted)">Click • Select • Double-click • Right-click</div></div>`;
-      head('Finished 🎉','');
+        <div style="font-size:24px;margin:10px 0">${t('Mouse Master finished!')}</div>
+        <div style="font-size:17px;color:var(--muted)">${t('Click • Select • Double-click • Right-click')}</div></div>`;
+      head(t('Finished 🎉'),'');
       awardBadge('🖱️ Mouse Master'); fire('game:done',{id:'mouse'});
     }
   }
@@ -863,22 +1124,22 @@ function gameScroll(b){
     'You are doing great. Keep scrolling — more stars are hiding below!'
   ];
   b.innerHTML=`<div class="game-wrap">
-    <div class="game-head"><span>⭐ Scroll Quest ${PIC.scroll()}</span><span id="sqScore">Stars: <b>0/${tops.length}</b></span></div>
+    <div class="game-head"><span>${t('⭐ Scroll Quest ')}${PIC.scroll()}</span><span id="sqScore">${t('Stars:')} <b>0/${tops.length}</b></span></div>
     <div class="game-area" style="overflow:auto" id="sqScroll">
       <div class="sq-page" id="sqPage" style="height:${H}px">
-        ${para.map((p,i)=>`<p style="position:absolute;top:${140+i*(H-260)/para.length}px;left:26px;right:26px">${p}</p>`).join('')}
-        <div style="position:absolute;top:20px;left:26px;font-size:22px">⬇️ Roll the wheel to scroll DOWN and find the stars.</div>
-        <div style="position:absolute;top:${H-70}px;left:26px;font-size:20px;color:var(--good)">🏁 Bottom of the page!</div>
+        ${para.map((p,i)=>`<p style="position:absolute;top:${140+i*(H-260)/para.length}px;left:26px;right:26px">${t(p)}</p>`).join('')}
+        <div style="position:absolute;top:20px;left:26px;font-size:22px">${t('⬇️ Roll the wheel to scroll DOWN and find the stars.')}</div>
+        <div style="position:absolute;top:${H-70}px;left:26px;font-size:20px;color:var(--good)">${t('🏁 Bottom of the page!')}</div>
       </div>
     </div></div>`;
   const page=$('#sqPage',b), sc=$('#sqScroll',b), out=$('#sqScore',b);
   let got=0;
   coachSay('Roll the mouse wheel to <b>scroll down</b>. Click every ⭐ you find.',[PIC.scroll,PIC.click]);
-  tops.forEach(t=>{
+  tops.forEach(top=>{
     const s=document.createElement('button');
     s.className='sq-star'; s.textContent='⭐';
-    s.style.top=t+'px'; s.style.left=rnd(40,Math.max(60,page.clientWidth-120))+'px';
-    s.onclick=()=>{ s.remove(); got++; beep('star'); out.innerHTML=`Stars: <b>${got}/${tops.length}</b>`;
+    s.style.top=top+'px'; s.style.left=rnd(40,Math.max(60,page.clientWidth-120))+'px';
+    s.onclick=()=>{ s.remove(); got++; beep('star'); out.innerHTML=`${t('Stars:')} <b>${got}/${tops.length}</b>`;
       if(got===tops.length) finish(); };
     page.appendChild(s);
   });
@@ -888,14 +1149,14 @@ function gameScroll(b){
     home.onclick=()=>{
       home.remove(); beep('star');
       $('#sqPage',b).innerHTML='<div style="position:absolute;top:40px;left:0;right:0;text-align:center">'+
-        '<div style="font-size:52px">🏅</div><div style="font-size:24px">Scroll Quest finished!</div>'+
-        '<div style="color:var(--muted);font-size:17px">You scrolled down AND up.</div></div>';
+        '<div style="font-size:52px">🏅</div><div style="font-size:24px">'+t('Scroll Quest finished!')+'</div>'+
+        '<div style="color:var(--muted);font-size:17px">'+t('You scrolled down AND up.')+'</div></div>';
       $('#sqPage',b).style.height='auto'; sc.scrollTop=0;
       awardBadge('⭐ Scroll Star'); fire('game:done',{id:'scroll'});
     };
     page.appendChild(home);
     coachSay('All stars found! Now <b>scroll UP</b> to the very top and click the 🏠 house.',[PIC.scroll]);
-    out.innerHTML='Now scroll <b>UP</b> ⬆️';
+    out.innerHTML=t('Now scroll <b>UP</b> ⬆️');
   }
 }
 
@@ -909,9 +1170,10 @@ const KEY_ROWS=[
   ['A','S','D','F','G','H','J','K','L'],
   ['Z','X','C','V','B','N','M']
 ];
-function keyLabel(t){
-  return {SPACE:'Space bar',ENTER:'Enter ⏎',BACKSPACE:'Backspace ⌫',SHIFT:'Shift ⇧',
-    ARROWLEFT:'← Left arrow',ARROWRIGHT:'→ Right arrow',ARROWUP:'↑ Up arrow',ARROWDOWN:'↓ Down arrow'}[t]||t;
+function keyLabel(k){
+  const en={SPACE:'Space bar',ENTER:'Enter ⏎',BACKSPACE:'Backspace ⌫',SHIFT:'Shift ⇧',
+    ARROWLEFT:'← Left arrow',ARROWRIGHT:'→ Right arrow',ARROWUP:'↑ Up arrow',ARROWDOWN:'↓ Down arrow'}[k];
+  return en?t(en):k;
 }
 function tokenOf(e){ return e.key===' '?'SPACE':e.key.toUpperCase(); }
 function gameKeys(b){
@@ -923,89 +1185,90 @@ function gameKeys(b){
                             :['SPACE','ENTER','BACKSPACE','SHIFT','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'];
   const seq=[...letters,...digits,...extras];
   b.innerHTML=`<div class="game-wrap">
-    <div class="game-head"><span id="khTitle">⌨️ Key Hunt</span><span id="khScore">0/${seq.length}</span></div>
-    <div style="flex:none" id="khPrompt" class="prompt-big">Get ready…</div>
+    <div class="game-head"><span id="khTitle">${t('⌨️ Key Hunt')}</span><span id="khScore">0/${seq.length}</span></div>
+    <div style="flex:none" id="khPrompt" class="prompt-big">${t('Get ready…')}</div>
     <div class="game-area" style="overflow:auto" id="khArea"></div></div>`;
   const area=$('#khArea',b), prompt=$('#khPrompt',b), score=$('#khScore',b);
   area.innerHTML=`<div class="kb" id="khBoard">
     ${KEY_ROWS.map(r=>`<div class="kb-row">${r.map(k=>`<div class="key" data-k="${k}">${k}</div>`).join('')}</div>`).join('')}
     <div class="kb-row">
-      <div class="key wide" data-k="SHIFT">⇧ Shift</div>
-      <div class="key xwide" data-k="SPACE">Space</div>
-      <div class="key wide" data-k="BACKSPACE">⌫ Backspace</div>
-      <div class="key wide" data-k="ENTER">⏎ Enter</div>
+      <div class="key wide" data-k="SHIFT">${t('⇧ Shift')}</div>
+      <div class="key xwide" data-k="SPACE">${t('Space')}</div>
+      <div class="key wide" data-k="BACKSPACE">${t('⌫ Backspace')}</div>
+      <div class="key wide" data-k="ENTER">${t('⏎ Enter')}</div>
     </div>
     <div class="kb-row">
       <div class="key" data-k="ARROWLEFT">←</div><div class="key" data-k="ARROWUP">↑</div>
       <div class="key" data-k="ARROWDOWN">↓</div><div class="key" data-k="ARROWRIGHT">→</div>
     </div></div>`;
   let i=0, hintTimer=null;
-  coachSay('Look at the big word. Find that key on the real keyboard and press it.',[()=>PIC.key('press')]);
+  coachSay('Look at the big word. Find that key on the real keyboard and press it.',[()=>PIC.key(t('press'))]);
   function ask(){
     clearTimeout(hintTimer);
     $$('.key',b).forEach(k=>k.classList.remove('hot'));
     if(i>=seq.length){ return typingRound(); }
-    const t=seq[i];
-    prompt.innerHTML='Press &nbsp;<b style="color:var(--star)">'+keyLabel(t)+'</b>';
+    const k=seq[i];
+    prompt.innerHTML=t('Press &nbsp;')+'<b style="color:var(--star)">'+keyLabel(k)+'</b>';
     score.textContent=i+'/'+seq.length;
-    const hot=()=>{ const el=$(`.key[data-k="${t}"]`,b); if(el) el.classList.add('hot'); };
+    const hot=()=>{ const el=$(`.key[data-k="${k}"]`,b); if(el) el.classList.add('hot'); };
     if(state.support) hot(); else hintTimer=setTimeout(hot,4000);
   }
   keyGame={ onKey(e){
     if(!openWins.keys){ keyGame=null; return; }
     if(i>=seq.length) return;
-    const t=tokenOf(e);
-    if(['SPACE','BACKSPACE','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'].includes(t)) e.preventDefault();
-    if(t===seq[i]){
-      const el=$(`.key[data-k="${t}"]`,b);
+    const tok=tokenOf(e);
+    if(['SPACE','BACKSPACE','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'].includes(tok)) e.preventDefault();
+    if(tok===seq[i]){
+      const el=$(`.key[data-k="${tok}"]`,b);
       if(el){ el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),260); }
       i++; beep('key'); ask();
-    } else if(t.length===1||['SHIFT','ENTER','BACKSPACE','SPACE'].includes(t)){
-      prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">not that one</span>');
+    } else if(tok.length===1||['SHIFT','ENTER','BACKSPACE','SPACE'].includes(tok)){
+      prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">'+t('not that one')+'</span>');
       setTimeout(ask,600);
     }
   }};
   function typingRound(){
     clearTimeout(hintTimer);
-    score.textContent='Typing';
-    $('#khTitle',b).textContent='⌨️ Key Hunt — Typing';
-    prompt.innerHTML='Type your <b>name</b>, then press <b>Enter</b>';
+    score.textContent=t('Typing');
+    $('#khTitle',b).textContent=t('⌨️ Key Hunt — Typing');
+    prompt.innerHTML=t('Type your <b>name</b>, then press <b>Enter</b>');
     area.innerHTML=`<div style="padding:16px;text-align:center">
-      <input class="type-box" id="khType" placeholder="your name" autocomplete="off">
-      <div style="color:var(--muted);font-size:16px">Shift ⇧ + a letter = CAPITAL letter. Backspace ⌫ erases.</div></div>`;
+      <input class="type-box" id="khType" placeholder="${t('your name')}" autocomplete="off">
+      <div style="color:var(--muted);font-size:16px">${t('Shift ⇧ + a letter = CAPITAL letter. Backspace ⌫ erases.')}</div></div>`;
     const inp=$('#khType',b); setTimeout(()=>inp.focus(),50);
     area.addEventListener('click',()=>inp.focus());
     keyGame={onKey(){}};
     inp.addEventListener('keydown',e=>{
       if(e.key!=='Enter') return;
       e.preventDefault();
-      if(inp.value.trim().length<1){ prompt.innerHTML='Type some letters first, then press <b>Enter</b>'; beep('bad'); return; }
+      if(inp.value.trim().length<1){ prompt.innerHTML=t('Type some letters first, then press <b>Enter</b>'); beep('bad'); return; }
       beep('star'); fixRound(inp.value.trim());
     });
   }
   function fixRound(typed){
-    prompt.innerHTML='The box should say <b>cat</b> — press <b>Backspace</b> ⌫ to fix it, then <b>Enter</b>';
+    const good=fixWord(), bad=good+good.slice(-1);
+    prompt.innerHTML=t('The box should say <b>{word}</b> — press <b>Backspace</b> ⌫ to fix it, then <b>Enter</b>',{word:good});
     area.innerHTML=`<div style="padding:16px;text-align:center">
-      <div style="font-size:20px;color:var(--good);margin-bottom:8px">Nice typing, ${typed}! One more.</div>
-      <input class="type-box" id="khFix" value="catt" autocomplete="off">
-      <div style="color:var(--muted);font-size:16px">Backspace ⌫ erases the letter before the blinking line.</div></div>`;
-    const inp=$('#khFix',b); setTimeout(()=>{inp.focus(); inp.setSelectionRange(4,4);},50);
+      <div style="font-size:20px;color:var(--good);margin-bottom:8px">${t('Nice typing, {name}! One more.',{name:typed})}</div>
+      <input class="type-box" id="khFix" value="${bad}" autocomplete="off">
+      <div style="color:var(--muted);font-size:16px">${t('Backspace ⌫ erases the letter before the blinking line.')}</div></div>`;
+    const inp=$('#khFix',b); setTimeout(()=>{inp.focus(); inp.setSelectionRange(bad.length,bad.length);},50);
     const toEnd=()=>setTimeout(()=>inp.setSelectionRange(inp.value.length,inp.value.length),0);
     inp.addEventListener('click',toEnd); inp.addEventListener('focus',toEnd);
     area.addEventListener('click',()=>inp.focus());
     inp.addEventListener('keydown',e=>{
       if(e.key!=='Enter') return;
       e.preventDefault();
-      if(inp.value.toLowerCase().trim()==='cat'){ beep('star'); finishKeys(); }
-      else { prompt.innerHTML='Not yet — make it say <b>cat</b> with Backspace ⌫, then Enter'; beep('bad'); }
+      if(inp.value.toLowerCase().trim()===good){ beep('star'); finishKeys(); }
+      else { prompt.innerHTML=t('Not yet — make it say <b>{word}</b> with Backspace ⌫, then Enter',{word:good}); beep('bad'); }
     });
   }
   function finishKeys(){
-    prompt.innerHTML='Finished! 🎉';
+    prompt.innerHTML=t('Finished! 🎉');
     area.innerHTML=`<div style="padding:30px;text-align:center">
-      <div style="font-size:52px">🏅</div><div style="font-size:24px">Key Hunt finished!</div>
-      <div style="color:var(--muted);font-size:17px">Letters • Numbers • Space • Enter • Backspace • Shift • Arrows</div></div>`;
-    score.textContent='Done';
+      <div style="font-size:52px">🏅</div><div style="font-size:24px">${t('Key Hunt finished!')}</div>
+      <div style="color:var(--muted);font-size:17px">${t('Letters • Numbers • Space • Enter • Backspace • Shift • Arrows')}</div></div>`;
+    score.textContent=t('Done');
     keyGame=null;
     awardBadge('⌨️ Key Finder'); fire('game:done',{id:'keys'});
   }
@@ -1017,10 +1280,10 @@ document.addEventListener('keydown',e=>{ if(keyGame&&keyGame.onKey) keyGame.onKe
    COACH / BADGES
    ===================================================================== */
 let coachTimer=null;
-function coachSay(html,pics){
+function coachSay(html,pics,params){
   clearTimeout(coachTimer);
   $('#coach').classList.remove('hidden');
-  $('#coachText').innerHTML=html;
+  $('#coachText').innerHTML=t(html,params);
   $('#coachPics').innerHTML=(pics||[]).map(p=>typeof p==='function'?p():p).join('');
   $('#coachNext').classList.add('hidden');
   coachTimer=setTimeout(showCoach,5000);
@@ -1028,7 +1291,10 @@ function coachSay(html,pics){
 function awardBadge(name){
   if(state.badges.includes(name)) return;
   state.badges.push(name);
-  $('#badges').innerHTML=state.badges.map(b=>`<span class="badge">${b}</span>`).join('');
+  renderBadges();
+}
+function renderBadges(){
+  $('#badges').innerHTML=state.badges.map(b=>`<span class="badge">${t(b)}</span>`).join('');
 }
 
 /* =====================================================================
@@ -1036,7 +1302,7 @@ function awardBadge(name){
    ===================================================================== */
 const PART_NAMES=['','Part 1 — Login &amp; Warm-Up','Part 2 — Teacher Modeling (Tour)',
   'Part 3 — Mouse &amp; Keyboard Games','Part 4 — Desktop Scavenger Hunt'];
-function setPart(n){ state.part=n; $('#hudPart').innerHTML=PART_NAMES[n]; }
+function setPart(n){ state.part=n; $('#hudPart').innerHTML=t(PART_NAMES[n]); }
 
 function showDesktop(){
   $('#loginScreen').classList.add('hidden');
@@ -1051,8 +1317,8 @@ function startPart1(){
   makeWarmup(bubbles);
   setQuests([
     {short:'Pop the warm-up bubbles', on:'warmup:done',
-     text:`Welcome, <b>${state.name}</b>! Warm up your mouse hand: pop all <b>${bubbles}</b> bubbles with <b>one click</b> each.`,
-     pics:[PIC.click]},
+     text:'Welcome, <b>{name}</b>! Warm up your mouse hand: pop all <b>{n}</b> bubbles with <b>one click</b> each.',
+     p:{name:state.name,n:bubbles}, pics:[PIC.click]},
     {short:'Single-click the Files icon', on:'icon:click', match:d=>d.id==='files', spot:'#icon-files',
      text:'<b>One click</b> on the <b>Files</b> icon. One click <b>chooses</b> — the icon turns blue.', pics:[PIC.click]},
     {short:'Double-click Text Editor to open', on:'app:open', match:d=>d.id==='textedit', spot:'#icon-textedit',
@@ -1148,8 +1414,8 @@ function partComplete(){
     3:['🎉 Part 3 done!','Click, double-click, right-click, scroll, and keyboard — all practiced.','Next: the scavenger hunt.']
   }[p];
   beep('star');
-  modal(`<h2>${msg[0]}</h2><p>${msg[1]}</p><p style="color:var(--star);font-size:24px">${'⭐'.repeat(Math.min(state.stars,12))}</p>
-    <p>${msg[2]}</p><button class="btn good" id="mNext">Continue ▶</button>`);
+  modal(`<h2>${t(msg[0])}</h2><p>${t(msg[1])}</p><p style="color:var(--star);font-size:24px">${'⭐'.repeat(Math.min(state.stars,12))}</p>
+    <p>${t(msg[2])}</p><button class="btn good" id="mNext">${t('Continue ▶')}</button>`);
   $('#mNext').onclick=()=>{ closeModal(); [null,startPart2,startPart3,startPart4][p](); };
 }
 
@@ -1164,14 +1430,14 @@ function exitTicket(){
                  ['space','I can press the <b>Space bar</b> to make a space.'],
                  ['enter','I can press <b>Enter</b> to go.'],
                  ['backspace','I can press <b>Backspace</b> to erase.']];
-  const row=(arr,g)=>arr.map(([v,t])=>`<button class="btn ghost small ex" data-g="${g}" data-v="${v}" style="text-align:left">${t}</button>`).join('');
-  modal(`<h2>🎟️ Exit Question</h2>
-    <p style="font-size:18px">Show me <b>one thing you can do with the mouse</b> and <b>one thing you can do with the keyboard</b>.</p>
-    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">🖱️ Pick ONE mouse job:</div>
+  const row=(arr,g)=>arr.map(([v,txt])=>`<button class="btn ghost small ex" data-g="${g}" data-v="${v}" style="text-align:left">${t(txt)}</button>`).join('');
+  modal(`<h2>${t('🎟️ Exit Question')}</h2>
+    <p style="font-size:18px">${t('Show me <b>one thing you can do with the mouse</b> and <b>one thing you can do with the keyboard</b>.')}</p>
+    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">${t('🖱️ Pick ONE mouse job:')}</div>
     <div style="display:grid;gap:6px;margin:6px 0">${row(mouseOpts,'mouse')}</div>
-    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">⌨️ Pick ONE keyboard job:</div>
+    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">${t('⌨️ Pick ONE keyboard job:')}</div>
     <div style="display:grid;gap:6px;margin:6px 0">${row(keyOpts,'key')}</div>
-    <button class="btn good hidden" id="exDone">Finish ▶</button>`);
+    <button class="btn good hidden" id="exDone">${t('Finish ▶')}</button>`);
   $$('.ex').forEach(b=>b.onclick=()=>{
     const g=b.dataset.g;
     $$(`.ex[data-g="${g}"]`).forEach(x=>{x.classList.add('ghost');x.classList.remove('good');});
@@ -1186,23 +1452,23 @@ function certificate(){
   const c=$('#certificate'); c.classList.remove('hidden');
   c.innerHTML=`<div class="cert">
     <div style="font-size:44px">🐧 🖱️ ⌨️</div>
-    <h1>Desktop Quest Certificate</h1>
-    <div>This certifies that</div>
+    <h1>${t('Desktop Quest Certificate')}</h1>
+    <div>${t('This certifies that')}</div>
     <div class="nm">${state.name}</div>
-    <div style="font-size:20px">can navigate the Linux desktop and control the mouse and keyboard.</div>
+    <div style="font-size:20px">${t('can navigate the Linux desktop and control the mouse and keyboard.')}</div>
     <ul>
-      <li>✔ Logged in and kept the password private</li>
-      <li>✔ Found the desktop, icons, App Launcher, Files, and system menu</li>
-      <li>✔ Clicked, double-clicked, right-clicked, and scrolled</li>
-      <li>✔ Used letters, numbers, Space, Enter, Backspace, Shift, and arrows</li>
-      <li>✔ Opened and closed an application</li>
+      <li>${t('✔ Logged in and kept the password private')}</li>
+      <li>${t('✔ Found the desktop, icons, App Launcher, Files, and system menu')}</li>
+      <li>${t('✔ Clicked, double-clicked, right-clicked, and scrolled')}</li>
+      <li>${t('✔ Used letters, numbers, Space, Enter, Backspace, Shift, and arrows')}</li>
+      <li>${t('✔ Opened and closed an application')}</li>
     </ul>
     <p style="font-size:19px">${state.exit.mouse||''}<br>${state.exit.key||''}</p>
-    <p style="font-size:22px;color:#b8952f">${'⭐'.repeat(Math.min(state.stars,15))} &nbsp; ${state.stars} stars</p>
-    <p style="font-size:16px">${new Date().toLocaleDateString()} &nbsp;•&nbsp; ${state.badges.join('  ')}</p>
+    <p style="font-size:22px;color:#b8952f">${'⭐'.repeat(Math.min(state.stars,15))} &nbsp; ${state.stars} ${t('stars')}</p>
+    <p style="font-size:16px">${new Date().toLocaleDateString(state.lang==='es'?'es-MX':'en-US')} &nbsp;•&nbsp; ${state.badges.map(x=>t(x)).join('  ')}</p>
     <div class="noprint" style="margin-top:14px">
-      <button class="btn" onclick="window.print()">🖨️ Print</button>
-      <button class="btn ghost" id="again">🔄 Play again</button>
+      <button class="btn" onclick="window.print()">${t('🖨️ Print')}</button>
+      <button class="btn ghost" id="again">${t('🔄 Play again')}</button>
     </div></div>`;
   $('#again').onclick=()=>location.reload();
   beep('star');
@@ -1222,15 +1488,15 @@ const HELP_ROWS=[
 function buildHelper(){
   const h=$('#helper');
   h.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;
-      background:#fffbe8;padding:4px 0 8px;margin:-4px 0 0"><h3 style="margin:0">📖 Helper Sheet</h3>
-      <button class="btn small" id="hpCloseTop">Close</button></div>
-    <div class="hp-row"><span class="hp-em">${mousePic('click')}</span><span class="hp-tx"><b>Click</b><div>Press the LEFT button ONE time = choose.</div></span></div>
-    <div class="hp-row"><span class="hp-em">${mousePic('double')}</span><span class="hp-tx"><b>Double-click</b><div>Press the LEFT button TWO times fast = open.</div></span></div>
-    <div class="hp-row"><span class="hp-em">${mousePic('right')}</span><span class="hp-tx"><b>Right-click</b><div>Press the RIGHT button = a menu appears.</div></span></div>
-    <div class="hp-row"><span class="hp-em">${mousePic('scroll')}</span><span class="hp-tx"><b>Scroll</b><div>Roll the wheel = the page moves up and down.</div></span></div>
-    ${HELP_ROWS.map(([e,t,d])=>`<div class="hp-row"><span class="hp-em">${e}</span><span class="hp-tx"><b>${t}</b><div>${d}</div></span></div>`).join('')}
-    <div class="hp-row"><span class="hp-em">⌨️</span><span class="hp-tx"><b>Keys</b><div>Space = space · Enter ⏎ = go · Backspace ⌫ = erase · Shift ⇧ = CAPITAL · ← ↑ ↓ → = move</div></span></div>
-    <button class="btn small" id="hpClose" style="margin-top:10px">Close</button>`;
+      background:#fffbe8;padding:4px 0 8px;margin:-4px 0 0"><h3 style="margin:0">${t('📖 Helper Sheet')}</h3>
+      <button class="btn small" id="hpCloseTop">${t('Close')}</button></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('click')}</span><span class="hp-tx"><b>${t('Click')}</b><div>${t('Press the LEFT button ONE time = choose.')}</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('double')}</span><span class="hp-tx"><b>${t('Double-click')}</b><div>${t('Press the LEFT button TWO times fast = open.')}</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('right')}</span><span class="hp-tx"><b>${t('Right-click')}</b><div>${t('Press the RIGHT button = a menu appears.')}</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('scroll')}</span><span class="hp-tx"><b>${t('Scroll')}</b><div>${t('Roll the wheel = the page moves up and down.')}</div></span></div>
+    ${HELP_ROWS.map(([e,ttl,d])=>`<div class="hp-row"><span class="hp-em">${e}</span><span class="hp-tx"><b>${t(ttl)}</b><div>${t(d)}</div></span></div>`).join('')}
+    <div class="hp-row"><span class="hp-em">⌨️</span><span class="hp-tx"><b>${t('Keys')}</b><div>${t('Space = space · Enter ⏎ = go · Backspace ⌫ = erase · Shift ⇧ = CAPITAL · ← ↑ ↓ → = move')}</div></span></div>
+    <button class="btn small" id="hpClose" style="margin-top:10px">${t('Close')}</button>`;
   $('#hpClose').onclick=()=>h.classList.add('hidden');
   $('#hpCloseTop').onclick=()=>h.classList.add('hidden');
 }
@@ -1242,41 +1508,45 @@ $('#btnHelper').onclick=()=>{ $('#helper').classList.toggle('hidden'); };
 $('#btnSupport').onclick=()=>{
   state.support=!state.support;
   document.body.classList.toggle('support',state.support);
-  $('#btnSupport').textContent='🖼️ Picture Mode: '+(state.support?'ON':'OFF');
+  $('#btnSupport').textContent=t('🖼️ Picture Mode: ')+(state.support?t('ON'):t('OFF'));
   // keep the sheet out of the way of the login card; it opens with the desktop
   if(state.support&&!$('#desktopScreen').classList.contains('hidden')) $('#helper').classList.remove('hidden');
   if(!state.support) $('#helper').classList.add('hidden');
   try{ localStorage.setItem('dq_support',state.support?'1':'0'); }catch(e){}  // file:// may block storage
-  if($('#lgWord')) $('#lgWord').textContent=state.support?'cat':'star';
+  renderPassLabel(); buildTeacher();
 };
 $('#btnSound').onclick=()=>{
   state.sound=!state.sound;
-  $('#btnSound').textContent='🔊 Sound: '+(state.sound?'ON':'OFF');
+  $('#btnSound').textContent=t('🔊 Sound: ')+(state.sound?t('ON'):t('OFF'));
 };
 $('#btnTeacher').onclick=()=>{ $('#teacher').classList.toggle('hidden'); };
 function buildTeacher(){
-  $('#teacher').innerHTML=`<h3>👩‍🏫 Teacher Panel</h3>
-    <p style="font-size:14px;color:var(--muted)">Objective: SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.</p>
+  $('#teacher').innerHTML=`<h3>${t('👩‍🏫 Teacher Panel')}</h3>
+    <p style="font-size:14px;color:var(--muted)">${t('Objective: SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.')}</p>
+    <div class="tch-row">
+      <button class="btn small ${state.lang==='en'?'':'ghost'}" data-setlang="en">🇺🇸 English</button>
+      <button class="btn small ${state.lang==='es'?'':'ghost'}" data-setlang="es">🇲🇽 Español</button>
+    </div>
     <table>
-      <tr><th>Time</th><th>Part</th><th>In the game</th></tr>
-      <tr><td>0:00–0:08</td><td>Login &amp; Warm-Up</td><td>Login routine, bubble pop, click vs. double-click</td></tr>
-      <tr><td>0:08–0:18</td><td>Teacher Modeling</td><td>Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close</td></tr>
-      <tr><td>0:18–0:38</td><td>Mouse &amp; Keyboard Games</td><td>Mouse Master (4 rounds), Scroll Quest, Key Hunt</td></tr>
-      <tr><td>0:38–0:49</td><td>Scavenger Hunt / Closure</td><td>7-item hunt, exit question, certificate</td></tr>
+      <tr><th>${t('Time')}</th><th>${t('Part')}</th><th>${t('In the game')}</th></tr>
+      <tr><td>0:00–0:08</td><td>${t('Login &amp; Warm-Up')}</td><td>${t('Login routine, bubble pop, click vs. double-click')}</td></tr>
+      <tr><td>0:08–0:18</td><td>${t('Teacher Modeling')}</td><td>${t('Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close')}</td></tr>
+      <tr><td>0:18–0:38</td><td>${t('Mouse &amp; Keyboard Games')}</td><td>${t('Mouse Master (4 rounds), Scroll Quest, Key Hunt')}</td></tr>
+      <tr><td>0:38–0:49</td><td>${t('Scavenger Hunt / Closure')}</td><td>${t('7-item hunt, exit question, certificate')}</td></tr>
     </table>
     <div class="tch-row">
-      <button class="btn small ghost" data-p="1">▶ Part 1</button>
-      <button class="btn small ghost" data-p="2">▶ Part 2</button>
-      <button class="btn small ghost" data-p="3">▶ Part 3</button>
-      <button class="btn small ghost" data-p="4">▶ Part 4</button>
-      <button class="btn small ghost" id="tchCert">▶ Exit ticket</button>
+      <button class="btn small ghost" data-p="1">${t('▶ Part 1')}</button>
+      <button class="btn small ghost" data-p="2">${t('▶ Part 2')}</button>
+      <button class="btn small ghost" data-p="3">${t('▶ Part 3')}</button>
+      <button class="btn small ghost" data-p="4">${t('▶ Part 4')}</button>
+      <button class="btn small ghost" id="tchCert">${t('▶ Exit ticket')}</button>
     </div>
-    <p style="font-size:14px"><b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away,
-    Helper Sheet pinned open, shorter password (<i>cat</i>).</p>
+    <p style="font-size:14px">${t('<b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away, Helper Sheet pinned open, shorter password ({word}).',{word:'<i>'+(state.lang==='es'?'sol':'cat')+'</i>'})}</p>
     <div class="tch-row">
-      <button class="btn small ghost" id="tchReset">🔄 Restart from login</button>
-      <button class="btn small" id="tchClose">Close panel</button>
+      <button class="btn small ghost" id="tchReset">${t('🔄 Restart from login')}</button>
+      <button class="btn small" id="tchClose">${t('Close panel')}</button>
     </div>`;
+  $$('#teacher [data-setlang]').forEach(b=>b.onclick=()=>setLang(b.dataset.setlang));
   $$('#teacher [data-p]').forEach(b=>b.onclick=()=>{
     $('#teacher').classList.add('hidden'); closeModal();
     Object.keys(openWins).forEach(closeApp);
@@ -1288,10 +1558,47 @@ function buildTeacher(){
 }
 
 /* =====================================================================
+   LANGUAGE SWITCHING
+   ===================================================================== */
+function setLang(lang){
+  if(lang!==state.lang){ state.lang=lang; try{ localStorage.setItem('dq_lang',lang); }catch(e){} }
+  applyLang();
+}
+function applyLang(){
+  document.documentElement.lang=state.lang;
+  document.title=t('Desktop Quest — Mouse &amp; Keyboard Lab').replace('&amp;','&');
+  // static text marked with data-i18n / data-i18n-ph
+  $$('[data-i18n]').forEach(el=>{ el.innerHTML=t(el.dataset.i18n); });
+  $$('[data-i18n-ph]').forEach(el=>{ el.placeholder=t(el.dataset.i18nPh); });
+  $$('.langbtn').forEach(b=>b.classList.toggle('on',b.dataset.lang===state.lang));
+  $('#btnLang').textContent=state.lang==='en'?'🌐 Cambiar a Español':'🌐 Switch to English';
+  $('#btnSupport').textContent=t('🖼️ Picture Mode: ')+(state.support?t('ON'):t('OFF'));
+  $('#btnSound').textContent=t('🔊 Sound: ')+(state.sound?t('ON'):t('OFF'));
+  $('#btnHelper').textContent=t('📖 Helper Sheet');
+  $('#btnTeacher').textContent=t('👩‍🏫 Teacher');
+  $('#hudPart').innerHTML=t(PART_NAMES[state.part||1]);
+  if(!state.quests.length) $('#hudName').textContent=t('Player');
+  renderPassLabel();
+  // rebuild everything that is drawn from JS
+  buildIcons(); buildLauncher(); buildSys(); buildHelper(); buildTeacher(); renderBadges();
+  Object.keys(openWins).forEach(id=>{
+    const w=openWins[id], a=appById(id);
+    $('.win-bar b',w).textContent=a.em+' '+t(a.name);
+    buildAppBody(id,$('.win-body',w));   // games restart in the new language
+  });
+  refreshTaskbar();
+  if(state.quests.length){ renderQuests(); showCoach(); }
+}
+$('#btnLang').onclick=()=>setLang(state.lang==='en'?'es':'en');
+$$('.langbtn').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+
+/* =====================================================================
    INIT
    ===================================================================== */
 buildIcons(); buildLauncher(); buildSys(); buildHelper(); buildTeacher();
 try{ if(localStorage.getItem('dq_support')==='1') $('#btnSupport').click(); }catch(e){}
+try{ const L=localStorage.getItem('dq_lang'); if(L==='es'||L==='en') state.lang=L; }catch(e){}
+applyLang();
 $('#lgName').focus();
 window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ toggleLauncher(false); toggleSys(false); hideCtx(); } });
 </script>
