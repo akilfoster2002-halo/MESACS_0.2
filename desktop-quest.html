@@ -197,6 +197,47 @@ body.support #hudTask{font-size:21px}
   #coach{max-width:330px} .coach-bub{font-size:15px} svg.ms{width:28px;height:40px}
 }
 
+/* levels, shortcut doc, speed typing */
+.lvlbar{display:flex;gap:5px;align-items:center}
+.lvl{width:26px;height:26px;border-radius:50%;background:#26324c;border:2px solid #3b4a6b;
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted)}
+.lvl.on{background:var(--star);color:#231a00;border-color:#fff;font-weight:bold}
+.doc-app{border:3px solid var(--line);border-radius:12px;overflow:hidden;background:#0f1420;margin-bottom:8px}
+.doc-bar{background:#26324c;padding:8px 12px;font-size:15px;display:flex;justify-content:space-between}
+.doc-save{color:var(--good)}
+.doc-body{padding:12px;min-height:84px;font-size:20px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.doc-line{padding:2px 6px;border-radius:6px}
+.doc-line.sel{background:#2f6fd0;color:#fff}
+.clip-row{min-height:30px;margin-bottom:4px}
+.speed-badge{display:inline-block;background:#26324c;border:2px solid var(--line);border-radius:20px;
+  padding:4px 14px;font-size:15px;margin-bottom:8px}
+.target{font-size:27px;letter-spacing:.5px;padding:12px;background:#0f1420;border-radius:12px;
+  border:3px solid var(--line);min-height:58px;color:var(--muted)}
+.target span.ok{color:var(--good)}
+.target span.no{color:var(--bad);background:rgba(255,107,107,.22);border-radius:3px}
+.timer-wrap{height:14px;background:#0f1420;border-radius:8px;border:2px solid var(--line);overflow:hidden;margin:10px auto;width:92%}
+.timer-bar{height:100%;background:linear-gradient(90deg,#3ddc84,#ffd54a,#ff6b6b)}
+.wpm{font-size:34px;color:var(--star);font-weight:bold;margin:6px 0}
+.wpm span{font-size:15px;color:var(--muted);font-weight:normal}
+/* screenshot + upload */
+.card-step{padding:20px;text-align:center;font-size:19px;line-height:1.4}
+.shot-keys{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.shot-key{background:#26324c;border:3px solid #3b4a6b;border-radius:12px;padding:10px 14px;font-size:15px;color:var(--muted);max-width:190px}
+.shot-key b{display:block;font-size:18px;color:var(--star);margin-bottom:4px}
+#flashfx{position:fixed;inset:0;background:#fff;z-index:400;pointer-events:none;animation:flashy .55s ease-out forwards}
+@keyframes flashy{0%{opacity:.85}100%{opacity:0}}
+.drop{border:4px dashed var(--line);border-radius:16px;padding:24px;text-align:center;font-size:18px;color:var(--muted);margin:10px}
+.drop.over{border-color:var(--good);background:rgba(61,220,132,.14);color:var(--text)}
+.filecard{display:inline-flex;align-items:center;gap:8px;background:#26324c;border:3px solid var(--line);
+  border-radius:12px;padding:10px 14px;font-size:16px;cursor:grab}
+.filecard:active{cursor:grabbing}
+.prog{height:14px;background:#0f1420;border:2px solid var(--line);border-radius:8px;overflow:hidden;margin:12px 20px}
+.prog i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.realworld{background:#1a2233;border-left:6px solid var(--star);border-radius:10px;padding:12px 14px;margin:12px;
+  font-size:16px;text-align:left;line-height:1.5}
+.crumb{padding:8px 10px;color:var(--muted);font-size:15px;display:flex;gap:6px;align-items:center}
+.crumb button{background:transparent;border:none;color:var(--accent);font-size:15px;text-decoration:underline}
+
 /* game bits */
 .game-wrap{position:absolute;inset:0;display:flex;flex-direction:column}
 .game-head{flex:none;padding:8px 12px;background:#1c2436;border-bottom:2px solid var(--line);display:flex;
@@ -336,7 +377,8 @@ const state={
   name:'Friend', support:false, sound:true, lang:'en',
   part:0, stars:0, badges:[],
   quests:[], qi:0, mode:'seq',
-  exit:{mouse:null,key:null}
+  exit:{mouse:null,key:null},
+  shotTaken:false, uploaded:false
 };
 
 /* =====================================================================
@@ -567,6 +609,111 @@ const ES={
 '7-item hunt, exit question, certificate':'Búsqueda de 7 cosas, pregunta de salida, certificado',
 '▶ Part 1':'▶ Parte 1','▶ Part 2':'▶ Parte 2','▶ Part 3':'▶ Parte 3','▶ Part 4':'▶ Parte 4','▶ Exit ticket':'▶ Pregunta de salida',
 '<b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away, Helper Sheet pinned open, shorter password ({word}).':'<b>Modo Dibujos</b> (SWIEP/ELL): menos objetivos, letras más grandes, pistas de teclas visibles de inmediato, Hoja de Ayuda siempre abierta, contraseña más corta ({word}).',
+/* -- level 2: shortcuts -- */
+'Ctrl':'Ctrl','⌨️ Shortcut School':'⌨️ Escuela de Atajos',
+'Level 2 — Keyboard shortcuts':'Nivel 2 — Atajos del teclado',
+'A <b>shortcut</b> is two keys pressed together. Hold <b>Ctrl</b> down, then tap the letter.':'Un <b>atajo</b> son dos teclas al mismo tiempo. Mantén <b>Ctrl</b> presionada y toca la letra.',
+'Shortcuts do jobs fast — copy, paste, undo, save.':'Los atajos hacen el trabajo rápido — copiar, pegar, deshacer, guardar.',
+'Start Level 2 ▶':'Empezar Nivel 2 ▶',
+'I can use a computer.':'Yo puedo usar la computadora.',
+'my-work.txt':'mi-trabajo.txt','Clipboard:':'Portapapeles:','Saved':'Guardado',
+'<b>Ctrl + A</b> — select ALL the text. It turns blue.':'<b>Ctrl + A</b> — selecciona TODO el texto. Se pone azul.',
+'<b>Ctrl + C</b> — copy the blue text. Now it is on the clipboard.':'<b>Ctrl + C</b> — copia el texto azul. Ahora está en el portapapeles.',
+'<b>Ctrl + V</b> — paste. The words appear again.':'<b>Ctrl + V</b> — pega. Las palabras aparecen otra vez.',
+'<b>Ctrl + X</b> — cut. The text goes away and waits on the clipboard.':'<b>Ctrl + X</b> — corta. El texto se va y espera en el portapapeles.',
+'<b>Ctrl + Z</b> — undo. It brings back what you cut. Ctrl+Z is the fix-it key!':'<b>Ctrl + Z</b> — deshace. Trae de vuelta lo que cortaste. ¡Ctrl+Z arregla los errores!',
+'<b>Ctrl + S</b> — save your work. Do this a lot!':'<b>Ctrl + S</b> — guarda tu trabajo. ¡Hazlo seguido!',
+'Hold <b>Ctrl</b> down FIRST, then tap the letter.':'Primero mantén <b>Ctrl</b> presionada y DESPUÉS toca la letra.',
+/* -- level 3: speed typing -- */
+'⌨️ Speed Typing':'⌨️ Escribir Rápido','Level 3 — Typing speed':'Nivel 3 — Velocidad al escribir',
+'Now for speed! Type what you see before the bar runs out.':'¡Ahora rapidez! Escribe lo que ves antes de que se acabe la barra.',
+'Three speeds: Warm Up, Faster, Speedy. Keep your eyes on the words.':'Tres velocidades: Calentamiento, Más Rápido y Veloz. Mantén los ojos en las palabras.',
+'Start Level 3 ▶':'Empezar Nivel 3 ▶',
+'Warm Up':'Calentamiento','Faster':'Más Rápido','Speedy':'Veloz','lines':'líneas','sec':'seg',
+'cat dog':'gato perro','red bus':'camión rojo','my desk':'mi pupitre','I can type':'yo sé escribir',
+'click the icon':'haz clic en el icono','open the app':'abre la aplicación','save my work':'guardar mi trabajo',
+'press the space bar':'presiona la barra espaciadora',
+'I can use the mouse and keyboard':'puedo usar el ratón y el teclado',
+'double click opens an app':'doble clic abre una aplicación',
+'Ctrl S saves my work':'Ctrl S guarda mi trabajo',
+'Type it fast! &nbsp;':'¡Escribe rápido! &nbsp;',
+'Time! Try that one again.':'¡Se acabó el tiempo! Intenta otra vez.',
+'Nice! {wpm} words per minute':'¡Bien! {wpm} palabras por minuto',
+'Round finished! 🎉':'¡Ronda terminada! 🎉','{name} complete!':'¡{name} completo!',
+'words per minute':'palabras por minuto','Next speed ▶':'Siguiente velocidad ▶',
+'🎹 Shortcut Pro':'🎹 Experto en Atajos','⚡ Speed Typer':'⚡ Veloz al Teclado',
+/* -- files with folders -- */
+'Home':'Inicio','Pictures':'Imágenes','Screenshots':'Capturas','Back':'Atrás',
+'Screenshots are saved in this folder. Double-click it.':'Las capturas se guardan en esta carpeta. Haz doble clic.',
+'There it is! That is the picture of your screen.':'¡Ahí está! Esa es la foto de tu pantalla.',
+'This folder is empty. Take a screenshot first with 📸 Screenshot Helper.':'Esta carpeta está vacía. Primero toma una captura con 📸 Ayuda de Capturas.',
+/* -- screenshot helper -- */
+'Screenshot Helper':'Ayuda de Capturas','Cloud Upload':'Subir a la Nube','My Certificate':'Mi Certificado',
+'What is a screenshot?':'¿Qué es una captura de pantalla?',
+'A <b>screenshot</b> is a picture of what is on your screen. The computer saves it as a picture file you can share.':'Una <b>captura de pantalla</b> es una foto de lo que está en tu pantalla. La computadora la guarda como una imagen que puedes compartir.',
+'The screenshot keys on Linux':'Las teclas de captura en Linux',
+'The whole screen':'Toda la pantalla','Pick one part with the mouse':'Escoger una parte con el ratón',
+'Only the window you are using':'Solo la ventana que estás usando',
+'The key is at the top of the keyboard. It can say <b>PrtScn</b>, <b>PrtSc</b>, or <b>Print Screen</b>.':'La tecla está arriba del teclado. Puede decir <b>PrtScn</b>, <b>PrtSc</b> o <b>Print Screen</b>.',
+'Where does it go?':'¿Dónde se guarda?',
+'Linux saves your picture in <b>Pictures → Screenshots</b>. You can open it in <b>Files</b> 📁 any time.':'Linux guarda tu foto en <b>Imágenes → Capturas</b>. Puedes abrirla en <b>Archivos</b> 📁 cuando quieras.',
+'Some Linux computers open a little screenshot window instead. If that happens, click <b>Take Screenshot</b> or <b>Save</b> in that window — same job, one extra click.':'Algunas computadoras Linux abren una ventanita de captura. Si pasa eso, haz clic en <b>Tomar captura</b> o <b>Guardar</b> en esa ventana — es el mismo trabajo, un clic más.',
+'I am ready to try ▶':'Estoy listo para probar ▶',
+'Your turn — take a screenshot':'Tu turno — toma una captura',
+'Your certificate is on the screen behind this window. Press <b>PrtScn</b> now to take a picture of it.':'Tu certificado está detrás de esta ventana. Presiona <b>PrtScn</b> ahora para tomarle una foto.',
+'(or click here to practice)':'(o haz clic aquí para practicar)',
+'Did the screen flash, or a window pop up? That means it worked.':'¿La pantalla parpadeó o salió una ventana? Eso quiere decir que funcionó.',
+'✅ It worked!':'✅ ¡Funcionó!','🤔 Nothing happened':'🤔 No pasó nada',
+'No problem. Try one of these: hold <b>Shift</b> and press <b>PrtScn</b>, or open the <b>Screenshot</b> app from the App Launcher 🚀 and click <b>Take Screenshot</b>. Then come back and click ✅.':'No hay problema. Prueba esto: mantén <b>Shift</b> y presiona <b>PrtScn</b>, o abre la aplicación <b>Captura de pantalla</b> desde el Lanzador de Apps 🚀 y haz clic en <b>Tomar captura</b>. Luego regresa y haz clic en ✅.',
+'Screenshot saved!':'¡Captura guardada!',
+'It is saved in <b>Pictures → Screenshots</b>. Open <b>Files</b> 📁 and go find it.':'Se guardó en <b>Imágenes → Capturas</b>. Abre <b>Archivos</b> 📁 y ve a buscarla.',
+'Real life: this is how you hand work in. Take the screenshot, find it in Files, then upload it.':'En la vida real: así se entrega el trabajo. Toma la captura, búscala en Archivos y súbela.',
+/* -- cloud upload -- */
+'First take a screenshot with 📸 <b>Screenshot Helper</b>. Then come back here to upload it.':'Primero toma una captura con 📸 <b>Ayuda de Capturas</b>. Luego regresa aquí para subirla.',
+'Class Folder — Practice Upload':'Carpeta de la Clase — Práctica de Subida','+ New':'+ Nuevo',
+'This is a practice window. It works like Google Drive so you know what to do on the real one.':'Esta es una ventana de práctica. Funciona como Google Drive para que sepas qué hacer en el de verdad.',
+'Drag your screenshot here':'Arrastra tu captura aquí',
+'+ New → File upload':'+ Nuevo → Subir archivo','Pick the file you want to send:':'Escoge el archivo que quieres enviar:',
+'Pictures / Screenshots /':'Imágenes / Capturas /','Uploading…':'Subiendo…','Uploaded!':'¡Subido!',
+'On a real computer:':'En una computadora de verdad:',
+'Open your browser and go to <b>drive.google.com</b>.':'Abre tu navegador y ve a <b>drive.google.com</b>.',
+'Sign in with your school account.':'Inicia sesión con tu cuenta de la escuela.',
+'Click <b>+ New → File upload</b>.':'Haz clic en <b>+ Nuevo → Subir archivo</b>.',
+'Go to <b>Pictures → Screenshots</b> and pick your screenshot.':'Ve a <b>Imágenes → Capturas</b> y escoge tu captura.',
+'Click <b>Open</b>. Wait for the ✓. Done!':'Haz clic en <b>Abrir</b>. Espera la ✓. ¡Listo!',
+/* -- part 5 -- */
+'Part 5 — Screenshot &amp; Upload':'Parte 5 — Captura y Entrega',
+'📸 Save my certificate':'📸 Guardar mi certificado',
+'Look at your certificate':'Mira tu certificado',
+'🏆 Great job, <b>{name}</b>! Your certificate is open on the desktop. Now let us save a picture of it — a <b>screenshot</b>.':'🏆 ¡Muy bien, <b>{name}</b>! Tu certificado está abierto en el escritorio. Ahora vamos a guardar una foto de él — una <b>captura de pantalla</b>.',
+'Open the Screenshot Helper':'Abre la Ayuda de Capturas',
+'<b>Double-click</b> the 📸 <b>Screenshot Helper</b> icon.':'Haz <b>doble clic</b> en el icono 📸 <b>Ayuda de Capturas</b>.',
+'Learn the screenshot keys':'Aprende las teclas de captura',
+'Read the three cards. Learn which key takes a picture of the screen.':'Lee las tres tarjetas. Aprende qué tecla toma la foto de la pantalla.',
+'Take the screenshot':'Toma la captura',
+'Now press <b>PrtScn</b> to take the picture.':'Ahora presiona <b>PrtScn</b> para tomar la foto.',
+'Find it in Pictures → Screenshots':'Búscala en Imágenes → Capturas',
+'Open <b>Files</b> 📁 and <b>double-click</b> <b>Pictures</b>, then <b>Screenshots</b>, to find your picture.':'Abre <b>Archivos</b> 📁 y haz <b>doble clic</b> en <b>Imágenes</b> y luego en <b>Capturas</b> para encontrar tu foto.',
+'Open Cloud Upload':'Abre Subir a la Nube',
+'<b>Double-click</b> the ☁️ <b>Cloud Upload</b> icon — this is where you hand your work in.':'Haz <b>doble clic</b> en el icono ☁️ <b>Subir a la Nube</b> — aquí se entrega el trabajo.',
+'Upload your screenshot':'Sube tu captura',
+'Send it to the class folder: <b>drag</b> the file into the box, or use <b>+ New → File upload</b>.':'Envíala a la carpeta de la clase: <b>arrastra</b> el archivo a la caja o usa <b>+ Nuevo → Subir archivo</b>.',
+'Last part! Take a picture of your certificate and hand it in.':'¡Última parte! Toma una foto de tu certificado y entrégala.',
+'🏆 You did it, {name}!':'🏆 ¡Lo lograste, {name}!',
+'You logged in, learned the desktop, mastered the mouse, learned keyboard shortcuts, typed for speed, took a screenshot, and handed it in.':'Iniciaste sesión, aprendiste el escritorio, dominaste el ratón, aprendiste atajos del teclado, escribiste rápido, tomaste una captura y la entregaste.',
+'Now do it for real:':'Ahora hazlo de verdad:',
+'Press <b>PrtScn</b> to photograph your certificate.':'Presiona <b>PrtScn</b> para fotografiar tu certificado.',
+'Open <b>Files → Pictures → Screenshots</b>.':'Abre <b>Archivos → Imágenes → Capturas</b>.',
+'Go to <b>drive.google.com</b> and sign in.':'Ve a <b>drive.google.com</b> e inicia sesión.',
+'Click <b>+ New → File upload</b> and pick your screenshot.':'Haz clic en <b>+ Nuevo → Subir archivo</b> y escoge tu captura.',
+'Put it in the folder your teacher named.':'Ponla en la carpeta que dijo tu maestro.',
+'🖨️ Print my certificate':'🖨️ Imprimir mi certificado',
+'🎉 Part 4 done!':'🎉 ¡Parte 4 terminada!',
+'You found everything on the desktop.':'Encontraste todo en el escritorio.',
+'Next: the exit question.':'Ahora: la pregunta de salida.',
+'Screenshot &amp; Hand-In':'Captura y Entrega',
+'PrtScn lesson, find it in Files, practice upload, real Drive steps':'Lección de PrtScn, buscarla en Archivos, práctica de subida, pasos reales de Drive',
+'▶ Part 5':'▶ Parte 5',
 '🔄 Restart from login':'🔄 Empezar desde el inicio de sesión','Close panel':'Cerrar panel'
 };
 function t(s,p){
@@ -663,7 +810,9 @@ function updateStars(){ $('#starCount').textContent=state.stars; }
 function showCoach(){
   const q=currentQuest();
   $('#coach').classList.remove('hidden');
-  if(!q){ $('#coachText').textContent=t('Nice work!'); $('#coachPics').innerHTML=''; $('#coachNext').classList.add('hidden'); clearSpot(); return; }
+  if(!q){ $('#coachText').textContent=t('Nice work!'); $('#hudTask').textContent=t('Nice work!');
+          $('#coachPics').innerHTML=''; $('#hudPics').innerHTML='';
+          $('#coachNext').classList.add('hidden'); clearSpot(); return; }
   $('#coachText').innerHTML=t(q.text,q.p);
   $('#hudTask').innerHTML=t(q.text,q.p);
   const pics=(q.pics||[]).map(p=>typeof p==='function'?p():p).join('');
@@ -748,13 +897,18 @@ const APPS=[
   {id:'mouse',    name:'Mouse Master', em:'🖱️'},
   {id:'scroll',   name:'Scroll Quest', em:'⭐'},
   {id:'keys',     name:'Key Hunt',     em:'⌨️'},
-  {id:'trash',    name:'Trash',        em:'🗑️'}
+  {id:'trash',    name:'Trash',        em:'🗑️'},
+  {id:'shot',     name:'Screenshot Helper', em:'📸', late:true},
+  {id:'drive',    name:'Cloud Upload',      em:'☁️', late:true},
+  {id:'cert',     name:'My Certificate',    em:'🏆', late:true}
 ];
+// the last three appear only in Part 5, once there is a certificate to save
+function liveApps(){ return APPS.filter(a=>!a.late||state.part>=5); }
 function appById(id){ return APPS.find(a=>a.id===id); }
 
 function buildIcons(){
   const layer=$('#iconLayer'); layer.innerHTML='';
-  APPS.forEach(a=>{
+  liveApps().forEach(a=>{
     const d=document.createElement('div');
     d.className='icon'; d.dataset.id=a.id; d.id='icon-'+a.id;
     d.innerHTML=`<div class="em">${a.em}</div><div class="nm">${t(a.name)}</div>`;
@@ -804,7 +958,7 @@ function toast(msg){
 function buildLauncher(){
   const l=$('#launcher');
   l.innerHTML=`<h2>${t('🚀 App Launcher — all your apps live here')}</h2>
-    <div class="lch-grid">${APPS.map(a=>`<button class="lch" data-id="${a.id}"><span class="em">${a.em}</span>${t(a.name)}</button>`).join('')}</div>
+    <div class="lch-grid">${liveApps().map(a=>`<button class="lch" data-id="${a.id}"><span class="em">${a.em}</span>${t(a.name)}</button>`).join('')}</div>
     <button class="btn ghost" id="lchClose">${t('✖ Close the Launcher')}</button>`;
   $$('.lch',l).forEach(b=>b.onclick=()=>{ toggleLauncher(false); openApp(b.dataset.id); });
   $('#lchClose').onclick=()=>toggleLauncher(false);
@@ -863,7 +1017,7 @@ function openApp(id){
   if(openWins[id]){ focusWin(id); return; }
   const w=document.createElement('div');
   w.className='win'; w.id='win-'+id;
-  const big=['mouse','scroll','keys','paint'].includes(id);
+  const big=['mouse','scroll','keys','paint','shot','drive','cert'].includes(id);
   const W=big?640:460, H=big?450:340;
   const deskR=$('#desk').getBoundingClientRect();
   const useW=usableW();
@@ -928,7 +1082,8 @@ function dragify(win,handle){
    ===================================================================== */
 function buildAppBody(id,body){
   ({files:appFiles,textedit:appText,paint:appPaint,trash:appTrash,
-    mouse:gameMouse,scroll:gameScroll,keys:gameKeys}[id]||appPlain)(body);
+    mouse:gameMouse,scroll:gameScroll,keys:gameKeys,
+    shot:appShot,drive:appDrive,cert:appCert}[id]||appPlain)(body);
 }
 function appPlain(b){ b.innerHTML='<div style="padding:20px;font-size:18px">'+t('This app is empty. Close it with the ✕ button.')+'</div>'; }
 
@@ -940,11 +1095,42 @@ const FILE_NAMES_ES=['mi-cuento.txt','perro.png','notas-mate.txt','playa.jpg','c
  'colores.png','poema.txt','arbol.jpg','nubes.png','juego.txt','merienda.jpg','autobus.png','lista.txt','estrellas.png'];
 function appFiles(b){
   const FILE_NAMES=state.lang==='es'?FILE_NAMES_ES:FILE_NAMES_EN;
-  b.innerHTML=`<div class="filelist">
-    <div style="padding:8px 10px;color:var(--muted);font-size:15px">${t('📁 Home — {n} files. Use the mouse wheel to scroll down.',{n:FILE_NAMES.length})}</div>
-    ${FILE_NAMES.map(n=>`<div class="filerow">${n.endsWith('.txt')?'📄':n.endsWith('.mp3')?'🎵':'🖼️'} ${n}</div>`).join('')}
-    <div class="filerow" style="color:var(--good)">${t('🏁 You reached the bottom of the list!')}</div></div>`;
-  b.addEventListener('scroll',()=>{ if(b.scrollTop>120) fire('scroll:files',{}); });
+  let path='home';
+  const shotName=state.lang==='es'?'certificado.png':'certificate.png';
+  function row(icon,name,cls,on){
+    return `<div class="filerow ${cls||''}" data-n="${name}">${icon} ${name}</div>`;
+  }
+  function draw(){
+    if(path==='home'){
+      b.innerHTML=`<div class="filelist">
+        <div class="crumb">🏠 ${t('Home')}</div>
+        <div style="padding:2px 10px 8px;color:var(--muted);font-size:15px">${t('📁 Home — {n} files. Use the mouse wheel to scroll down.',{n:FILE_NAMES.length})}</div>
+        ${row('📁',t('Pictures'),'folder')}
+        ${FILE_NAMES.map(n=>`<div class="filerow">${n.endsWith('.txt')?'📄':n.endsWith('.mp3')?'🎵':'🖼️'} ${n}</div>`).join('')}
+        <div class="filerow" style="color:var(--good)">${t('🏁 You reached the bottom of the list!')}</div></div>`;
+      $('.folder',b).ondblclick=()=>{ path='pictures'; beep('pop'); draw(); };
+      b.onscroll=()=>{ if(b.scrollTop>120) fire('scroll:files',{}); };
+    } else if(path==='pictures'){
+      b.innerHTML=`<div class="filelist">
+        <div class="crumb"><button id="fBack">⬅ ${t('Back')}</button> 🏠 ${t('Home')} › 📁 ${t('Pictures')}</div>
+        ${row('📁',t('Screenshots'),'folder')}
+        <div class="filerow">🖼️ ${state.lang==='es'?'vacaciones.jpg':'vacation.jpg'}</div>
+        <div style="padding:10px;color:var(--muted);font-size:15px">${t('Screenshots are saved in this folder. Double-click it.')}</div></div>`;
+      $('.folder',b).ondblclick=()=>{ path='shots'; beep('pop'); draw(); };
+      $('#fBack',b).onclick=()=>{ path='home'; draw(); };
+    } else {
+      b.innerHTML=`<div class="filelist">
+        <div class="crumb"><button id="fBack">⬅ ${t('Back')}</button> 🏠 ${t('Home')} › 📁 ${t('Pictures')} › 📁 ${t('Screenshots')}</div>
+        ${state.shotTaken
+          ? `<div class="filerow" style="font-size:19px;color:var(--good)">🖼️ ${shotName}</div>
+             <div style="padding:10px;font-size:16px">${t('There it is! That is the picture of your screen.')}</div>`
+          : `<div style="padding:16px;font-size:17px;color:var(--muted)">${t('This folder is empty. Take a screenshot first with 📸 Screenshot Helper.')}</div>`}
+      </div>`;
+      $('#fBack',b).onclick=()=>{ path='pictures'; draw(); };
+      if(state.shotTaken) fire('files:shot',{});
+    }
+  }
+  draw();
 }
 function appTrash(b){
   b.innerHTML='<div style="padding:24px;font-size:19px;text-align:center">🗑️<br><br>'+t('The Trash is empty.')+'<br>'+
@@ -986,6 +1172,133 @@ function appPaint(b){
     if(dist>90&&!fired){ fired=true; fire('paint:draw',{}); }
   });
   window.addEventListener('mouseup',()=>drawing=false);
+}
+
+/* =====================================================================
+   SCREENSHOT HELPER — how to photograph the screen on Linux
+   ===================================================================== */
+function appShot(b){
+  let card=0;
+  const shotName=state.lang==='es'?'certificado.png':'certificate.png';
+  const cards=[
+    ()=>`<div class="card-step">
+      <div style="font-size:52px">📸</div>
+      <h3 style="margin:10px 0">${t('What is a screenshot?')}</h3>
+      <p>${t('A <b>screenshot</b> is a picture of what is on your screen. The computer saves it as a picture file you can share.')}</p>
+      <button class="btn" id="shotNext">${t('Next ▶')}</button></div>`,
+    ()=>`<div class="card-step">
+      <h3 style="margin:4px 0 0">${t('The screenshot keys on Linux')}</h3>
+      <div class="shot-keys">
+        <div class="shot-key"><b>PrtScn</b>${t('The whole screen')}</div>
+        <div class="shot-key"><b>Shift + PrtScn</b>${t('Pick one part with the mouse')}</div>
+        <div class="shot-key"><b>Alt + PrtScn</b>${t('Only the window you are using')}</div>
+      </div>
+      <p style="font-size:17px">${t('The key is at the top of the keyboard. It can say <b>PrtScn</b>, <b>PrtSc</b>, or <b>Print Screen</b>.')}</p>
+      <button class="btn" id="shotNext">${t('Next ▶')}</button></div>`,
+    ()=>`<div class="card-step">
+      <h3 style="margin:4px 0 0">${t('Where does it go?')}</h3>
+      <p>${t('Linux saves your picture in <b>Pictures → Screenshots</b>. You can open it in <b>Files</b> 📁 any time.')}</p>
+      <div class="realworld">${t('Some Linux computers open a little screenshot window instead. If that happens, click <b>Take Screenshot</b> or <b>Save</b> in that window — same job, one extra click.')}</div>
+      <button class="btn" id="shotNext">${t('I am ready to try ▶')}</button></div>`
+  ];
+  function drawCard(){
+    b.innerHTML=cards[card]();
+    $('#shotNext',b).onclick=()=>{
+      card++; beep('good');
+      if(card<cards.length) drawCard();
+      else { fire('shot:learned',{}); practice(); }
+    };
+  }
+  function practice(){
+    b.innerHTML=`<div class="card-step">
+      <div style="font-size:46px">🖥️📸</div>
+      <h3 style="margin:8px 0">${t('Your turn — take a screenshot')}</h3>
+      <p>${t('Your certificate is on the screen behind this window. Press <b>PrtScn</b> now to take a picture of it.')}</p>
+      <div class="shot-keys"><button class="shot-key" id="prtBtn" style="cursor:pointer"><b>PrtScn</b>${t('(or click here to practice)')}</button></div>
+      <div style="font-size:16px;color:var(--muted)">${t('Did the screen flash, or a window pop up? That means it worked.')}</div>
+      <div style="margin-top:12px">
+        <button class="btn good" id="shotOK">${t('✅ It worked!')}</button>
+        <button class="btn ghost small" id="shotHelp">${t('🤔 Nothing happened')}</button>
+      </div>
+      <div id="shotHelpBox"></div></div>`;
+    $('#prtBtn',b).onclick=takeIt;
+    $('#shotOK',b).onclick=takeIt;
+    $('#shotHelp',b).onclick=()=>{
+      $('#shotHelpBox',b).innerHTML=`<div class="realworld">${t('No problem. Try one of these: hold <b>Shift</b> and press <b>PrtScn</b>, or open the <b>Screenshot</b> app from the App Launcher 🚀 and click <b>Take Screenshot</b>. Then come back and click ✅.')}</div>`;
+    };
+    // a real PrtScn press counts too, when the computer lets the browser see it
+    keyShot=e=>{ if(e.key==='PrintScreen'){ e.preventDefault(); takeIt(); } };
+  }
+  function takeIt(){
+    if(state.shotTaken) return;
+    state.shotTaken=true; keyShot=null;
+    const fx=document.createElement('div'); fx.id='flashfx';
+    document.body.appendChild(fx); setTimeout(()=>fx.remove(),600);
+    beep('star');
+    b.innerHTML=`<div class="card-step">
+      <div style="font-size:52px">✅</div>
+      <h3 style="margin:8px 0">${t('Screenshot saved!')}</h3>
+      <div class="filecard" style="cursor:default">🖼️ ${shotName}</div>
+      <p style="font-size:17px;margin-top:12px">${t('It is saved in <b>Pictures → Screenshots</b>. Open <b>Files</b> 📁 and go find it.')}</p>
+      <div class="realworld">${t('Real life: this is how you hand work in. Take the screenshot, find it in Files, then upload it.')}</div></div>`;
+    fire('shot:taken',{});
+  }
+  drawCard();
+}
+let keyShot=null;
+document.addEventListener('keydown',e=>{ if(keyShot) keyShot(e); });
+
+/* =====================================================================
+   CLOUD UPLOAD — practice window that works like Google Drive
+   ===================================================================== */
+function appDrive(b){
+  const shotName=state.lang==='es'?'certificado.png':'certificate.png';
+  if(!state.shotTaken){
+    b.innerHTML=`<div class="card-step">
+      <div style="font-size:46px">☁️</div>
+      <p>${t('First take a screenshot with 📸 <b>Screenshot Helper</b>. Then come back here to upload it.')}</p></div>`;
+    return;
+  }
+  b.innerHTML=`<div style="padding:10px">
+    <div class="doc-bar" style="border-radius:10px">☁️ ${t('Class Folder — Practice Upload')}
+      <button class="btn small" id="dvNew">${t('+ New')}</button></div>
+    <div style="font-size:14px;color:var(--muted);padding:8px 4px">${t('This is a practice window. It works like Google Drive so you know what to do on the real one.')}</div>
+    <div style="text-align:center;padding:6px"><div class="filecard" id="dvFile" draggable="true">🖼️ ${shotName}</div></div>
+    <div class="drop" id="dvDrop">⬇️ ${t('Drag your screenshot here')}</div>
+    <div id="dvOut"></div></div>`;
+  const drop=$('#dvDrop',b), file=$('#dvFile',b);
+  file.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain',shotName); });
+  drop.addEventListener('dragover',e=>{ e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{ e.preventDefault(); drop.classList.remove('over'); upload(); });
+  $('#dvNew',b).onclick=()=>{
+    $('#dvOut',b).innerHTML=`<div class="realworld">
+      <b>${t('+ New → File upload')}</b><br>${t('Pick the file you want to send:')}
+      <div style="margin-top:8px"><button class="btn small" id="dvPick">🖼️ ${t('Pictures / Screenshots /')} ${shotName}</button></div></div>`;
+    $('#dvPick',b).onclick=upload;
+  };
+  function upload(){
+    if(state.uploaded) return;
+    state.uploaded=true; beep('pop');
+    $('#dvOut',b).innerHTML=`<div class="prog"><i id="dvBar"></i></div>
+      <div id="dvMsg" style="text-align:center;font-size:17px">${t('Uploading…')}</div>`;
+    const bar=$('#dvBar',b); let n=0;
+    const iv=setInterval(()=>{
+      n+=25; bar.style.width=Math.min(n,100)+'%';
+      if(n>=100){
+        clearInterval(iv); beep('star');
+        $('#dvMsg',b).innerHTML=`<div style="font-size:40px">✅</div><b>${t('Uploaded!')}</b>`;
+        $('#dvOut',b).insertAdjacentHTML('beforeend',`<div class="realworld">
+          <b>${t('On a real computer:')}</b><br>
+          1. ${t('Open your browser and go to <b>drive.google.com</b>.')}<br>
+          2. ${t('Sign in with your school account.')}<br>
+          3. ${t('Click <b>+ New → File upload</b>.')}<br>
+          4. ${t('Go to <b>Pictures → Screenshots</b> and pick your screenshot.')}<br>
+          5. ${t('Click <b>Open</b>. Wait for the ✓. Done!')}</div>`);
+        fire('drive:uploaded',{});
+      }
+    },260);
+  }
 }
 
 /* =====================================================================
@@ -1177,102 +1490,248 @@ function keyLabel(k){
 }
 function tokenOf(e){ return e.key===' '?'SPACE':e.key.toUpperCase(); }
 function gameKeys(b){
-  const letters=[], L=state.support?3:5, D=state.support?1:2;
-  const pool='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  while(letters.length<L){ const c=pick(pool); if(!letters.includes(c)) letters.push(c); }
-  const digits=[]; while(digits.length<D){ const c=String(rnd(0,9)); if(!digits.includes(c)) digits.push(c); }
-  const extras=state.support?['SPACE','ENTER','BACKSPACE','ARROWLEFT','ARROWRIGHT']
-                            :['SPACE','ENTER','BACKSPACE','SHIFT','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'];
-  const seq=[...letters,...digits,...extras];
+  /* Three levels: 1 find the keys, 2 keyboard shortcuts, 3 timed typing. */
   b.innerHTML=`<div class="game-wrap">
-    <div class="game-head"><span id="khTitle">${t('⌨️ Key Hunt')}</span><span id="khScore">0/${seq.length}</span></div>
+    <div class="game-head">
+      <span id="khTitle">${t('⌨️ Key Hunt')}</span>
+      <span class="lvlbar">
+        <span class="lvl on" id="lvl1">1</span><span class="lvl" id="lvl2">2</span><span class="lvl" id="lvl3">3</span>
+      </span>
+      <span id="khScore">0</span></div>
     <div style="flex:none" id="khPrompt" class="prompt-big">${t('Get ready…')}</div>
     <div class="game-area" style="overflow:auto" id="khArea"></div></div>`;
-  const area=$('#khArea',b), prompt=$('#khPrompt',b), score=$('#khScore',b);
-  area.innerHTML=`<div class="kb" id="khBoard">
-    ${KEY_ROWS.map(r=>`<div class="kb-row">${r.map(k=>`<div class="key" data-k="${k}">${k}</div>`).join('')}</div>`).join('')}
-    <div class="kb-row">
-      <div class="key wide" data-k="SHIFT">${t('⇧ Shift')}</div>
-      <div class="key xwide" data-k="SPACE">${t('Space')}</div>
-      <div class="key wide" data-k="BACKSPACE">${t('⌫ Backspace')}</div>
-      <div class="key wide" data-k="ENTER">${t('⏎ Enter')}</div>
-    </div>
-    <div class="kb-row">
-      <div class="key" data-k="ARROWLEFT">←</div><div class="key" data-k="ARROWUP">↑</div>
-      <div class="key" data-k="ARROWDOWN">↓</div><div class="key" data-k="ARROWRIGHT">→</div>
-    </div></div>`;
-  let i=0, hintTimer=null;
-  coachSay('Look at the big word. Find that key on the real keyboard and press it.',[()=>PIC.key(t('press'))]);
-  function ask(){
-    clearTimeout(hintTimer);
-    $$('.key',b).forEach(k=>k.classList.remove('hot'));
-    if(i>=seq.length){ return typingRound(); }
-    const k=seq[i];
-    prompt.innerHTML=t('Press &nbsp;')+'<b style="color:var(--star)">'+keyLabel(k)+'</b>';
-    score.textContent=i+'/'+seq.length;
-    const hot=()=>{ const el=$(`.key[data-k="${k}"]`,b); if(el) el.classList.add('hot'); };
-    if(state.support) hot(); else hintTimer=setTimeout(hot,4000);
+  const area=$('#khArea',b), prompt=$('#khPrompt',b), score=$('#khScore',b), title=$('#khTitle',b);
+  const setLevel=n=>{ [1,2,3].forEach(i=>$('#lvl'+i,b).classList.toggle('on',i===n)); };
+
+  /* ---------- shared keyboard picture ---------- */
+  function boardHTML(){
+    return `<div class="kb" id="khBoard">
+      ${KEY_ROWS.map(r=>`<div class="kb-row">${r.map(k=>`<div class="key" data-k="${k}">${k}</div>`).join('')}</div>`).join('')}
+      <div class="kb-row">
+        <div class="key wide" data-k="CONTROL">${t('Ctrl')}</div>
+        <div class="key wide" data-k="SHIFT">${t('⇧ Shift')}</div>
+        <div class="key xwide" data-k="SPACE">${t('Space')}</div>
+        <div class="key wide" data-k="BACKSPACE">${t('⌫ Backspace')}</div>
+        <div class="key wide" data-k="ENTER">${t('⏎ Enter')}</div>
+      </div>
+      <div class="kb-row">
+        <div class="key" data-k="ARROWLEFT">←</div><div class="key" data-k="ARROWUP">↑</div>
+        <div class="key" data-k="ARROWDOWN">↓</div><div class="key" data-k="ARROWRIGHT">→</div>
+      </div></div>`;
   }
-  keyGame={ onKey(e){
-    if(!openWins.keys){ keyGame=null; return; }
-    if(i>=seq.length) return;
-    const tok=tokenOf(e);
-    if(['SPACE','BACKSPACE','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'].includes(tok)) e.preventDefault();
-    if(tok===seq[i]){
-      const el=$(`.key[data-k="${tok}"]`,b);
-      if(el){ el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),260); }
-      i++; beep('key'); ask();
-    } else if(tok.length===1||['SHIFT','ENTER','BACKSPACE','SPACE'].includes(tok)){
-      prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">'+t('not that one')+'</span>');
-      setTimeout(ask,600);
+  const flash=(k,cls)=>{ const el=$(`.key[data-k="${k}"]`,b); if(el){ el.classList.add(cls); setTimeout(()=>el.classList.remove(cls),260); } };
+
+  /* =================== LEVEL 1 — find the keys =================== */
+  function level1(){
+    setLevel(1); title.textContent=t('⌨️ Key Hunt');
+    const letters=[], L=state.support?4:6;
+    const pool='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    while(letters.length<L){ const c=pick(pool); if(!letters.includes(c)) letters.push(c); }
+    const digits=[]; const D=state.support?2:3;
+    while(digits.length<D){ const c=String(rnd(0,9)); if(!digits.includes(c)) digits.push(c); }
+    const extras=state.support?['SPACE','ENTER','BACKSPACE','ARROWLEFT','ARROWRIGHT']
+                              :['SPACE','ENTER','BACKSPACE','SHIFT','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'];
+    const seq=[...letters,...digits,...extras];
+    area.innerHTML=boardHTML();
+    let i=0, hintTimer=null;
+    coachSay('Look at the big word. Find that key on the real keyboard and press it.',[()=>PIC.key(t('press'))]);
+    function ask(){
+      clearTimeout(hintTimer);
+      $$('.key',b).forEach(k=>k.classList.remove('hot'));
+      if(i>=seq.length){ keyGame=null; return level2intro(); }
+      const k=seq[i];
+      prompt.innerHTML=t('Press &nbsp;')+'<b style="color:var(--star)">'+keyLabel(k)+'</b>';
+      score.textContent=i+'/'+seq.length;
+      const hot=()=>{ const el=$(`.key[data-k="${k}"]`,b); if(el) el.classList.add('hot'); };
+      if(state.support) hot(); else hintTimer=setTimeout(hot,4000);
     }
-  }};
-  function typingRound(){
-    clearTimeout(hintTimer);
-    score.textContent=t('Typing');
-    $('#khTitle',b).textContent=t('⌨️ Key Hunt — Typing');
-    prompt.innerHTML=t('Type your <b>name</b>, then press <b>Enter</b>');
-    area.innerHTML=`<div style="padding:16px;text-align:center">
-      <input class="type-box" id="khType" placeholder="${t('your name')}" autocomplete="off">
-      <div style="color:var(--muted);font-size:16px">${t('Shift ⇧ + a letter = CAPITAL letter. Backspace ⌫ erases.')}</div></div>`;
-    const inp=$('#khType',b); setTimeout(()=>inp.focus(),50);
-    area.addEventListener('click',()=>inp.focus());
-    keyGame={onKey(){}};
-    inp.addEventListener('keydown',e=>{
-      if(e.key!=='Enter') return;
-      e.preventDefault();
-      if(inp.value.trim().length<1){ prompt.innerHTML=t('Type some letters first, then press <b>Enter</b>'); beep('bad'); return; }
-      beep('star'); fixRound(inp.value.trim());
-    });
+    keyGame={ onKey(e){
+      if(!openWins.keys){ keyGame=null; return; }
+      if(i>=seq.length) return;
+      const tok=tokenOf(e);
+      if(['SPACE','BACKSPACE','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'].includes(tok)) e.preventDefault();
+      if(tok===seq[i]){ flash(tok,'hit'); i++; beep('key'); ask(); }
+      else if(tok.length===1||['SHIFT','ENTER','BACKSPACE','SPACE'].includes(tok)){
+        prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">'+t('not that one')+'</span>');
+        setTimeout(ask,600);
+      }
+    }};
+    ask();
   }
-  function fixRound(typed){
-    const good=fixWord(), bad=good+good.slice(-1);
-    prompt.innerHTML=t('The box should say <b>{word}</b> — press <b>Backspace</b> ⌫ to fix it, then <b>Enter</b>',{word:good});
-    area.innerHTML=`<div style="padding:16px;text-align:center">
-      <div style="font-size:20px;color:var(--good);margin-bottom:8px">${t('Nice typing, {name}! One more.',{name:typed})}</div>
-      <input class="type-box" id="khFix" value="${bad}" autocomplete="off">
-      <div style="color:var(--muted);font-size:16px">${t('Backspace ⌫ erases the letter before the blinking line.')}</div></div>`;
-    const inp=$('#khFix',b); setTimeout(()=>{inp.focus(); inp.setSelectionRange(bad.length,bad.length);},50);
-    const toEnd=()=>setTimeout(()=>inp.setSelectionRange(inp.value.length,inp.value.length),0);
-    inp.addEventListener('click',toEnd); inp.addEventListener('focus',toEnd);
-    area.addEventListener('click',()=>inp.focus());
-    inp.addEventListener('keydown',e=>{
-      if(e.key!=='Enter') return;
-      e.preventDefault();
-      if(inp.value.toLowerCase().trim()===good){ beep('star'); finishKeys(); }
-      else { prompt.innerHTML=t('Not yet — make it say <b>{word}</b> with Backspace ⌫, then Enter',{word:good}); beep('bad'); }
-    });
+
+  /* =================== LEVEL 2 — shortcut school =================== */
+  function level2intro(){
+    setLevel(2); title.textContent=t('⌨️ Shortcut School');
+    prompt.innerHTML=t('Level 2 — Keyboard shortcuts');
+    score.textContent='';
+    area.innerHTML=`<div style="padding:22px;text-align:center">
+      <div style="font-size:46px">🎹</div>
+      <div style="font-size:21px;margin:10px 0">${t('A <b>shortcut</b> is two keys pressed together. Hold <b>Ctrl</b> down, then tap the letter.')}</div>
+      <div style="font-size:17px;color:var(--muted);margin-bottom:14px">${t('Shortcuts do jobs fast — copy, paste, undo, save.')}</div>
+      <button class="btn" id="khGo2">${t('Start Level 2 ▶')}</button></div>`;
+    $('#khGo2',b).onclick=level2;
+    beep('star');
   }
-  function finishKeys(){
+  function level2(){
+    const SENT=t('I can use a computer.');
+    const steps=state.support
+      ? [['A','select'],['C','copy'],['V','paste'],['S','save']]
+      : [['A','select'],['C','copy'],['V','paste'],['X','cut'],['Z','undo'],['S','save']];
+    const HOW={
+      select:'<b>Ctrl + A</b> — select ALL the text. It turns blue.',
+      copy:'<b>Ctrl + C</b> — copy the blue text. Now it is on the clipboard.',
+      paste:'<b>Ctrl + V</b> — paste. The words appear again.',
+      cut:'<b>Ctrl + X</b> — cut. The text goes away and waits on the clipboard.',
+      undo:'<b>Ctrl + Z</b> — undo. It brings back what you cut. Ctrl+Z is the fix-it key!',
+      save:'<b>Ctrl + S</b> — save your work. Do this a lot!'
+    };
+    let i=0, lines=[SENT], selected=false, clip='', cut=false;
+    area.innerHTML=`<div style="padding:12px">
+      <div class="doc-app">
+        <div class="doc-bar">📝 ${t('my-work.txt')} <span id="docSave" class="doc-save"></span></div>
+        <div class="doc-body" id="docBody"></div>
+      </div>
+      <div id="clipRow" class="clip-row"></div>
+      ${boardHTML()}</div>`;
+    const draw=()=>{
+      $('#docBody',b).innerHTML=lines.map(l=>`<div class="doc-line ${selected?'sel':''}">${l}</div>`).join('');
+      $('#clipRow',b).innerHTML=clip?`<span class="tag">📋 ${t('Clipboard:')} <b>${clip}</b></span>`:'';
+    };
+    function ask(){
+      $$('.key',b).forEach(k=>k.classList.remove('hot'));
+      if(i>=steps.length) return level3intro();
+      const [letter,what]=steps[i];
+      score.textContent=i+'/'+steps.length;
+      prompt.innerHTML=t('Press &nbsp;')+`<b style="color:var(--star)">Ctrl + ${letter}</b>`;
+      coachSay(HOW[what]);
+      const hot=()=>{ ['CONTROL',letter].forEach(k=>{const el=$(`.key[data-k="${k}"]`,b); if(el) el.classList.add('hot');}); };
+      if(state.support) hot(); else setTimeout(()=>{ if(steps[i]&&steps[i][0]===letter) hot(); },3500);
+      draw();
+    }
+    function apply(what){
+      if(what==='select') selected=true;
+      if(what==='copy'){ clip=SENT; }
+      if(what==='paste'){ lines=[...lines,SENT]; selected=false; }
+      if(what==='cut'){ clip=SENT; lines=lines.slice(0,-1); cut=true; if(!lines.length) lines=[]; }
+      if(what==='undo'&&cut){ lines=[...lines,SENT]; cut=false; }
+      if(what==='save'){ $('#docSave',b).textContent='✓ '+t('Saved'); }
+      draw();
+    }
+    keyGame={ onKey(e){
+      if(!openWins.keys){ keyGame=null; return; }
+      if(i>=steps.length) return;
+      const ctrl=e.ctrlKey||e.metaKey;
+      const letter=(e.key||'').toUpperCase();
+      if(ctrl&&['A','C','V','X','Z','S','P','F'].includes(letter)) e.preventDefault();  // keep the browser out of it
+      if(!ctrl) {
+        if(letter.length===1){ coachSay('Hold <b>Ctrl</b> down FIRST, then tap the letter.'); }
+        return;
+      }
+      flash('CONTROL','hit');
+      if(letter===steps[i][0]){
+        flash(letter,'hit'); beep('star');
+        apply(steps[i][1]); i++;
+        setTimeout(ask,520);
+      } else {
+        prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">'+t('not that one')+'</span>');
+        setTimeout(ask,700);
+      }
+    }};
+    ask();
+  }
+
+  /* =================== LEVEL 3 — typing speed =================== */
+  function level3intro(){
+    setLevel(3); title.textContent=t('⌨️ Speed Typing');
+    prompt.innerHTML=t('Level 3 — Typing speed');
+    score.textContent='';
+    keyGame=null;
+    area.innerHTML=`<div style="padding:22px;text-align:center">
+      <div style="font-size:46px">⏱️</div>
+      <div style="font-size:21px;margin:10px 0">${t('Now for speed! Type what you see before the bar runs out.')}</div>
+      <div style="font-size:17px;color:var(--muted);margin-bottom:14px">${t('Three speeds: Warm Up, Faster, Speedy. Keep your eyes on the words.')}</div>
+      <button class="btn" id="khGo3">${t('Start Level 3 ▶')}</button></div>`;
+    $('#khGo3',b).onclick=()=>speedRound(0);
+    beep('star');
+  }
+  const SPEEDS=[
+    {name:'Warm Up',   secs:state.support?16:12, items:['cat dog','red bus','my desk','I can type']},
+    {name:'Faster',    secs:state.support?14:9,  items:['click the icon','open the app','save my work','press the space bar']},
+    {name:'Speedy',    secs:state.support?16:11, items:['I can use the mouse and keyboard','double click opens an app','Ctrl S saves my work']}
+  ];
+  function speedRound(r){
+    if(r>=SPEEDS.length) return finishKeys();
+    const set=SPEEDS[r];
+    const items=state.support?set.items.slice(0,3):set.items;
+    let idx=0, correct=0, started=0, totalChars=0, totalMs=0;
+    title.textContent=t('⌨️ Speed Typing')+' — '+t(set.name);
+    area.innerHTML=`<div style="padding:14px;text-align:center">
+      <div class="speed-badge">${t(set.name)} — ${items.length} ${t('lines')}</div>
+      <div class="target" id="spTarget"></div>
+      <input class="type-box" id="spInput" autocomplete="off" spellcheck="false">
+      <div class="timer-wrap"><div class="timer-bar" id="spBar"></div></div>
+      <div id="spMsg" style="font-size:17px;color:var(--muted);height:24px;margin-top:6px"></div></div>`;
+    const target=$('#spTarget',b), inp=$('#spInput',b), bar=$('#spBar',b), msg=$('#spMsg',b);
+    let timer=null, tick=null;
+    function show(){
+      const want=t(items[idx]);
+      score.textContent=(idx)+'/'+items.length;
+      prompt.innerHTML=t('Type it fast! &nbsp;')+`<b style="color:var(--star)">${set.secs} ${t('sec')}</b>`;
+      target.innerHTML=want.split('').map((c,n)=>`<span data-n="${n}">${c===' '?'&nbsp;':c}</span>`).join('');
+      inp.value=''; inp.focus(); msg.textContent='';
+      started=Date.now();
+      bar.style.transition='none'; bar.style.width='100%';
+      requestAnimationFrame(()=>{ bar.style.transition=`width ${set.secs}s linear`; bar.style.width='0%'; });
+      clearTimeout(timer);
+      timer=setTimeout(()=>{ msg.innerHTML='⏳ '+t('Time! Try that one again.'); beep('bad'); show(); }, set.secs*1000);
+    }
+    inp.addEventListener('input',()=>{
+      const want=t(items[idx]), got=inp.value;
+      $$('#spTarget span',b).forEach((sp,n)=>{
+        sp.className = n>=got.length ? '' : (got[n]===want[n] ? 'ok' : 'no');
+      });
+      if(got===want){
+        clearTimeout(timer);
+        const ms=Date.now()-started;
+        totalChars+=want.length; totalMs+=ms; correct++;
+        const wpm=Math.max(1,Math.min(180,Math.round((want.length/5)/(ms/60000))));
+        msg.innerHTML='✅ '+t('Nice! {wpm} words per minute',{wpm:wpm});
+        beep('star'); idx++;
+        if(idx>=items.length){
+          const avg=Math.max(1,Math.min(180,Math.round((totalChars/5)/(totalMs/60000))));
+          bar.style.transition='none'; bar.style.width='0%';
+          setTimeout(()=>roundDone(r,avg),700);
+        } else setTimeout(show,700);
+      }
+    });
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter') e.preventDefault(); });
+    show();
+  }
+  function roundDone(r,wpm){
+    prompt.innerHTML=t('Round finished! 🎉');
+    area.innerHTML=`<div style="padding:24px;text-align:center">
+      <div style="font-size:46px">${r===SPEEDS.length-1?'🏆':'⚡'}</div>
+      <div style="font-size:23px;margin:8px 0">${t('{name} complete!',{name:t(SPEEDS[r].name)})}</div>
+      <div class="wpm">${wpm} <span>${t('words per minute')}</span></div>
+      <button class="btn" id="khNextR">${r===SPEEDS.length-1?t('Finish ▶'):t('Next speed ▶')}</button></div>`;
+    $('#khNextR',b).onclick=()=>{ if(r===SPEEDS.length-1) finishKeys(wpm); else speedRound(r+1); };
+    beep('star');
+  }
+
+  function finishKeys(wpm){
     prompt.innerHTML=t('Finished! 🎉');
-    area.innerHTML=`<div style="padding:30px;text-align:center">
+    area.innerHTML=`<div style="padding:26px;text-align:center">
       <div style="font-size:52px">🏅</div><div style="font-size:24px">${t('Key Hunt finished!')}</div>
-      <div style="color:var(--muted);font-size:17px">${t('Letters • Numbers • Space • Enter • Backspace • Shift • Arrows')}</div></div>`;
+      <div style="color:var(--muted);font-size:17px;margin-top:6px">${t('Letters • Numbers • Space • Enter • Backspace • Shift • Arrows')}</div>
+      <div style="color:var(--muted);font-size:17px">${t('Ctrl + A C V X Z S')}</div>
+      ${wpm?`<div class="wpm" style="margin-top:10px">${wpm} <span>${t('words per minute')}</span></div>`:''}</div>`;
     score.textContent=t('Done');
     keyGame=null;
-    awardBadge('⌨️ Key Finder'); fire('game:done',{id:'keys'});
+    awardBadge('⌨️ Key Finder'); awardBadge('🎹 Shortcut Pro'); awardBadge('⚡ Speed Typer');
+    fire('game:done',{id:'keys'});
   }
-  ask();
+
+  level1();
 }
 document.addEventListener('keydown',e=>{ if(keyGame&&keyGame.onKey) keyGame.onKey(e); });
 
@@ -1301,7 +1760,7 @@ function renderBadges(){
    PARTS
    ===================================================================== */
 const PART_NAMES=['','Part 1 — Login &amp; Warm-Up','Part 2 — Teacher Modeling (Tour)',
-  'Part 3 — Mouse &amp; Keyboard Games','Part 4 — Desktop Scavenger Hunt'];
+  'Part 3 — Mouse &amp; Keyboard Games','Part 4 — Desktop Scavenger Hunt','Part 5 — Screenshot &amp; Upload'];
 function setPart(n){ state.part=n; $('#hudPart').innerHTML=t(PART_NAMES[n]); }
 
 function showDesktop(){
@@ -1404,14 +1863,61 @@ function startPart4(){
   coachSay('Scavenger hunt! Find each item on the list. Any order is fine.',[PIC.click]);
 }
 
+/* ---- Part 5 : screenshot the certificate and hand it in ---- */
+function startPart5(){
+  showDesktop(); setPart(5); clearWarmup(); buildIcons(); buildLauncher();
+  setQuests([
+    {short:'Look at your certificate', on:'next',
+     text:'🏆 Great job, <b>{name}</b>! Your certificate is open on the desktop. Now let us save a picture of it — a <b>screenshot</b>.', p:{name:state.name}},
+    {short:'Open the Screenshot Helper', on:'app:open', match:d=>d.id==='shot', spot:'#icon-shot',
+     text:'<b>Double-click</b> the 📸 <b>Screenshot Helper</b> icon.', pics:[PIC.double]},
+    {short:'Learn the screenshot keys', on:'shot:learned',
+     text:'Read the three cards. Learn which key takes a picture of the screen.', pics:[()=>PIC.key('PrtScn')]},
+    {short:'Take the screenshot', on:'shot:taken',
+     text:'Now press <b>PrtScn</b> to take the picture.', pics:[()=>PIC.key('PrtScn')]},
+    {short:'Find it in Pictures → Screenshots', on:'files:shot',
+     text:'Open <b>Files</b> 📁 and <b>double-click</b> <b>Pictures</b>, then <b>Screenshots</b>, to find your picture.', pics:[PIC.double]},
+    {short:'Open Cloud Upload', on:'app:open', match:d=>d.id==='drive', spot:'#icon-drive',
+     text:'<b>Double-click</b> the ☁️ <b>Cloud Upload</b> icon — this is where you hand your work in.', pics:[PIC.double]},
+    {short:'Upload your screenshot', on:'drive:uploaded',
+     text:'Send it to the class folder: <b>drag</b> the file into the box, or use <b>+ New → File upload</b>.', pics:[PIC.click]}
+  ]);
+  coachSay('Last part! Take a picture of your certificate and hand it in.',[()=>PIC.key('PrtScn')]);
+}
+
+/* ---- the very end ---- */
+function finishAll(){
+  beep('star');
+  modal(`<h2>${t('🏆 You did it, {name}!',{name:state.name})}</h2>
+    <p style="color:var(--star);font-size:26px">${'⭐'.repeat(Math.min(state.stars,14))}</p>
+    <p style="font-size:18px">${t('You logged in, learned the desktop, mastered the mouse, learned keyboard shortcuts, typed for speed, took a screenshot, and handed it in.')}</p>
+    <div class="realworld" style="margin:14px 0">
+      <b>${t('Now do it for real:')}</b><br>
+      1. ${t('Press <b>PrtScn</b> to photograph your certificate.')}<br>
+      2. ${t('Open <b>Files → Pictures → Screenshots</b>.')}<br>
+      3. ${t('Go to <b>drive.google.com</b> and sign in.')}<br>
+      4. ${t('Click <b>+ New → File upload</b> and pick your screenshot.')}<br>
+      5. ${t('Put it in the folder your teacher named.')}
+    </div>
+    <button class="btn" id="fPrint">${t('🖨️ Print my certificate')}</button>
+    <button class="btn ghost" id="fAgain">${t('🔄 Play again')}</button>`);
+  $('#fPrint').onclick=()=>{ closeModal(); $('#certificate').classList.remove('hidden'); $('#certificate').innerHTML=certHTML(true);
+    $('#again').onclick=()=>location.reload();
+    $('#toShot').onclick=()=>{ $('#certificate').classList.add('hidden'); };
+    setTimeout(()=>window.print(),300); };
+  $('#fAgain').onclick=()=>location.reload();
+}
+
 /* ---- part transitions ---- */
 function partComplete(){
   const p=state.part;
   if(p===4){ exitTicket(); return; }
+  if(p===5){ finishAll(); return; }
   const msg={
     1:['🎉 Part 1 done!','You logged in and warmed up your mouse hand.','Next: a tour of the desktop with your teacher.'],
     2:['🎉 Part 2 done!','You found the desktop, icons, App Launcher, Files, and the system menu.','Next: three games!'],
-    3:['🎉 Part 3 done!','Click, double-click, right-click, scroll, and keyboard — all practiced.','Next: the scavenger hunt.']
+    3:['🎉 Part 3 done!','Click, double-click, right-click, scroll, and keyboard — all practiced.','Next: the scavenger hunt.'],
+    4:['🎉 Part 4 done!','You found everything on the desktop.','Next: the exit question.']
   }[p];
   beep('star');
   modal(`<h2>${t(msg[0])}</h2><p>${t(msg[1])}</p><p style="color:var(--star);font-size:24px">${'⭐'.repeat(Math.min(state.stars,12))}</p>
@@ -1447,10 +1953,8 @@ function exitTicket(){
   });
   $('#exDone').onclick=()=>{ closeModal(); certificate(); };
 }
-function certificate(){
-  state.stars+=2; updateStars();
-  const c=$('#certificate'); c.classList.remove('hidden');
-  c.innerHTML=`<div class="cert">
+function certHTML(showButtons){
+  return `<div class="cert">
     <div style="font-size:44px">🐧 🖱️ ⌨️</div>
     <h1>${t('Desktop Quest Certificate')}</h1>
     <div>${t('This certifies that')}</div>
@@ -1466,12 +1970,30 @@ function certificate(){
     <p style="font-size:19px">${state.exit.mouse||''}<br>${state.exit.key||''}</p>
     <p style="font-size:22px;color:#b8952f">${'⭐'.repeat(Math.min(state.stars,15))} &nbsp; ${state.stars} ${t('stars')}</p>
     <p style="font-size:16px">${new Date().toLocaleDateString(state.lang==='es'?'es-MX':'en-US')} &nbsp;•&nbsp; ${state.badges.map(x=>t(x)).join('  ')}</p>
-    <div class="noprint" style="margin-top:14px">
+    ${showButtons?`<div class="noprint" style="margin-top:14px">
+      <button class="btn good" id="toShot">${t('📸 Save my certificate')}</button>
       <button class="btn" onclick="window.print()">${t('🖨️ Print')}</button>
       <button class="btn ghost" id="again">${t('🔄 Play again')}</button>
-    </div></div>`;
+    </div>`:''}</div>`;
+}
+function certificate(){
+  state.stars+=2; updateStars();
+  const c=$('#certificate'); c.classList.remove('hidden');
+  c.innerHTML=certHTML(true);
   $('#again').onclick=()=>location.reload();
+  $('#toShot').onclick=()=>{
+    c.classList.add('hidden');           // the certificate moves onto the desktop…
+    state.part=5; buildIcons();          // …so the last three icons can appear
+    openApp('cert');
+    startPart5();
+  };
   beep('star');
+}
+function appCert(b){
+  b.innerHTML=`<div style="padding:10px">${certHTML(false)}</div>`;
+  $('.cert',b).style.cssText='width:auto;border-width:8px;padding:18px;font-size:15px';
+  $('.cert h1',b).style.fontSize='26px';
+  $('.cert .nm',b).style.fontSize='32px';
 }
 
 /* =====================================================================
@@ -1532,13 +2054,15 @@ function buildTeacher(){
       <tr><td>0:00–0:08</td><td>${t('Login &amp; Warm-Up')}</td><td>${t('Login routine, bubble pop, click vs. double-click')}</td></tr>
       <tr><td>0:08–0:18</td><td>${t('Teacher Modeling')}</td><td>${t('Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close')}</td></tr>
       <tr><td>0:18–0:38</td><td>${t('Mouse &amp; Keyboard Games')}</td><td>${t('Mouse Master (4 rounds), Scroll Quest, Key Hunt')}</td></tr>
-      <tr><td>0:38–0:49</td><td>${t('Scavenger Hunt / Closure')}</td><td>${t('7-item hunt, exit question, certificate')}</td></tr>
+      <tr><td>0:38–0:46</td><td>${t('Scavenger Hunt / Closure')}</td><td>${t('7-item hunt, exit question, certificate')}</td></tr>
+      <tr><td>0:46–0:52</td><td>${t('Screenshot &amp; Hand-In')}</td><td>${t('PrtScn lesson, find it in Files, practice upload, real Drive steps')}</td></tr>
     </table>
     <div class="tch-row">
       <button class="btn small ghost" data-p="1">${t('▶ Part 1')}</button>
       <button class="btn small ghost" data-p="2">${t('▶ Part 2')}</button>
       <button class="btn small ghost" data-p="3">${t('▶ Part 3')}</button>
       <button class="btn small ghost" data-p="4">${t('▶ Part 4')}</button>
+      <button class="btn small ghost" data-p="5">${t('▶ Part 5')}</button>
       <button class="btn small ghost" id="tchCert">${t('▶ Exit ticket')}</button>
     </div>
     <p style="font-size:14px">${t('<b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away, Helper Sheet pinned open, shorter password ({word}).',{word:'<i>'+(state.lang==='es'?'sol':'cat')+'</i>'})}</p>
@@ -1550,7 +2074,8 @@ function buildTeacher(){
   $$('#teacher [data-p]').forEach(b=>b.onclick=()=>{
     $('#teacher').classList.add('hidden'); closeModal();
     Object.keys(openWins).forEach(closeApp);
-    [null,startPart1,startPart2,startPart3,startPart4][+b.dataset.p]();
+    if(+b.dataset.p===5&&!openWins.cert){ state.part=5; buildIcons(); openApp('cert'); }
+    [null,startPart1,startPart2,startPart3,startPart4,startPart5][+b.dataset.p]();
   });
   $('#tchCert').onclick=()=>{ $('#teacher').classList.add('hidden'); exitTicket(); };
   $('#tchReset').onclick=()=>location.reload();
