@@ -1,0 +1,2151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[TEST BUILD] Desktop Quest — Mouse &amp; Keyboard Lab</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#0d1017; --panel:#1b2130; --panel2:#232c40; --line:#36445f;
+  --accent:#3ea6ff; --accent2:#7c5cff; --good:#3ddc84; --warn:#ffb020; --bad:#ff6b6b;
+  --star:#ffd54a; --text:#eef3ff; --muted:#9fb0cc;
+  --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+  --hudw:330px;
+}
+html,body{height:100%;margin:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden;
+     -webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+.hidden{display:none !important}
+button{font-family:var(--font);cursor:pointer}
+#app{display:flex;height:100vh;width:100vw}
+#stage{flex:1;position:relative;min-width:0}
+
+/* ---------------- QA TEST BUILD ---------------- */
+#qaRibbon{position:fixed;top:0;left:0;z-index:99999;background:#ff6b6b;color:#1a0000;
+  font:bold 12px var(--font);letter-spacing:.05em;padding:3px 10px;border-bottom-right-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none}
+.qa-login-btn{margin-top:10px;background:#ff6b6b;border:none;border-radius:10px;color:#1a0000;
+  font:bold 14px var(--font);padding:8px 14px;cursor:pointer;width:100%}
+
+/* ---------------- LOGIN ---------------- */
+#loginScreen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 700px at 30% 20%,#20304d 0%,#0e1420 60%,#080b12 100%)}
+.login-card{width:min(560px,92%);background:var(--panel);border:3px solid var(--line);border-radius:22px;
+  padding:26px 30px 30px;box-shadow:0 30px 70px rgba(0,0,0,.55);text-align:center}
+.lg-logo{font-size:60px;line-height:1}
+.lg-lang{display:flex;gap:8px;justify-content:center;margin-bottom:6px}
+.langbtn{background:var(--panel2);border:3px solid var(--line);color:var(--text);border-radius:12px;
+  padding:8px 16px;font-size:17px}
+.langbtn:hover{border-color:var(--accent)}
+.langbtn.on{background:var(--accent);color:#04121f;border-color:#fff}
+.login-card h1{margin:6px 0 18px;font-size:28px;letter-spacing:.5px}
+.login-card label{display:block;font-size:18px;margin:14px 0 8px;color:var(--text)}
+.login-card input{width:100%;padding:16px 18px;font-size:24px;border-radius:14px;border:3px solid var(--line);
+  background:#0f1420;color:var(--text);text-align:center;outline:none}
+.login-card input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(62,166,255,.22)}
+.lg-user{display:flex;align-items:center;justify-content:center;gap:10px;font-size:22px;margin-bottom:6px}
+.lg-user span:first-child{font-size:38px}
+.lg-privacy{margin-top:10px;font-size:15px;color:var(--warn);background:rgba(255,176,32,.1);
+  border:2px dashed rgba(255,176,32,.4);border-radius:12px;padding:8px 10px}
+.lg-msg{min-height:24px;margin-top:8px;font-size:17px;color:var(--bad)}
+.btn{margin-top:16px;background:var(--accent);color:#04121f;border:none;border-radius:14px;
+  padding:14px 24px;font-size:20px;font-weight:bold;box-shadow:0 5px 0 #1f6fb0}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1f6fb0}
+.btn.small{font-size:14px;padding:9px 12px;box-shadow:0 4px 0 #1f6fb0;margin:0}
+.btn.ghost{background:var(--panel2);color:var(--text);box-shadow:0 4px 0 #101725}
+.btn.good{background:var(--good);color:#052414;box-shadow:0 5px 0 #219a5b}
+
+/* ---------------- DESKTOP SHELL ---------------- */
+#desktopScreen{position:absolute;inset:0;display:flex;flex-direction:column}
+#topbar{height:38px;flex:none;background:rgba(8,12,20,.92);border-bottom:2px solid #000;
+  display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:15px}
+.tb-btn{background:transparent;border:2px solid transparent;color:var(--text);font-size:15px;
+  padding:4px 12px;border-radius:9px}
+.tb-btn:hover{background:rgba(255,255,255,.12)}
+.tb-mid{color:var(--muted);font-size:14px}
+#desk{flex:1;position:relative;overflow:hidden;
+  background:
+   radial-gradient(900px 600px at 20% 15%, #2c4f6e 0%, transparent 60%),
+   radial-gradient(800px 600px at 85% 80%, #3b2f6b 0%, transparent 60%),
+   linear-gradient(160deg,#12324a 0%,#101a2c 55%,#0b1120 100%)}
+#iconLayer{position:absolute;inset:0;padding:16px;display:grid;
+  grid-template-columns:repeat(auto-fill,112px);grid-auto-rows:112px;gap:6px;align-content:start;justify-content:start}
+.icon{width:112px;height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;border-radius:14px;border:3px solid transparent;background:transparent;color:#fff;text-align:center}
+.icon .em{font-size:46px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.icon .nm{font-size:14px;text-shadow:0 2px 4px #000;padding:0 4px;line-height:1.15}
+.icon:hover{background:rgba(255,255,255,.10)}
+.icon.sel{background:rgba(62,166,255,.30);border-color:var(--accent)}
+.icon.pulse{animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,213,74,.85)}50%{box-shadow:0 0 0 12px rgba(255,213,74,0)}}
+#dock{height:66px;flex:none;background:rgba(8,12,20,.92);border-top:2px solid #000;display:flex;
+  align-items:center;gap:10px;padding:0 12px}
+.dock-launch{display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3ea6ff,#2b7fd0);
+  color:#04121f;border:none;border-radius:14px;padding:10px 16px;font-size:17px;font-weight:bold;box-shadow:0 4px 0 #17588f}
+.dock-launch:active{transform:translateY(2px);box-shadow:0 2px 0 #17588f}
+#taskbtns{display:flex;gap:8px;flex:1;overflow:hidden}
+.taskbtn{background:var(--panel2);border:2px solid var(--line);color:var(--text);border-radius:10px;
+  padding:8px 12px;font-size:14px;white-space:nowrap}
+.dock-right{color:var(--muted);font-size:15px}
+
+/* launcher + menus */
+#launcher{position:absolute;left:0;right:0;bottom:0;top:0;background:rgba(8,12,20,.88);
+  padding:40px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:60}
+#launcher h2{margin:0;font-size:26px}
+.lch-grid{display:grid;grid-template-columns:repeat(4,130px);gap:14px}
+.lch{background:var(--panel2);border:3px solid var(--line);border-radius:16px;padding:14px 8px;color:var(--text);
+  display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px}
+.lch:hover{border-color:var(--accent);background:#2b3854}
+.lch .em{font-size:38px}
+#sysmenu{position:absolute;right:10px;top:8px;width:250px;background:var(--panel);border:3px solid var(--line);
+  border-radius:16px;padding:14px;z-index:70;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+#sysmenu .row{display:flex;justify-content:space-between;padding:8px 4px;font-size:16px;border-bottom:1px solid var(--line)}
+#sysmenu .row:last-child{border:none}
+#ctxmenu{position:absolute;z-index:90;background:var(--panel);border:3px solid var(--line);border-radius:12px;
+  padding:6px;min-width:180px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+#ctxmenu button{display:block;width:100%;text-align:left;background:transparent;border:none;color:var(--text);
+  padding:10px 12px;font-size:16px;border-radius:8px}
+#ctxmenu button:hover{background:var(--accent);color:#04121f}
+
+/* windows */
+.win{position:absolute;background:var(--panel);border:3px solid var(--line);border-radius:14px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden;z-index:20}
+.win-bar{height:44px;flex:none;display:flex;align-items:center;
+  justify-content:space-between;padding:0 8px 0 14px;cursor:grab;background:#2a3550;border-bottom:2px solid #161e2e}
+.win-bar b{font-size:16px}
+.win-x{width:34px;height:34px;border-radius:9px;border:none;background:#b23b3b;color:#fff;font-size:18px;font-weight:bold}
+.win-x:hover{background:#e04b4b}
+.win-body{flex:1;overflow:auto;position:relative;background:#151b28}
+
+/* coach + spotlight */
+#coach{position:absolute;left:16px;bottom:82px;max-width:520px;display:flex;gap:12px;align-items:flex-end;z-index:80}
+.coach-face{font-size:44px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
+.coach-bub{background:#fffbe8;color:#1a1a1a;border:3px solid var(--star);border-radius:18px;padding:12px 16px;
+  font-size:19px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.coach-bub .pics{display:flex;gap:10px;margin-top:8px;align-items:center}
+#spot{position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(0,0,0,.55);pointer-events:none;z-index:75;
+  border:4px solid var(--star);transition:all .18s ease}
+
+/* ---------------- HUD ---------------- */
+#hud{width:var(--hudw);flex:none;background:var(--panel);border-left:4px solid var(--line);
+  display:flex;flex-direction:column;padding:14px;gap:10px;overflow:auto}
+.hud-title{font-size:22px;font-weight:bold}
+.hud-sub{color:var(--muted);font-size:15px}
+.hud-part{background:var(--accent2);color:#fff;border-radius:12px;padding:9px 12px;font-size:16px;font-weight:bold}
+.hud-stars{font-size:26px;color:var(--star);font-weight:bold}
+.hud-now{background:var(--panel2);border:3px solid var(--accent);border-radius:14px;padding:10px 12px}
+.hud-now .lbl{font-size:12px;letter-spacing:1.5px;color:var(--accent);font-weight:bold}
+#hudTask{font-size:18px;margin-top:6px;line-height:1.3}
+#questList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#questList li{font-size:15px;padding:8px 10px;border-radius:10px;background:#161d2c;border-left:5px solid var(--line);color:var(--muted)}
+#questList li.cur{border-left-color:var(--accent);color:var(--text);background:#1d2740}
+#questList li.done{border-left-color:var(--good);color:var(--good);text-decoration:line-through}
+.hud-badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{background:#20304a;border:2px solid var(--good);border-radius:20px;padding:5px 10px;font-size:13px}
+.hud-btns{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+
+/* mouse pictograms */
+.mouse-pic{display:inline-flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:#333}
+svg.ms{width:34px;height:48px}
+.ms .body{fill:#fff;stroke:#333;stroke-width:4}
+.ms .btn{fill:#dfe6f0;stroke:#333;stroke-width:3}
+.ms .on{fill:#ff5f5f}
+.ms .wheel{fill:#333}
+
+/* helper sheet */
+#helper{position:fixed;right:calc(var(--hudw) + 10px);bottom:16px;width:min(420px,52vw);max-height:78vh;overflow:auto;background:#fffbe8;color:#1a1a1a;
+  border:4px solid var(--star);border-radius:18px;padding:16px;z-index:200;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+#helper h3{margin:0 0 10px;font-size:22px}
+.hp-row{display:flex;align-items:center;gap:12px;padding:8px 6px;border-bottom:2px dashed #e2d5a5}
+.hp-row:last-child{border:none}
+.hp-em{font-size:32px;width:44px;text-align:center}
+.hp-tx b{font-size:18px}
+.hp-tx div{font-size:14px;color:#4a4636}
+
+/* modal / teacher / certificate */
+#modal{position:fixed;inset:0;background:rgba(5,8,14,.78);display:flex;align-items:center;justify-content:center;z-index:300}
+.modal-card{width:min(620px,92%);background:var(--panel);border:4px solid var(--star);border-radius:22px;padding:26px;text-align:center}
+.modal-card h2{margin:0 0 10px;font-size:30px}
+.modal-card p{font-size:19px;line-height:1.4}
+#teacher{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,94%);max-height:86vh;overflow:auto;
+  background:var(--panel);border:4px solid var(--accent);border-radius:20px;padding:20px;z-index:310}
+#teacher h3{margin:0 0 8px}
+#teacher table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+#teacher td,#teacher th{border:1px solid var(--line);padding:6px 8px;text-align:left}
+.tch-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+#certificate{position:fixed;inset:0;background:#0b1020;display:flex;align-items:center;justify-content:center;z-index:320;padding:20px}
+.cert{width:min(820px,96%);background:#fffdf4;color:#1a1a1a;border:14px double #b8952f;border-radius:10px;padding:34px;text-align:center}
+.cert h1{font-size:38px;margin:6px 0}
+.cert .nm{font-size:44px;color:#123;border-bottom:3px solid #b8952f;display:inline-block;padding:0 30px 6px;margin:12px 0}
+.cert ul{text-align:left;display:inline-block;font-size:18px;line-height:1.7}
+@media print{ body *{visibility:hidden} #certificate,#certificate *{visibility:visible}
+  #certificate{position:absolute;inset:0;background:#fff} .noprint{display:none !important} }
+
+/* picture (support) mode */
+body.support .icon .nm{font-size:16px;font-weight:bold;background:rgba(0,0,0,.45);border-radius:8px}
+body.support .coach-bub{font-size:22px}
+body.support #hudTask{font-size:21px}
+.picrow{display:flex;gap:8px;align-items:center;margin-top:8px}
+.tag{background:#0f1726;border:2px solid var(--line);border-radius:8px;padding:2px 8px;font-size:13px;color:var(--muted)}
+
+/* smaller lab screens */
+@media (max-width:1180px){
+  :root{--hudw:264px}
+  .icon{width:96px;height:96px} .icon .em{font-size:38px} .icon .nm{font-size:13px}
+  #iconLayer{grid-template-columns:repeat(auto-fill,96px);grid-auto-rows:96px}
+  .hud-title{font-size:19px} #hudTask{font-size:16px} #questList li{font-size:13.5px}
+  #coach{max-width:400px} .coach-bub{font-size:17px}
+}
+@media (max-width:920px){
+  :root{--hudw:224px}
+  .lch-grid{grid-template-columns:repeat(3,120px)}
+  #coach{max-width:330px} .coach-bub{font-size:15px} svg.ms{width:28px;height:40px}
+}
+
+/* levels, shortcut doc, speed typing */
+.lvlbar{display:flex;gap:5px;align-items:center}
+.lvl{width:26px;height:26px;border-radius:50%;background:#26324c;border:2px solid #3b4a6b;
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted)}
+.lvl.on{background:var(--star);color:#231a00;border-color:#fff;font-weight:bold}
+.doc-app{border:3px solid var(--line);border-radius:12px;overflow:hidden;background:#0f1420;margin-bottom:8px}
+.doc-bar{background:#26324c;padding:8px 12px;font-size:15px;display:flex;justify-content:space-between}
+.doc-save{color:var(--good)}
+.doc-body{padding:12px;min-height:84px;font-size:20px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.doc-line{padding:2px 6px;border-radius:6px}
+.doc-line.sel{background:#2f6fd0;color:#fff}
+.clip-row{min-height:30px;margin-bottom:4px}
+.speed-badge{display:inline-block;background:#26324c;border:2px solid var(--line);border-radius:20px;
+  padding:4px 14px;font-size:15px;margin-bottom:8px}
+.target{font-size:27px;letter-spacing:.5px;padding:12px;background:#0f1420;border-radius:12px;
+  border:3px solid var(--line);min-height:58px;color:var(--muted)}
+.target span.ok{color:var(--good)}
+.target span.no{color:var(--bad);background:rgba(255,107,107,.22);border-radius:3px}
+.timer-wrap{height:14px;background:#0f1420;border-radius:8px;border:2px solid var(--line);overflow:hidden;margin:10px auto;width:92%}
+.timer-bar{height:100%;background:linear-gradient(90deg,#3ddc84,#ffd54a,#ff6b6b)}
+.wpm{font-size:34px;color:var(--star);font-weight:bold;margin:6px 0}
+.wpm span{font-size:15px;color:var(--muted);font-weight:normal}
+/* screenshot + upload */
+.card-step{padding:20px;text-align:center;font-size:19px;line-height:1.4}
+.shot-keys{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.shot-key{background:#26324c;border:3px solid #3b4a6b;border-radius:12px;padding:10px 14px;font-size:15px;color:var(--muted);max-width:190px}
+.shot-key b{display:block;font-size:18px;color:var(--star);margin-bottom:4px}
+#flashfx{position:fixed;inset:0;background:#fff;z-index:400;pointer-events:none;animation:flashy .55s ease-out forwards}
+@keyframes flashy{0%{opacity:.85}100%{opacity:0}}
+.drop{border:4px dashed var(--line);border-radius:16px;padding:24px;text-align:center;font-size:18px;color:var(--muted);margin:10px}
+.drop.over{border-color:var(--good);background:rgba(61,220,132,.14);color:var(--text)}
+.filecard{display:inline-flex;align-items:center;gap:8px;background:#26324c;border:3px solid var(--line);
+  border-radius:12px;padding:10px 14px;font-size:16px;cursor:grab}
+.filecard:active{cursor:grabbing}
+.prog{height:14px;background:#0f1420;border:2px solid var(--line);border-radius:8px;overflow:hidden;margin:12px 20px}
+.prog i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.realworld{background:#1a2233;border-left:6px solid var(--star);border-radius:10px;padding:12px 14px;margin:12px;
+  font-size:16px;text-align:left;line-height:1.5}
+.crumb{padding:8px 10px;color:var(--muted);font-size:15px;display:flex;gap:6px;align-items:center}
+.crumb button{background:transparent;border:none;color:var(--accent);font-size:15px;text-decoration:underline}
+
+/* game bits */
+.game-wrap{position:absolute;inset:0;display:flex;flex-direction:column}
+.game-head{flex:none;padding:8px 12px;background:#1c2436;border-bottom:2px solid var(--line);display:flex;
+  justify-content:space-between;align-items:center;font-size:16px;gap:10px}
+.game-area{flex:1;position:relative;overflow:hidden;background:#101725}
+.balloon{position:absolute;width:74px;height:74px;border-radius:50%;border:4px solid rgba(255,255,255,.5);
+  font-size:34px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.balloon:active{transform:scale(.92)}
+.shape{position:absolute;width:88px;height:88px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:40px;border:4px solid transparent;background:#26324c}
+.shape.sel{border-color:var(--accent);background:#2f4a74}
+.shape.open{border-color:var(--good);background:#1f4a35}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.sq-page{position:relative;padding:20px 26px;font-size:18px;line-height:1.6;color:#cdd9ee}
+.sq-star{position:absolute;font-size:40px;background:transparent;border:none;filter:drop-shadow(0 0 8px var(--star))}
+.kb{display:flex;flex-direction:column;gap:6px;align-items:center;padding:10px}
+.kb-row{display:flex;gap:6px}
+.key{min-width:44px;height:46px;border-radius:9px;background:#26324c;border:3px solid #3b4a6b;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;padding:0 10px}
+.key.wide{min-width:100px}.key.xwide{min-width:170px}
+.key.hot{background:var(--star);color:#231a00;border-color:#fff;animation:pulse 1s infinite}
+.key.hit{background:var(--good);color:#04210f}
+.prompt-big{font-size:26px;text-align:center;padding:10px}
+.type-box{width:92%;margin:8px auto;display:block;font-size:26px;padding:12px;border-radius:12px;
+  border:3px solid var(--line);background:#0f1420;color:#fff;text-align:center}
+.hunt-list{list-style:none;margin:0;padding:12px;display:flex;flex-direction:column;gap:8px}
+.hunt-list li{font-size:17px;background:#1a2233;border-left:6px solid var(--line);padding:10px 12px;border-radius:10px;color:var(--muted)}
+.hunt-list li.done{border-left-color:var(--good);color:var(--good)}
+.paint-tools{flex:none;display:flex;gap:8px;padding:8px;background:#1c2436;border-bottom:2px solid var(--line);align-items:center}
+.swatch{width:34px;height:34px;border-radius:50%;border:3px solid #fff}
+.swatch.on{outline:4px solid var(--star)}
+.filelist{padding:6px}
+.filerow{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;font-size:17px}
+.filerow:hover{background:#1e293c}
+</style>
+</head>
+<body>
+<div id="qaRibbon">TEST BUILD — QA ONLY</div>
+<div id="app">
+  <div id="stage">
+
+    <section id="loginScreen">
+      <div class="login-card">
+        <div class="lg-lang">
+          <button class="langbtn" data-lang="en">🇺🇸 English</button>
+          <button class="langbtn" data-lang="es">🇲🇽 Español</button>
+        </div>
+        <div class="lg-logo">🐧</div>
+        <h1 data-i18n="Computer Lab Login">Computer Lab Login</h1>
+        <div id="lgStep1">
+          <label data-i18n="1. Click the box, then type your first name.">1. Click the box, then type your first name.</label>
+          <input id="lgName" maxlength="14" autocomplete="off" data-i18n-ph="type here" placeholder="type here">
+          <button id="lgNext" class="btn" data-i18n="Next ▶">Next ▶</button>
+          <button id="qaSkipLogin" class="qa-login-btn">⚡ QA: Skip login</button>
+        </div>
+        <div id="lgStep2" class="hidden">
+          <div class="lg-user"><span>🙂</span><span id="lgUser"></span></div>
+          <label id="lgPassLabel"></label>
+          <input id="lgPass" type="password" autocomplete="off" placeholder="••••">
+          <div class="lg-privacy" data-i18n="🔒 Your password shows as dots. A password is &lt;b&gt;private&lt;/b&gt; — we do not share it."></div>
+          <button id="lgLogin" class="btn" data-i18n="Log In ⏎">Log In ⏎</button>
+          <div id="lgMsg" class="lg-msg"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="desktopScreen" class="hidden">
+      <div id="topbar">
+        <button id="btnLauncherTop" class="tb-btn" data-i18n="☰ Activities">☰ Activities</button>
+        <div class="tb-mid" id="tbTitle" data-i18n="🐧 Linux Lab — Desktop">🐧 Linux Lab — Desktop</div>
+        <button id="btnSys" class="tb-btn">📶 🔊 🔋 <span id="clock">--:--</span> ▾</button>
+      </div>
+      <div id="desk">
+        <div id="iconLayer"></div>
+        <div id="windows"></div>
+        <div id="launcher" class="hidden"></div>
+        <div id="sysmenu" class="hidden"></div>
+        <div id="ctxmenu" class="hidden"></div>
+      </div>
+      <div id="dock">
+        <button id="btnLauncher" class="dock-launch">🚀 <span data-i18n="App Launcher">App Launcher</span></button>
+        <div id="taskbtns"></div>
+        <div class="dock-right" id="deskLabel" data-i18n="🖥️ This is the Desktop">🖥️ This is the Desktop</div>
+      </div>
+    </section>
+
+    <div id="coach" class="hidden">
+      <div class="coach-face">🤖</div>
+      <div class="coach-bub">
+        <div id="coachText">Hi!</div>
+        <div class="pics" id="coachPics"></div>
+        <button id="coachNext" class="btn small hidden" style="margin-top:8px">Got it ▶</button>
+      </div>
+    </div>
+    <div id="spot" class="hidden"></div>
+  </div>
+
+  <aside id="hud">
+    <div>
+      <div class="hud-title" data-i18n="🖥️ Desktop Quest">🖥️ Desktop Quest</div>
+      <div class="hud-sub" id="hudName">Player</div>
+    </div>
+    <div class="hud-part" id="hudPart">Part 1 — Login &amp; Warm-Up</div>
+    <div class="hud-stars"><span id="starCount">0</span> ⭐ <span data-i18n="stars">stars</span></div>
+    <div class="hud-now">
+      <div class="lbl" data-i18n="YOUR JOB RIGHT NOW">YOUR JOB RIGHT NOW</div>
+      <div id="hudTask" data-i18n="Log in to start.">Log in to start.</div>
+      <div class="picrow" id="hudPics"></div>
+    </div>
+    <ol id="questList"></ol>
+    <div class="hud-badges" id="badges"></div>
+    <div class="hud-btns">
+      <button id="btnLang" class="btn small ghost" style="grid-column:1 / -1">🌐 Español / English</button>
+      <button id="btnHelper" class="btn small ghost">📖 Helper Sheet</button>
+      <button id="btnSupport" class="btn small ghost">🖼️ Picture Mode: OFF</button>
+      <button id="btnSound" class="btn small ghost">🔊 Sound: ON</button>
+      <button id="btnTeacher" class="btn small ghost">👩‍🏫 Teacher</button>
+    </div>
+  </aside>
+</div>
+
+<div id="helper" class="hidden"></div>
+<div id="teacher" class="hidden"></div>
+<div id="modal" class="hidden"></div>
+<div id="certificate" class="hidden"></div>
+
+<script>
+/* =====================================================================
+   DESKTOP QUEST — computer navigation + mouse/keyboard control game
+   Single file, no network. Open in any browser.
+   ===================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[rnd(0,a.length-1)];
+
+const state={
+  name:'Friend', support:false, sound:true, lang:'en',
+  part:0, stars:0, badges:[],
+  quests:[], qi:0, mode:'seq',
+  exit:{mouse:null,key:null},
+  shotTaken:false, uploaded:false
+};
+
+/* =====================================================================
+   LANGUAGE / IDIOMA
+   English is the source text; ES holds the Spanish for each string.
+   t('English string', {placeholders}) returns the right one.
+   ===================================================================== */
+const ES={
+/* -- login -- */
+'Computer Lab Login':'Laboratorio de Computación',
+'1. Click the box, then type your first name.':'1. Haz clic en la casilla y escribe tu nombre.',
+'type here':'escribe aquí',
+'Next ▶':'Siguiente ▶',
+'2. Type the class password: {word} then press <b>Enter</b>.':'2. Escribe la contraseña de la clase: {word} y presiona <b>Enter</b>.',
+'🔒 Your password shows as dots. A password is <b>private</b> — we do not share it.':'🔒 Tu contraseña se ve como puntitos. Una contraseña es <b>privada</b> — no la compartimos.',
+'Log In ⏎':'Entrar ⏎',
+'Not quite. Type the word: {word}  (Backspace erases.)':'Casi. Escribe la palabra: {word}  (Backspace borra.)',
+'English':'English','Español':'Español','Language / Idioma':'Idioma / Language',
+'Desktop Quest — Mouse &amp; Keyboard Lab':'Aventura del Escritorio — Ratón y Teclado',
+/* -- desktop chrome -- */
+'☰ Activities':'☰ Actividades',
+'🐧 Linux Lab — Desktop':'🐧 Laboratorio Linux — Escritorio',
+'App Launcher':'Lanzador de Apps',
+'🖥️ This is the Desktop':'🖥️ Esto es el Escritorio',
+'🚀 App Launcher — all your apps live here':'🚀 Lanzador de Apps — aquí viven todas tus aplicaciones',
+'✖ Close the Launcher':'✖ Cerrar el Lanzador',
+'📶 Wi-Fi':'📶 Wi-Fi','Connected':'Conectado',
+'🔊 Volume':'🔊 Volumen','🔋 Battery':'🔋 Batería','🕐 Clock':'🕐 Reloj',
+'⏻ Power / Log Out':'⏻ Apagar / Cerrar sesión','Close menu':'Cerrar menú',
+'Open':'Abrir','Copy':'Copiar','Rename':'Cambiar nombre','Properties':'Propiedades',
+'Rename is not for today 🙂':'Cambiar el nombre no es para hoy 🙂',
+'{app} — an application icon.':'{app} — un icono de aplicación.',
+'Close':'Cerrar',
+/* -- app names -- */
+'Files':'Archivos','Text Editor':'Editor de Texto','Paint':'Pintura',
+'Mouse Master':'Maestro del Ratón','Scroll Quest':'Busca Estrellas','Key Hunt':'Caza de Teclas','Trash':'Papelera',
+/* -- HUD -- */
+'🖥️ Desktop Quest':'🖥️ Aventura del Escritorio','Player':'Jugador',
+'YOUR JOB RIGHT NOW':'TU TAREA AHORA','stars':'estrellas','Log in to start.':'Inicia sesión para empezar.',
+'📖 Helper Sheet':'📖 Hoja de Ayuda','🖼️ Picture Mode: ':'🖼️ Modo Dibujos: ','🔊 Sound: ':'🔊 Sonido: ',
+'👩‍🏫 Teacher':'👩‍🏫 Maestro','ON':'SÍ','OFF':'NO',
+'Part 1 — Login &amp; Warm-Up':'Parte 1 — Entrar y Calentamiento',
+'Part 2 — Teacher Modeling (Tour)':'Parte 2 — El Maestro Enseña (Recorrido)',
+'Part 3 — Mouse &amp; Keyboard Games':'Parte 3 — Juegos de Ratón y Teclado',
+'Part 4 — Desktop Scavenger Hunt':'Parte 4 — Búsqueda del Tesoro',
+'Nice work!':'¡Buen trabajo!',
+/* -- part 1 quests -- */
+'Pop the warm-up bubbles':'Revienta las burbujas',
+'Welcome, <b>{name}</b>! Warm up your mouse hand: pop all <b>{n}</b> bubbles with <b>one click</b> each.':'¡Hola, <b>{name}</b>! Calienta tu mano: revienta las <b>{n}</b> burbujas con <b>un clic</b> cada una.',
+'Single-click the Files icon':'Un clic en el icono Archivos',
+'<b>One click</b> on the <b>Files</b> icon. One click <b>chooses</b> — the icon turns blue.':'<b>Un clic</b> en el icono <b>Archivos</b>. Un clic <b>escoge</b> — el icono se pone azul.',
+'Double-click Text Editor to open':'Doble clic en Editor de Texto',
+'Now <b>double-click</b> the <b>Text Editor</b> icon — two fast clicks <b>opens</b> it.':'Ahora haz <b>doble clic</b> en el icono <b>Editor de Texto</b> — dos clics rápidos lo <b>abren</b>.',
+'Close Text Editor with ✕':'Cierra el Editor de Texto con ✕',
+'Close it: click the red <b>✕</b> in the corner of the window.':'Ciérralo: haz clic en la <b>✕</b> roja en la esquina de la ventana.',
+/* -- part 2 quests -- */
+'Meet the desktop':'Conoce el escritorio',
+'This whole screen is the <b>DESKTOP</b>. It is like the top of your desk — your things sit here.':'Toda esta pantalla es el <b>ESCRITORIO</b>. Es como la superficie de tu pupitre — aquí están tus cosas.',
+'Meet the icons':'Conoce los iconos',
+'These little pictures are <b>ICONS</b>. Each icon opens an app or a folder.':'Estos dibujitos son <b>ICONOS</b>. Cada icono abre una aplicación o una carpeta.',
+'Open the App Launcher':'Abre el Lanzador de Apps',
+'Click the <b>App Launcher</b> 🚀 at the bottom. Every app on the computer lives there.':'Haz clic en el <b>Lanzador de Apps</b> 🚀 de abajo. Ahí viven todas las aplicaciones de la computadora.',
+'Close the App Launcher':'Cierra el Lanzador de Apps',
+'Good! Now close the launcher with the <b>Close the Launcher</b> button.':'¡Bien! Ahora cierra el lanzador con el botón <b>Cerrar el Lanzador</b>.',
+'Open the system menu':'Abre el menú del sistema',
+'Top right corner: click the <b>system menu</b> 📶🔊🔋. It shows Wi-Fi, volume, battery, and the clock.':'Arriba a la derecha: haz clic en el <b>menú del sistema</b> 📶🔊🔋. Muestra el Wi-Fi, el volumen, la batería y el reloj.',
+'Close the system menu':'Cierra el menú del sistema',
+'Close the system menu with the <b>Close menu</b> button.':'Cierra el menú del sistema con el botón <b>Cerrar menú</b>.',
+'Single-click Files (choose)':'Un clic en Archivos (escoger)',
+'<b>One click</b> on <b>Files</b>. Watch: it is only <b>chosen</b>, not opened.':'<b>Un clic</b> en <b>Archivos</b>. Mira: solo queda <b>escogido</b>, no se abre.',
+'Double-click Files (open)':'Doble clic en Archivos (abrir)',
+'Now <b>two fast clicks</b> on <b>Files</b> to <b>open</b> it.':'Ahora <b>dos clics rápidos</b> en <b>Archivos</b> para <b>abrirlo</b>.',
+'Scroll down in the file list':'Baja por la lista de archivos',
+'Put the arrow inside the window and roll the mouse <b>wheel</b> to <b>scroll down</b> the file list.':'Pon la flecha dentro de la ventana y gira la <b>rueda</b> del ratón para <b>bajar</b> por la lista de archivos.',
+'Close Files with ✕':'Cierra Archivos con ✕',
+'Close the Files window with the red <b>✕</b>.':'Cierra la ventana de Archivos con la <b>✕</b> roja.',
+'Return to the desktop':'Regresa al escritorio',
+'Last one: click an <b>empty spot</b> on the desktop. You are back at the <b>desktop</b>! 🖥️':'La última: haz clic en un <b>lugar vacío</b> del escritorio. ¡Ya estás en el <b>escritorio</b>! 🖥️',
+/* -- part 3 quests -- */
+'Finish Mouse Master 🖱️':'Termina Maestro del Ratón 🖱️',
+'<b>Double-click</b> the 🖱️ <b>Mouse Master</b> icon and finish all 4 rounds.':'Haz <b>doble clic</b> en el icono 🖱️ <b>Maestro del Ratón</b> y termina las 4 rondas.',
+'Finish Scroll Quest ⭐':'Termina Busca Estrellas ⭐',
+'<b>Double-click</b> the ⭐ <b>Scroll Quest</b> icon and collect every star.':'Haz <b>doble clic</b> en el icono ⭐ <b>Busca Estrellas</b> y junta todas las estrellas.',
+'Finish Key Hunt ⌨️':'Termina Caza de Teclas ⌨️',
+'<b>Double-click</b> the ⌨️ <b>Key Hunt</b> icon and find the keys.':'Haz <b>doble clic</b> en el icono ⌨️ <b>Caza de Teclas</b> y encuentra las teclas.',
+'Three games are on the desktop. Do them in any order — <b>double-click</b> an icon to start.':'Hay tres juegos en el escritorio. Hazlos en el orden que quieras — <b>doble clic</b> en un icono para empezar.',
+/* -- part 4 quests -- */
+'Find the App Launcher':'Encuentra el Lanzador de Apps',
+'🔎 Find and open the <b>App Launcher</b>.':'🔎 Encuentra y abre el <b>Lanzador de Apps</b>.',
+'Find and open Files':'Encuentra y abre Archivos',
+'🔎 Find and open the <b>Files</b> app.':'🔎 Encuentra y abre la aplicación <b>Archivos</b>.',
+'Find the system menu':'Encuentra el menú del sistema',
+'🔎 Find and open the <b>system menu</b> (top right).':'🔎 Encuentra y abre el <b>menú del sistema</b> (arriba a la derecha).',
+'Open the Paint app':'Abre la aplicación Pintura',
+'🔎 Open the assigned app: <b>Paint</b> 🎨.':'🔎 Abre la aplicación asignada: <b>Pintura</b> 🎨.',
+'Draw a line with the mouse':'Dibuja una línea con el ratón',
+'✏️ Hold the left button down and <b>drag</b> to draw in Paint.':'✏️ Mantén presionado el botón izquierdo y <b>arrastra</b> para dibujar en Pintura.',
+'Close Paint with ✕':'Cierra Pintura con ✕',
+'❌ Close <b>Paint</b> with the red ✕.':'❌ Cierra <b>Pintura</b> con la ✕ roja.',
+'Show the desktop (close all)':'Muestra el escritorio (cierra todo)',
+'🖥️ Close every window so you can see the <b>desktop</b> again.':'🖥️ Cierra todas las ventanas para ver otra vez el <b>escritorio</b>.',
+'Scavenger hunt! Find each item on the list. Any order is fine.':'¡Búsqueda del tesoro! Encuentra cada cosa de la lista. En cualquier orden.',
+/* -- apps -- */
+'This app is empty. Close it with the ✕ button.':'Esta aplicación está vacía. Ciérrala con el botón ✕.',
+'📁 Home — {n} files. Use the mouse wheel to scroll down.':'📁 Mi carpeta — {n} archivos. Usa la rueda del ratón para bajar.',
+'🏁 You reached the bottom of the list!':'🏁 ¡Llegaste al final de la lista!',
+'The Trash is empty.':'La Papelera está vacía.',
+'Deleted files wait here. Ask your teacher before emptying it.':'Los archivos borrados esperan aquí. Pregúntale a tu maestro antes de vaciarla.',
+'📝 Type here. Try Shift for a CAPITAL letter, Space, Backspace, and Enter.':'📝 Escribe aquí. Prueba Shift para una MAYÚSCULA, Espacio, Backspace y Enter.',
+'Type your name...':'Escribe tu nombre...',
+'Hold the left button and drag to draw:':'Mantén el botón izquierdo y arrastra para dibujar:',
+'Clear':'Borrar',
+/* -- mouse master -- */
+'Slow down 🐢 — put the arrow ON the picture, then click.':'Más despacio 🐢 — pon la flecha SOBRE el dibujo y luego haz clic.',
+'Round 1 of 4 — SINGLE CLICK ':'Ronda 1 de 4 — UN CLIC ',
+'Round 2 of 4 — SELECT with one click ':'Ronda 2 de 4 — ESCOGER con un clic ',
+'Round 3 of 4 — DOUBLE-CLICK to open ':'Ronda 3 de 4 — DOBLE CLIC para abrir ',
+'Round 4 of 4 — RIGHT-CLICK for the menu ':'Ronda 4 de 4 — CLIC DERECHO para el menú ',
+'Popped:':'Reventados:','Chosen:':'Escogidas:','Opened:':'Abiertas:','Menus:':'Menús:',
+'Pop the balloons with <b>one click</b>.':'Revienta los globos con <b>un clic</b>.',
+'<b>One click chooses</b> a thing. Click each shape one time — it turns blue.':'<b>Un clic escoge</b> una cosa. Haz clic una vez en cada figura — se pone azul.',
+'<b>Two fast clicks</b> opens a thing. Double-click every box!':'<b>Dos clics rápidos</b> abren una cosa. ¡Haz doble clic en cada caja!',
+'One click only <b>chooses</b>. Click <b>two times fast</b> to open!':'Un clic solo <b>escoge</b>. ¡Haz clic <b>dos veces rápido</b> para abrir!',
+'Press the <b>right</b> mouse button on the folder. A menu appears — then click <b>Open</b>.':'Presiona el botón <b>derecho</b> del ratón sobre la carpeta. Aparece un menú — luego haz clic en <b>Abrir</b>.',
+'That is the LEFT button. Use the <b>RIGHT</b> button here.':'Ese es el botón IZQUIERDO. Aquí usa el botón <b>DERECHO</b>.',
+'Almost! In the menu, click <b>Open</b>.':'¡Casi! En el menú, haz clic en <b>Abrir</b>.',
+'⭐ Round complete! ⭐':'⭐ ¡Ronda completa! ⭐',
+'Mouse Master finished!':'¡Maestro del Ratón terminado!',
+'Click • Select • Double-click • Right-click':'Clic • Escoger • Doble clic • Clic derecho',
+'Finished 🎉':'Terminado 🎉',
+'🖱️ Mouse Master':'🖱️ Maestro del Ratón',
+/* -- scroll quest -- */
+'⭐ Scroll Quest ':'⭐ Busca Estrellas ','Stars:':'Estrellas:',
+'⬇️ Roll the wheel to scroll DOWN and find the stars.':'⬇️ Gira la rueda para BAJAR y encontrar las estrellas.',
+'🏁 Bottom of the page!':'🏁 ¡Final de la página!',
+'Roll the mouse wheel to <b>scroll down</b>. Click every ⭐ you find.':'Gira la rueda del ratón para <b>bajar</b>. Haz clic en cada ⭐ que encuentres.',
+'All stars found! Now <b>scroll UP</b> to the very top and click the 🏠 house.':'¡Las encontraste todas! Ahora <b>sube</b> hasta arriba del todo y haz clic en la casita 🏠.',
+'Now scroll <b>UP</b> ⬆️':'Ahora <b>SUBE</b> ⬆️',
+'Scroll Quest finished!':'¡Busca Estrellas terminado!',
+'You scrolled down AND up.':'Bajaste Y subiste.',
+'⭐ Scroll Star':'⭐ Campeón de la Rueda',
+'<b>The desktop</b> is the main screen of the computer. It is like the top of your school desk.':'<b>El escritorio</b> es la pantalla principal de la computadora. Es como la superficie de tu pupitre.',
+'<b>Icons</b> are small pictures. Each icon stands for an app, a file, or a folder.':'Los <b>iconos</b> son dibujos pequeños. Cada icono representa una aplicación, un archivo o una carpeta.',
+'The <b>App Launcher</b> holds every app on the computer. Click it to see them all.':'El <b>Lanzador de Apps</b> guarda todas las aplicaciones. Haz clic para verlas todas.',
+'<b>Files</b> keeps your work. Folders hold files, the way a binder holds papers.':'<b>Archivos</b> guarda tu trabajo. Las carpetas guardan archivos, como una carpeta guarda papeles.',
+'The <b>system menu</b> is in the top corner. It shows Wi-Fi, volume, battery, and the clock.':'El <b>menú del sistema</b> está en la esquina de arriba. Muestra el Wi-Fi, el volumen, la batería y el reloj.',
+'<b>One click</b> chooses. <b>Two fast clicks</b> opens. The <b>right button</b> shows a menu.':'<b>Un clic</b> escoge. <b>Dos clics rápidos</b> abren. El <b>botón derecho</b> muestra un menú.',
+'<b>Scrolling</b> moves the page up and down. Roll the wheel in the middle of the mouse.':'<b>Desplazar</b> mueve la página hacia arriba y hacia abajo. Gira la rueda que está en medio del ratón.',
+'To <b>close</b> an app, click the ✕ button in the corner of its window.':'Para <b>cerrar</b> una aplicación, haz clic en el botón ✕ en la esquina de su ventana.',
+'Careful hands: rest your hand on the mouse. Do not squeeze it or bang the keys.':'Manos con cuidado: apoya la mano sobre el ratón. No lo aprietes ni golpees las teclas.',
+'You are doing great. Keep scrolling — more stars are hiding below!':'Lo estás haciendo muy bien. Sigue bajando — ¡hay más estrellas escondidas!',
+/* -- key hunt -- */
+'⌨️ Key Hunt':'⌨️ Caza de Teclas','Get ready…':'Prepárate…',
+'Look at the big word. Find that key on the real keyboard and press it.':'Mira la palabra grande. Encuentra esa tecla en el teclado de verdad y presiónala.',
+'press':'presiona','keys':'teclas',
+'Press &nbsp;':'Presiona &nbsp;','not that one':'esa no','Typing':'Escribir','Done':'Listo',
+'⌨️ Key Hunt — Typing':'⌨️ Caza de Teclas — Escribir',
+'Type your <b>name</b>, then press <b>Enter</b>':'Escribe tu <b>nombre</b> y presiona <b>Enter</b>',
+'your name':'tu nombre',
+'Shift ⇧ + a letter = CAPITAL letter. Backspace ⌫ erases.':'Shift ⇧ + una letra = LETRA MAYÚSCULA. Backspace ⌫ borra.',
+'Type some letters first, then press <b>Enter</b>':'Escribe unas letras primero y luego presiona <b>Enter</b>',
+'The box should say <b>{word}</b> — press <b>Backspace</b> ⌫ to fix it, then <b>Enter</b>':'La casilla debe decir <b>{word}</b> — presiona <b>Backspace</b> ⌫ para arreglarla y luego <b>Enter</b>',
+'Nice typing, {name}! One more.':'¡Muy bien escrito, {name}! Una más.',
+'Backspace ⌫ erases the letter before the blinking line.':'Backspace ⌫ borra la letra que está antes de la rayita que parpadea.',
+'Not yet — make it say <b>{word}</b> with Backspace ⌫, then Enter':'Todavía no — haz que diga <b>{word}</b> con Backspace ⌫ y luego Enter',
+'Finished! 🎉':'¡Terminado! 🎉',
+'Key Hunt finished!':'¡Caza de Teclas terminada!',
+'Letters • Numbers • Space • Enter • Backspace • Shift • Arrows':'Letras • Números • Espacio • Enter • Backspace • Shift • Flechas',
+'⌨️ Key Finder':'⌨️ Detective de Teclas',
+'Space bar':'Barra espaciadora (Space)','Enter ⏎':'Enter ⏎','Backspace ⌫':'Backspace ⌫ (borrar)',
+'Shift ⇧':'Shift ⇧ (mayúsculas)','← Left arrow':'← Flecha izquierda','→ Right arrow':'→ Flecha derecha',
+'↑ Up arrow':'↑ Flecha arriba','↓ Down arrow':'↓ Flecha abajo',
+'⇧ Shift':'⇧ Shift','Space':'Espacio','⌫ Backspace':'⌫ Backspace','⏎ Enter':'⏎ Enter',
+/* -- part complete + exit + certificate -- */
+'🎉 Part 1 done!':'🎉 ¡Parte 1 terminada!','🎉 Part 2 done!':'🎉 ¡Parte 2 terminada!','🎉 Part 3 done!':'🎉 ¡Parte 3 terminada!',
+'You logged in and warmed up your mouse hand.':'Iniciaste sesión y calentaste tu mano del ratón.',
+'Next: a tour of the desktop with your teacher.':'Ahora: un recorrido por el escritorio con tu maestro.',
+'You found the desktop, icons, App Launcher, Files, and the system menu.':'Encontraste el escritorio, los iconos, el Lanzador de Apps, Archivos y el menú del sistema.',
+'Next: three games!':'Ahora: ¡tres juegos!',
+'Click, double-click, right-click, scroll, and keyboard — all practiced.':'Clic, doble clic, clic derecho, desplazar y teclado — todo practicado.',
+'Next: the scavenger hunt.':'Ahora: la búsqueda del tesoro.',
+'Continue ▶':'Continuar ▶',
+'🎟️ Exit Question':'🎟️ Pregunta de Salida',
+'Show me <b>one thing you can do with the mouse</b> and <b>one thing you can do with the keyboard</b>.':'Muéstrame <b>una cosa que puedes hacer con el ratón</b> y <b>una cosa que puedes hacer con el teclado</b>.',
+'🖱️ Pick ONE mouse job:':'🖱️ Escoge UNA cosa del ratón:',
+'⌨️ Pick ONE keyboard job:':'⌨️ Escoge UNA cosa del teclado:',
+'I can <b>click</b> to choose something.':'Puedo hacer <b>clic</b> para escoger algo.',
+'I can <b>double-click</b> to open an app.':'Puedo hacer <b>doble clic</b> para abrir una aplicación.',
+'I can <b>right-click</b> to see a menu.':'Puedo hacer <b>clic derecho</b> para ver un menú.',
+'I can <b>scroll</b> to move up and down.':'Puedo <b>desplazar</b> para subir y bajar.',
+'I can find <b>letters</b> and type my name.':'Puedo encontrar las <b>letras</b> y escribir mi nombre.',
+'I can press the <b>Space bar</b> to make a space.':'Puedo presionar la <b>barra espaciadora</b> para hacer un espacio.',
+'I can press <b>Enter</b> to go.':'Puedo presionar <b>Enter</b> para continuar.',
+'I can press <b>Backspace</b> to erase.':'Puedo presionar <b>Backspace</b> para borrar.',
+'Finish ▶':'Terminar ▶',
+'Desktop Quest Certificate':'Certificado de la Aventura del Escritorio',
+'This certifies that':'Esto certifica que',
+'can navigate the Linux desktop and control the mouse and keyboard.':'sabe navegar el escritorio de Linux y controlar el ratón y el teclado.',
+'✔ Logged in and kept the password private':'✔ Inició sesión y mantuvo su contraseña privada',
+'✔ Found the desktop, icons, App Launcher, Files, and system menu':'✔ Encontró el escritorio, los iconos, el Lanzador de Apps, Archivos y el menú del sistema',
+'✔ Clicked, double-clicked, right-clicked, and scrolled':'✔ Hizo clic, doble clic, clic derecho y desplazó la página',
+'✔ Used letters, numbers, Space, Enter, Backspace, Shift, and arrows':'✔ Usó letras, números, Espacio, Enter, Backspace, Shift y flechas',
+'✔ Opened and closed an application':'✔ Abrió y cerró una aplicación',
+'🖨️ Print':'🖨️ Imprimir','🔄 Play again':'🔄 Jugar otra vez',
+/* -- helper sheet -- */
+'Click':'Clic','Press the LEFT button ONE time = choose.':'Presiona el botón IZQUIERDO UNA vez = escoger.',
+'Double-click':'Doble clic','Press the LEFT button TWO times fast = open.':'Presiona el botón IZQUIERDO DOS veces rápido = abrir.',
+'Right-click':'Clic derecho','Press the RIGHT button = a menu appears.':'Presiona el botón DERECHO = aparece un menú.',
+'Scroll':'Desplazar','Roll the wheel = the page moves up and down.':'Gira la rueda = la página sube y baja.',
+'Desktop':'Escritorio','The main screen. Your icons live here.':'La pantalla principal. Aquí viven tus iconos.',
+'Icon':'Icono','A small picture that opens an app or folder.':'Un dibujo pequeño que abre una aplicación o carpeta.',
+'The button that shows all the apps.':'El botón que muestra todas las aplicaciones.',
+'The app that holds your work.':'La aplicación que guarda tu trabajo.',
+'System menu':'Menú del sistema','Wi-Fi, sound, battery, clock (top right).':'Wi-Fi, sonido, batería, reloj (arriba a la derecha).',
+'Closes the window / quits the app.':'Cierra la ventana / sale de la aplicación.',
+'Keys':'Teclas',
+'Space = space · Enter ⏎ = go · Backspace ⌫ = erase · Shift ⇧ = CAPITAL · ← ↑ ↓ → = move':'Space = espacio · Enter ⏎ = continuar · Backspace ⌫ = borrar · Shift ⇧ = MAYÚSCULA · ← ↑ ↓ → = mover',
+'click':'clic','double-click':'doble clic','right-click':'clic derecho','scroll':'desplazar','keyboard':'teclado',
+/* -- teacher panel -- */
+'👩‍🏫 Teacher Panel':'👩‍🏫 Panel del Maestro',
+'Objective: SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.':'Objetivo: los estudiantes identificarán las partes básicas del escritorio de Linux y demostrarán control preciso del ratón y el teclado.',
+'Time':'Hora','Part':'Parte','In the game':'En el juego',
+'Login &amp; Warm-Up':'Entrar y Calentamiento','Teacher Modeling':'El Maestro Enseña',
+'Mouse &amp; Keyboard Games':'Juegos de Ratón y Teclado','Scavenger Hunt / Closure':'Búsqueda del Tesoro / Cierre',
+'Login routine, bubble pop, click vs. double-click':'Rutina de inicio de sesión, reventar burbujas, clic vs. doble clic',
+'Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close':'Recorrido guiado: escritorio, iconos, lanzador, Archivos, menú del sistema, desplazar, abrir/cerrar',
+'Mouse Master (4 rounds), Scroll Quest, Key Hunt':'Maestro del Ratón (4 rondas), Busca Estrellas, Caza de Teclas',
+'7-item hunt, exit question, certificate':'Búsqueda de 7 cosas, pregunta de salida, certificado',
+'▶ Part 1':'▶ Parte 1','▶ Part 2':'▶ Parte 2','▶ Part 3':'▶ Parte 3','▶ Part 4':'▶ Parte 4','▶ Exit ticket':'▶ Pregunta de salida',
+'<b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away, Helper Sheet pinned open, shorter password ({word}).':'<b>Modo Dibujos</b> (SWIEP/ELL): menos objetivos, letras más grandes, pistas de teclas visibles de inmediato, Hoja de Ayuda siempre abierta, contraseña más corta ({word}).',
+/* -- level 2: shortcuts -- */
+'Ctrl':'Ctrl','⌨️ Shortcut School':'⌨️ Escuela de Atajos',
+'Level 2 — Keyboard shortcuts':'Nivel 2 — Atajos del teclado',
+'A <b>shortcut</b> is two keys pressed together. Hold <b>Ctrl</b> down, then tap the letter.':'Un <b>atajo</b> son dos teclas al mismo tiempo. Mantén <b>Ctrl</b> presionada y toca la letra.',
+'Shortcuts do jobs fast — copy, paste, undo, save.':'Los atajos hacen el trabajo rápido — copiar, pegar, deshacer, guardar.',
+'Start Level 2 ▶':'Empezar Nivel 2 ▶',
+'I can use a computer.':'Yo puedo usar la computadora.',
+'my-work.txt':'mi-trabajo.txt','Clipboard:':'Portapapeles:','Saved':'Guardado',
+'<b>Ctrl + A</b> — select ALL the text. It turns blue.':'<b>Ctrl + A</b> — selecciona TODO el texto. Se pone azul.',
+'<b>Ctrl + C</b> — copy the blue text. Now it is on the clipboard.':'<b>Ctrl + C</b> — copia el texto azul. Ahora está en el portapapeles.',
+'<b>Ctrl + V</b> — paste. The words appear again.':'<b>Ctrl + V</b> — pega. Las palabras aparecen otra vez.',
+'<b>Ctrl + X</b> — cut. The text goes away and waits on the clipboard.':'<b>Ctrl + X</b> — corta. El texto se va y espera en el portapapeles.',
+'<b>Ctrl + Z</b> — undo. It brings back what you cut. Ctrl+Z is the fix-it key!':'<b>Ctrl + Z</b> — deshace. Trae de vuelta lo que cortaste. ¡Ctrl+Z arregla los errores!',
+'<b>Ctrl + S</b> — save your work. Do this a lot!':'<b>Ctrl + S</b> — guarda tu trabajo. ¡Hazlo seguido!',
+'Hold <b>Ctrl</b> down FIRST, then tap the letter.':'Primero mantén <b>Ctrl</b> presionada y DESPUÉS toca la letra.',
+/* -- level 3: speed typing -- */
+'⌨️ Speed Typing':'⌨️ Escribir Rápido','Level 3 — Typing speed':'Nivel 3 — Velocidad al escribir',
+'Now for speed! Type what you see before the bar runs out.':'¡Ahora rapidez! Escribe lo que ves antes de que se acabe la barra.',
+'Three speeds: Warm Up, Faster, Speedy. Keep your eyes on the words.':'Tres velocidades: Calentamiento, Más Rápido y Veloz. Mantén los ojos en las palabras.',
+'Start Level 3 ▶':'Empezar Nivel 3 ▶',
+'Warm Up':'Calentamiento','Faster':'Más Rápido','Speedy':'Veloz','lines':'líneas','sec':'seg',
+'cat dog':'gato perro','red bus':'camión rojo','my desk':'mi pupitre','I can type':'yo sé escribir',
+'click the icon':'haz clic en el icono','open the app':'abre la aplicación','save my work':'guardar mi trabajo',
+'press the space bar':'presiona la barra espaciadora',
+'I can use the mouse and keyboard':'puedo usar el ratón y el teclado',
+'double click opens an app':'doble clic abre una aplicación',
+'Ctrl S saves my work':'Ctrl S guarda mi trabajo',
+'Type it fast! &nbsp;':'¡Escribe rápido! &nbsp;',
+'Time! Try that one again.':'¡Se acabó el tiempo! Intenta otra vez.',
+'Nice! {wpm} words per minute':'¡Bien! {wpm} palabras por minuto',
+'Round finished! 🎉':'¡Ronda terminada! 🎉','{name} complete!':'¡{name} completo!',
+'words per minute':'palabras por minuto','Next speed ▶':'Siguiente velocidad ▶',
+'🎹 Shortcut Pro':'🎹 Experto en Atajos','⚡ Speed Typer':'⚡ Veloz al Teclado',
+/* -- files with folders -- */
+'Home':'Inicio','Pictures':'Imágenes','Screenshots':'Capturas','Back':'Atrás',
+'Screenshots are saved in this folder. Double-click it.':'Las capturas se guardan en esta carpeta. Haz doble clic.',
+'There it is! That is the picture of your screen.':'¡Ahí está! Esa es la foto de tu pantalla.',
+'This folder is empty. Take a screenshot first with 📸 Screenshot Helper.':'Esta carpeta está vacía. Primero toma una captura con 📸 Ayuda de Capturas.',
+/* -- screenshot helper -- */
+'Screenshot Helper':'Ayuda de Capturas','Cloud Upload':'Subir a la Nube','My Certificate':'Mi Certificado',
+'What is a screenshot?':'¿Qué es una captura de pantalla?',
+'A <b>screenshot</b> is a picture of what is on your screen. The computer saves it as a picture file you can share.':'Una <b>captura de pantalla</b> es una foto de lo que está en tu pantalla. La computadora la guarda como una imagen que puedes compartir.',
+'The screenshot keys on Linux':'Las teclas de captura en Linux',
+'The whole screen':'Toda la pantalla','Pick one part with the mouse':'Escoger una parte con el ratón',
+'Only the window you are using':'Solo la ventana que estás usando',
+'The key is at the top of the keyboard. It can say <b>PrtScn</b>, <b>PrtSc</b>, or <b>Print Screen</b>.':'La tecla está arriba del teclado. Puede decir <b>PrtScn</b>, <b>PrtSc</b> o <b>Print Screen</b>.',
+'Where does it go?':'¿Dónde se guarda?',
+'Linux saves your picture in <b>Pictures → Screenshots</b>. You can open it in <b>Files</b> 📁 any time.':'Linux guarda tu foto en <b>Imágenes → Capturas</b>. Puedes abrirla en <b>Archivos</b> 📁 cuando quieras.',
+'Some Linux computers open a little screenshot window instead. If that happens, click <b>Take Screenshot</b> or <b>Save</b> in that window — same job, one extra click.':'Algunas computadoras Linux abren una ventanita de captura. Si pasa eso, haz clic en <b>Tomar captura</b> o <b>Guardar</b> en esa ventana — es el mismo trabajo, un clic más.',
+'I am ready to try ▶':'Estoy listo para probar ▶',
+'Your turn — take a screenshot':'Tu turno — toma una captura',
+'Your certificate is on the screen behind this window. Press <b>PrtScn</b> now to take a picture of it.':'Tu certificado está detrás de esta ventana. Presiona <b>PrtScn</b> ahora para tomarle una foto.',
+'(or click here to practice)':'(o haz clic aquí para practicar)',
+'Did the screen flash, or a window pop up? That means it worked.':'¿La pantalla parpadeó o salió una ventana? Eso quiere decir que funcionó.',
+'✅ It worked!':'✅ ¡Funcionó!','🤔 Nothing happened':'🤔 No pasó nada',
+'No problem. Try one of these: hold <b>Shift</b> and press <b>PrtScn</b>, or open the <b>Screenshot</b> app from the App Launcher 🚀 and click <b>Take Screenshot</b>. Then come back and click ✅.':'No hay problema. Prueba esto: mantén <b>Shift</b> y presiona <b>PrtScn</b>, o abre la aplicación <b>Captura de pantalla</b> desde el Lanzador de Apps 🚀 y haz clic en <b>Tomar captura</b>. Luego regresa y haz clic en ✅.',
+'Screenshot saved!':'¡Captura guardada!',
+'It is saved in <b>Pictures → Screenshots</b>. Open <b>Files</b> 📁 and go find it.':'Se guardó en <b>Imágenes → Capturas</b>. Abre <b>Archivos</b> 📁 y ve a buscarla.',
+'Real life: this is how you hand work in. Take the screenshot, find it in Files, then upload it.':'En la vida real: así se entrega el trabajo. Toma la captura, búscala en Archivos y súbela.',
+/* -- cloud upload -- */
+'First take a screenshot with 📸 <b>Screenshot Helper</b>. Then come back here to upload it.':'Primero toma una captura con 📸 <b>Ayuda de Capturas</b>. Luego regresa aquí para subirla.',
+'Class Folder — Practice Upload':'Carpeta de la Clase — Práctica de Subida','+ New':'+ Nuevo',
+'This is a practice window. It works like Google Drive so you know what to do on the real one.':'Esta es una ventana de práctica. Funciona como Google Drive para que sepas qué hacer en el de verdad.',
+'Drag your screenshot here':'Arrastra tu captura aquí',
+'+ New → File upload':'+ Nuevo → Subir archivo','Pick the file you want to send:':'Escoge el archivo que quieres enviar:',
+'Pictures / Screenshots /':'Imágenes / Capturas /','Uploading…':'Subiendo…','Uploaded!':'¡Subido!',
+'On a real computer:':'En una computadora de verdad:',
+'Open your browser and go to <b>drive.google.com</b>.':'Abre tu navegador y ve a <b>drive.google.com</b>.',
+'Sign in with your school account.':'Inicia sesión con tu cuenta de la escuela.',
+'Click <b>+ New → File upload</b>.':'Haz clic en <b>+ Nuevo → Subir archivo</b>.',
+'Go to <b>Pictures → Screenshots</b> and pick your screenshot.':'Ve a <b>Imágenes → Capturas</b> y escoge tu captura.',
+'Click <b>Open</b>. Wait for the ✓. Done!':'Haz clic en <b>Abrir</b>. Espera la ✓. ¡Listo!',
+/* -- part 5 -- */
+'Part 5 — Screenshot &amp; Upload':'Parte 5 — Captura y Entrega',
+'📸 Save my certificate':'📸 Guardar mi certificado',
+'Look at your certificate':'Mira tu certificado',
+'🏆 Great job, <b>{name}</b>! Your certificate is open on the desktop. Now let us save a picture of it — a <b>screenshot</b>.':'🏆 ¡Muy bien, <b>{name}</b>! Tu certificado está abierto en el escritorio. Ahora vamos a guardar una foto de él — una <b>captura de pantalla</b>.',
+'Open the Screenshot Helper':'Abre la Ayuda de Capturas',
+'<b>Double-click</b> the 📸 <b>Screenshot Helper</b> icon.':'Haz <b>doble clic</b> en el icono 📸 <b>Ayuda de Capturas</b>.',
+'Learn the screenshot keys':'Aprende las teclas de captura',
+'Read the three cards. Learn which key takes a picture of the screen.':'Lee las tres tarjetas. Aprende qué tecla toma la foto de la pantalla.',
+'Take the screenshot':'Toma la captura',
+'Now press <b>PrtScn</b> to take the picture.':'Ahora presiona <b>PrtScn</b> para tomar la foto.',
+'Find it in Pictures → Screenshots':'Búscala en Imágenes → Capturas',
+'Open <b>Files</b> 📁 and <b>double-click</b> <b>Pictures</b>, then <b>Screenshots</b>, to find your picture.':'Abre <b>Archivos</b> 📁 y haz <b>doble clic</b> en <b>Imágenes</b> y luego en <b>Capturas</b> para encontrar tu foto.',
+'Open Cloud Upload':'Abre Subir a la Nube',
+'<b>Double-click</b> the ☁️ <b>Cloud Upload</b> icon — this is where you hand your work in.':'Haz <b>doble clic</b> en el icono ☁️ <b>Subir a la Nube</b> — aquí se entrega el trabajo.',
+'Upload your screenshot':'Sube tu captura',
+'Send it to the class folder: <b>drag</b> the file into the box, or use <b>+ New → File upload</b>.':'Envíala a la carpeta de la clase: <b>arrastra</b> el archivo a la caja o usa <b>+ Nuevo → Subir archivo</b>.',
+'Last part! Take a picture of your certificate and hand it in.':'¡Última parte! Toma una foto de tu certificado y entrégala.',
+'🏆 You did it, {name}!':'🏆 ¡Lo lograste, {name}!',
+'You logged in, learned the desktop, mastered the mouse, learned keyboard shortcuts, typed for speed, took a screenshot, and handed it in.':'Iniciaste sesión, aprendiste el escritorio, dominaste el ratón, aprendiste atajos del teclado, escribiste rápido, tomaste una captura y la entregaste.',
+'Now do it for real:':'Ahora hazlo de verdad:',
+'Press <b>PrtScn</b> to photograph your certificate.':'Presiona <b>PrtScn</b> para fotografiar tu certificado.',
+'Open <b>Files → Pictures → Screenshots</b>.':'Abre <b>Archivos → Imágenes → Capturas</b>.',
+'Go to <b>drive.google.com</b> and sign in.':'Ve a <b>drive.google.com</b> e inicia sesión.',
+'Click <b>+ New → File upload</b> and pick your screenshot.':'Haz clic en <b>+ Nuevo → Subir archivo</b> y escoge tu captura.',
+'Put it in the folder your teacher named.':'Ponla en la carpeta que dijo tu maestro.',
+'🖨️ Print my certificate':'🖨️ Imprimir mi certificado',
+'🎉 Part 4 done!':'🎉 ¡Parte 4 terminada!',
+'You found everything on the desktop.':'Encontraste todo en el escritorio.',
+'Next: the exit question.':'Ahora: la pregunta de salida.',
+'Screenshot &amp; Hand-In':'Captura y Entrega',
+'PrtScn lesson, find it in Files, practice upload, real Drive steps':'Lección de PrtScn, buscarla en Archivos, práctica de subida, pasos reales de Drive',
+'▶ Part 5':'▶ Parte 5',
+'🔄 Restart from login':'🔄 Empezar desde el inicio de sesión','Close panel':'Cerrar panel'
+};
+function t(s,p){
+  let out=(state.lang==='es'&&ES[s]!==undefined)?ES[s]:s;
+  if(p) for(const k in p) out=out.split('{'+k+'}').join(p[k]);
+  return out;
+}
+function passWord(){
+  if(state.lang==='es') return state.support?'sol':'luna';
+  return state.support?'cat':'star';
+}
+function fixWord(){ return state.lang==='es'?'gato':'cat'; }
+
+/* ---------- sound ---------- */
+let actx=null;
+function beep(kind){
+  if(!state.sound) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain();
+    const map={good:[660,880],star:[784,1175],bad:[200,150],pop:[520,700],key:[440,520]};
+    const [f1,f2]=map[kind]||map.good;
+    o.type='triangle'; o.frequency.setValueAtTime(f1,actx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(f2,actx.currentTime+.12);
+    g.gain.setValueAtTime(.12,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.25);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+.26);
+  }catch(e){}
+}
+
+/* ---------- mouse pictograms (for ELL / picture mode) ---------- */
+function mousePic(type,label){
+  const on={left:'',right:'',wheel:''};
+  if(type==='click'||type==='double') on.left='on';
+  if(type==='right') on.right='on';
+  if(type==='scroll') on.wheel='on';
+  const badge = type==='double' ? '<text x="46" y="20" font-size="18" fill="#ff5f5f" font-weight="bold">x2</text>' : '';
+  const svg=`<svg class="ms" viewBox="0 0 70 96">
+    <rect class="body" x="8" y="6" width="48" height="84" rx="24"/>
+    <path class="btn ${on.left}" d="M8 30 L8 30 A24 24 0 0 1 32 6 L32 30 Z"/>
+    <path class="btn ${on.right}" d="M32 6 A24 24 0 0 1 56 30 L32 30 Z"/>
+    <rect class="wheel ${on.wheel?'on':''}" x="29" y="34" width="6" height="16" rx="3"/>
+    ${type==='scroll'?'<text x="44" y="30" font-size="20" fill="#ff5f5f">↕</text>':''}
+    ${badge}</svg>`;
+  return `<span class="mouse-pic">${svg}<span>${label||''}</span></span>`;
+}
+function keyPic(label){
+  return `<span class="mouse-pic"><span style="font-size:30px">⌨️</span><span>${label||''}</span></span>`;
+}
+const PIC={
+  click:()=>mousePic('click',t('click')),
+  double:()=>mousePic('double',t('double-click')),
+  right:()=>mousePic('right',t('right-click')),
+  scroll:()=>mousePic('scroll',t('scroll')),
+  key:l=>keyPic(l||t('keyboard'))
+};
+
+/* =====================================================================
+   QUEST ENGINE
+   ===================================================================== */
+function setQuests(list,mode='seq'){
+  state.quests=list.map(q=>({...q,done:false}));
+  state.qi=0; state.mode=mode;
+  renderQuests(); showCoach();
+}
+function currentQuest(){
+  if(state.mode==='any') return state.quests.find(q=>!q.done);
+  return state.quests[state.qi];
+}
+function fire(action,data={}){
+  const match=q=>!q.done&&q.on===action&&(!q.match||q.match(data));
+  let q=null;
+  if(state.mode==='any') q=state.quests.find(match);
+  else { const c=state.quests[state.qi]; if(c&&match(c)) q=c; }
+  if(!q) return false;
+  q.done=true; state.stars++; beep('star'); updateStars();
+  if(state.mode==='seq') state.qi++;
+  renderQuests();
+  if(state.quests.every(x=>x.done)){ clearSpot(); setTimeout(()=>partComplete(),450); }
+  else { setTimeout(showCoach,120); }
+  return true;
+}
+function renderQuests(){
+  const ol=$('#questList'); ol.innerHTML='';
+  const cur=currentQuest();
+  state.quests.forEach(q=>{
+    const li=document.createElement('li');
+    li.textContent=(q.done?'✔ ':'• ')+t(q.short);
+    if(q.done) li.className='done'; else if(q===cur) li.className='cur';
+    ol.appendChild(li);
+  });
+}
+function updateStars(){ $('#starCount').textContent=state.stars; }
+function showCoach(){
+  const q=currentQuest();
+  $('#coach').classList.remove('hidden');
+  if(!q){ $('#coachText').textContent=t('Nice work!'); $('#hudTask').textContent=t('Nice work!');
+          $('#coachPics').innerHTML=''; $('#hudPics').innerHTML='';
+          $('#coachNext').classList.add('hidden'); clearSpot(); return; }
+  $('#coachText').innerHTML=t(q.text,q.p);
+  $('#hudTask').innerHTML=t(q.text,q.p);
+  const pics=(q.pics||[]).map(p=>typeof p==='function'?p():p).join('');
+  $('#coachPics').innerHTML=pics;
+  $('#hudPics').innerHTML=pics;
+  $('#coachNext').classList.toggle('hidden',q.on!=='next');
+  $('#coachNext').textContent=t('Got it ▶');
+  // never dim the screen while an app window is open — the student is working inside it
+  if(q.spot&&Object.keys(openWins).length===0) setTimeout(()=>{
+      if(Object.keys(openWins).length===0&&currentQuest()===q) spotlight(q.spot);
+    },60);
+  else clearSpot();
+}
+$('#coachNext').onclick=()=>fire('next');
+
+/* spotlight */
+let spotTarget=null;
+function spotlight(sel){
+  const el=typeof sel==='string'?$(sel):sel;
+  if(!el){clearSpot();return;}
+  spotTarget=el;
+  const r=el.getBoundingClientRect(), pad=8, s=$('#spot');
+  s.classList.remove('hidden');
+  s.style.left=(r.left-pad)+'px'; s.style.top=(r.top-pad)+'px';
+  s.style.width=(r.width+pad*2)+'px'; s.style.height=(r.height+pad*2)+'px';
+  $$('.pulse').forEach(e=>e.classList.remove('pulse'));
+  el.classList.add('pulse');
+}
+function clearSpot(){ $('#spot').classList.add('hidden'); if(spotTarget){spotTarget.classList.remove('pulse');spotTarget=null;} }
+window.addEventListener('resize',()=>{ if(spotTarget) spotlight(spotTarget); });
+
+/* modal */
+function modal(html){
+  const m=$('#modal'); m.classList.remove('hidden');
+  m.innerHTML=`<div class="modal-card">${html}</div>`;
+  return m;
+}
+function closeModal(){ $('#modal').classList.add('hidden'); $('#modal').innerHTML=''; }
+
+/* =====================================================================
+   LOGIN
+   ===================================================================== */
+$('#lgNext').onclick=()=>{
+  const v=$('#lgName').value.trim();
+  if(!v){ $('#lgName').focus(); return; }
+  state.name=v.charAt(0).toUpperCase()+v.slice(1);
+  $('#hudName').textContent=state.name;
+  $('#lgUser').textContent=state.name;
+  $('#lgStep1').classList.add('hidden');
+  $('#lgStep2').classList.remove('hidden');
+  renderPassLabel();
+  $('#lgPass').focus(); beep('good');
+};
+$('#lgName').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lgNext').click(); });
+function renderPassLabel(){
+  const el=$('#lgPassLabel'); if(!el) return;
+  el.innerHTML=t('2. Type the class password: {word} then press <b>Enter</b>.',
+    {word:'<b style="color:var(--star)">'+passWord()+'</b>'});
+}
+function tryLogin(){
+  const want=passWord();
+  if($('#lgPass').value.toLowerCase().trim()===want){
+    beep('star');
+    $('#loginScreen').classList.add('hidden');
+    $('#desktopScreen').classList.remove('hidden');
+    startPart1();
+  } else {
+    $('#lgMsg').innerHTML=t('Not quite. Type the word: {word}  (Backspace erases.)',{word:'<b>'+want+'</b>'});
+    beep('bad'); $('#lgPass').focus();
+  }
+}
+$('#lgLogin').onclick=tryLogin;
+$('#lgPass').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();tryLogin();} });
+
+/* ---------- QA: one click straight to the desktop, Teacher Panel already open ---------- */
+$('#qaSkipLogin').onclick=()=>{
+  state.name='QA';
+  $('#hudName').textContent=state.name;
+  $('#loginScreen').classList.add('hidden');
+  $('#desktopScreen').classList.remove('hidden');
+  startPart1();
+  buildTeacher();
+  $('#teacher').classList.remove('hidden');
+};
+
+/* =====================================================================
+   DESKTOP SHELL
+   ===================================================================== */
+const APPS=[
+  {id:'files',    name:'Files',        em:'📁'},
+  {id:'textedit', name:'Text Editor',  em:'📝'},
+  {id:'paint',    name:'Paint',        em:'🎨'},
+  {id:'mouse',    name:'Mouse Master', em:'🖱️'},
+  {id:'scroll',   name:'Scroll Quest', em:'⭐'},
+  {id:'keys',     name:'Key Hunt',     em:'⌨️'},
+  {id:'trash',    name:'Trash',        em:'🗑️'},
+  {id:'shot',     name:'Screenshot Helper', em:'📸', late:true},
+  {id:'drive',    name:'Cloud Upload',      em:'☁️', late:true},
+  {id:'cert',     name:'My Certificate',    em:'🏆', late:true}
+];
+// the last three appear only in Part 5, once there is a certificate to save
+function liveApps(){ return APPS.filter(a=>!a.late||state.part>=5); }
+function appById(id){ return APPS.find(a=>a.id===id); }
+
+function buildIcons(){
+  const layer=$('#iconLayer'); layer.innerHTML='';
+  liveApps().forEach(a=>{
+    const d=document.createElement('div');
+    d.className='icon'; d.dataset.id=a.id; d.id='icon-'+a.id;
+    d.innerHTML=`<div class="em">${a.em}</div><div class="nm">${t(a.name)}</div>`;
+    d.addEventListener('click',()=>{ selectIcon(a.id); fire('icon:click',{id:a.id}); });
+    d.addEventListener('dblclick',()=>{ fire('icon:dblclick',{id:a.id}); openApp(a.id); });
+    d.addEventListener('contextmenu',e=>{ e.preventDefault(); showCtx(e.clientX,e.clientY,a.id); fire('icon:rightclick',{id:a.id}); });
+    layer.appendChild(d);
+  });
+}
+function selectIcon(id){
+  $$('.icon').forEach(i=>i.classList.toggle('sel',i.dataset.id===id));
+}
+$('#desk').addEventListener('mousedown',e=>{
+  if(e.target.id==='desk'||e.target.id==='iconLayer'){ selectIcon(null); hideCtx(); fire('desktop:click'); }
+});
+document.addEventListener('contextmenu',e=>{ if(e.target.closest('#app')&&!e.target.matches('input,textarea')) e.preventDefault(); });
+
+/* context menu */
+function showCtx(x,y,id){
+  const m=$('#ctxmenu'); const a=appById(id);
+  const deskRect=$('#desk').getBoundingClientRect();
+  m.innerHTML='';
+  [['Open',()=>{hideCtx();openApp(id);fire('ctx:open',{id});}],
+   ['Rename',()=>{hideCtx();toast(t('Rename is not for today 🙂'));}],
+   ['Properties',()=>{hideCtx();toast(t('{app} — an application icon.',{app:t(a.name)}));}]
+  ].forEach(([label,fn])=>{
+    const b=document.createElement('button'); b.textContent=t(label); b.onclick=fn; m.appendChild(b);
+  });
+  m.style.left=(x-deskRect.left)+'px'; m.style.top=(y-deskRect.top)+'px';
+  m.classList.remove('hidden');
+  m.style.left=Math.max(2,Math.min(x-deskRect.left,deskRect.width-m.offsetWidth-6))+'px';
+  m.style.top=Math.max(2,Math.min(y-deskRect.top,deskRect.height-m.offsetHeight-6))+'px';
+}
+function hideCtx(){ $('#ctxmenu').classList.add('hidden'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#ctxmenu')) hideCtx(); });
+
+function toast(msg){
+  const el=document.createElement('div');
+  el.textContent=msg;
+  el.style.cssText='position:absolute;left:50%;top:14%;transform:translateX(-50%);background:#fffbe8;color:#222;'+
+    'padding:10px 18px;border-radius:12px;border:3px solid var(--star);font-size:18px;z-index:120';
+  $('#desk').appendChild(el);
+  setTimeout(()=>el.remove(),1900);
+}
+
+/* launcher */
+function buildLauncher(){
+  const l=$('#launcher');
+  l.innerHTML=`<h2>${t('🚀 App Launcher — all your apps live here')}</h2>
+    <div class="lch-grid">${liveApps().map(a=>`<button class="lch" data-id="${a.id}"><span class="em">${a.em}</span>${t(a.name)}</button>`).join('')}</div>
+    <button class="btn ghost" id="lchClose">${t('✖ Close the Launcher')}</button>`;
+  $$('.lch',l).forEach(b=>b.onclick=()=>{ toggleLauncher(false); openApp(b.dataset.id); });
+  $('#lchClose').onclick=()=>toggleLauncher(false);
+}
+function toggleLauncher(force){
+  const l=$('#launcher');
+  const wasOpen=!l.classList.contains('hidden');
+  const open = force!==undefined ? force : !wasOpen;
+  if(open===wasOpen) return;
+  l.classList.toggle('hidden',!open);
+  if(open){ beep('pop'); fire('launcher:open'); } else { beep('good'); fire('launcher:close'); }
+}
+$('#btnLauncher').onclick=()=>toggleLauncher();
+$('#btnLauncherTop').onclick=()=>toggleLauncher();
+
+/* system menu */
+function buildSys(){
+  $('#sysmenu').innerHTML=`
+    <div class="row"><span>${t('📶 Wi-Fi')}</span><span>${t('Connected')}</span></div>
+    <div class="row"><span>${t('🔊 Volume')}</span><span>60%</span></div>
+    <div class="row"><span>${t('🔋 Battery')}</span><span>92%</span></div>
+    <div class="row"><span>${t('🕐 Clock')}</span><span id="sysClock">--:--</span></div>
+    <div class="row"><span>${t('⏻ Power / Log Out')}</span><span>—</span></div>
+    <button class="btn small ghost" id="sysClose" style="width:100%;margin-top:10px">${t('Close menu')}</button>`;
+  $('#sysClose').onclick=()=>toggleSys(false);
+}
+function toggleSys(force){
+  const s=$('#sysmenu');
+  const wasOpen=!s.classList.contains('hidden');
+  const open= force!==undefined ? force : !wasOpen;
+  if(open===wasOpen) return;
+  s.classList.toggle('hidden',!open);
+  if(open){ beep('pop'); fire('sysmenu:open'); } else { beep('good'); fire('sysmenu:close'); }
+}
+$('#btnSys').onclick=()=>toggleSys();
+
+function tick(){
+  const d=new Date();
+  const now=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  $('#clock').textContent=now; const sc=$('#sysClock'); if(sc) sc.textContent=now;
+}
+setInterval(tick,1000); tick();
+
+/* =====================================================================
+   WINDOW MANAGER
+   ===================================================================== */
+const openWins={}; let zTop=20;
+// the Helper Sheet floats over the right side of the desk — keep things out from under it
+function usableW(){
+  const d=$('#desk');
+  const h=$('#helper');
+  return h.classList.contains('hidden') ? d.clientWidth : Math.max(320,d.clientWidth-h.offsetWidth-30);
+}
+function openApp(id){
+  const a=appById(id); if(!a) return;
+  if(openWins[id]){ focusWin(id); return; }
+  const w=document.createElement('div');
+  w.className='win'; w.id='win-'+id;
+  const big=['mouse','scroll','keys','paint','shot','drive','cert'].includes(id);
+  const W=big?640:460, H=big?450:340;
+  const deskR=$('#desk').getBoundingClientRect();
+  const useW=usableW();
+  w.style.width=Math.min(W,useW-30)+'px';
+  w.style.height=Math.min(H,deskR.height-30)+'px';
+  w.style.left=Math.max(10,rnd(20,Math.max(40,useW-W-30)))+'px';
+  w.style.top=Math.max(10,rnd(20,Math.max(40,deskR.height-H-60)))+'px';
+  w.style.zIndex=++zTop;
+  w.innerHTML=`<div class="win-bar"><b>${a.em} ${t(a.name)}</b>
+      <button class="win-x" title="${t('Close')}">✕</button></div>
+    <div class="win-body"></div>`;
+  $('#windows').appendChild(w);
+  openWins[id]=w;
+  $('.win-x',w).onclick=()=>closeApp(id);
+  w.addEventListener('mousedown',()=>focusWin(id));
+  dragify(w,$('.win-bar',w));
+  buildAppBody(id,$('.win-body',w));
+  refreshTaskbar();
+  clearSpot();
+  beep('pop');
+  fire('app:open',{id});
+}
+function closeApp(id){
+  const w=openWins[id]; if(!w) return;
+  w.remove(); delete openWins[id];
+  refreshTaskbar(); beep('good');
+  fire('app:close',{id});
+  if(Object.keys(openWins).length===0) fire('desktop:clear');
+}
+function focusWin(id){ const w=openWins[id]; if(w) w.style.zIndex=++zTop; }
+function refreshTaskbar(){
+  const bar=$('#taskbtns'); bar.innerHTML='';
+  Object.keys(openWins).forEach(id=>{
+    const a=appById(id);
+    const b=document.createElement('button'); b.className='taskbtn';
+    b.innerHTML=a.em+' '+t(a.name); b.onclick=()=>focusWin(id);
+    bar.appendChild(b);
+  });
+}
+function dragify(win,handle){
+  let sx,sy,ox,oy,drag=false;
+  handle.addEventListener('mousedown',e=>{
+    if(e.target.closest('.win-x')) return;
+    drag=true; sx=e.clientX; sy=e.clientY;
+    ox=parseInt(win.style.left); oy=parseInt(win.style.top);
+    handle.style.cursor='grabbing'; e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!drag) return;
+    const deskR=$('#desk').getBoundingClientRect();
+    let nx=ox+e.clientX-sx, ny=oy+e.clientY-sy;
+    nx=Math.max(0,Math.min(nx,deskR.width-win.offsetWidth));
+    ny=Math.max(0,Math.min(ny,deskR.height-win.offsetHeight));
+    win.style.left=nx+'px'; win.style.top=ny+'px';
+    if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>60) fire('win:drag',{});
+  });
+  window.addEventListener('mouseup',()=>{ drag=false; handle.style.cursor='grab'; });
+}
+
+/* =====================================================================
+   APP CONTENT
+   ===================================================================== */
+function buildAppBody(id,body){
+  ({files:appFiles,textedit:appText,paint:appPaint,trash:appTrash,
+    mouse:gameMouse,scroll:gameScroll,keys:gameKeys,
+    shot:appShot,drive:appDrive,cert:appCert}[id]||appPlain)(body);
+}
+function appPlain(b){ b.innerHTML='<div style="padding:20px;font-size:18px">'+t('This app is empty. Close it with the ✕ button.')+'</div>'; }
+
+const FILE_NAMES_EN=['my-story.txt','dog.png','math-notes.txt','beach.jpg','song.mp3','robot.png','homework.txt',
+ 'cat.jpg','rocket.png','recipe.txt','map.png','science.txt','puzzle.jpg','letters.txt','space.png','soccer.jpg',
+ 'colors.png','poem.txt','tree.jpg','clouds.png','game.txt','snack.jpg','bus.png','list.txt','stars.png'];
+const FILE_NAMES_ES=['mi-cuento.txt','perro.png','notas-mate.txt','playa.jpg','cancion.mp3','robot.png','tarea.txt',
+ 'gato.jpg','cohete.png','receta.txt','mapa.png','ciencias.txt','rompecabezas.jpg','letras.txt','espacio.png','futbol.jpg',
+ 'colores.png','poema.txt','arbol.jpg','nubes.png','juego.txt','merienda.jpg','autobus.png','lista.txt','estrellas.png'];
+function appFiles(b){
+  const FILE_NAMES=state.lang==='es'?FILE_NAMES_ES:FILE_NAMES_EN;
+  let path='home';
+  const shotName=state.lang==='es'?'certificado.png':'certificate.png';
+  function row(icon,name,cls,on){
+    return `<div class="filerow ${cls||''}" data-n="${name}">${icon} ${name}</div>`;
+  }
+  function draw(){
+    if(path==='home'){
+      b.innerHTML=`<div class="filelist">
+        <div class="crumb">🏠 ${t('Home')}</div>
+        <div style="padding:2px 10px 8px;color:var(--muted);font-size:15px">${t('📁 Home — {n} files. Use the mouse wheel to scroll down.',{n:FILE_NAMES.length})}</div>
+        ${row('📁',t('Pictures'),'folder')}
+        ${FILE_NAMES.map(n=>`<div class="filerow">${n.endsWith('.txt')?'📄':n.endsWith('.mp3')?'🎵':'🖼️'} ${n}</div>`).join('')}
+        <div class="filerow" style="color:var(--good)">${t('🏁 You reached the bottom of the list!')}</div></div>`;
+      $('.folder',b).ondblclick=()=>{ path='pictures'; beep('pop'); draw(); };
+      b.onscroll=()=>{ if(b.scrollTop>120) fire('scroll:files',{}); };
+    } else if(path==='pictures'){
+      b.innerHTML=`<div class="filelist">
+        <div class="crumb"><button id="fBack">⬅ ${t('Back')}</button> 🏠 ${t('Home')} › 📁 ${t('Pictures')}</div>
+        ${row('📁',t('Screenshots'),'folder')}
+        <div class="filerow">🖼️ ${state.lang==='es'?'vacaciones.jpg':'vacation.jpg'}</div>
+        <div style="padding:10px;color:var(--muted);font-size:15px">${t('Screenshots are saved in this folder. Double-click it.')}</div></div>`;
+      $('.folder',b).ondblclick=()=>{ path='shots'; beep('pop'); draw(); };
+      $('#fBack',b).onclick=()=>{ path='home'; draw(); };
+    } else {
+      b.innerHTML=`<div class="filelist">
+        <div class="crumb"><button id="fBack">⬅ ${t('Back')}</button> 🏠 ${t('Home')} › 📁 ${t('Pictures')} › 📁 ${t('Screenshots')}</div>
+        ${state.shotTaken
+          ? `<div class="filerow" style="font-size:19px;color:var(--good)">🖼️ ${shotName}</div>
+             <div style="padding:10px;font-size:16px">${t('There it is! That is the picture of your screen.')}</div>`
+          : `<div style="padding:16px;font-size:17px;color:var(--muted)">${t('This folder is empty. Take a screenshot first with 📸 Screenshot Helper.')}</div>`}
+      </div>`;
+      $('#fBack',b).onclick=()=>{ path='pictures'; draw(); };
+      if(state.shotTaken) fire('files:shot',{});
+    }
+  }
+  draw();
+}
+function appTrash(b){
+  b.innerHTML='<div style="padding:24px;font-size:19px;text-align:center">🗑️<br><br>'+t('The Trash is empty.')+'<br>'+
+  '<span style="color:var(--muted);font-size:16px">'+t('Deleted files wait here. Ask your teacher before emptying it.')+'</span></div>';
+}
+function appText(b){
+  b.innerHTML=`<div style="padding:10px;height:100%;display:flex;flex-direction:column">
+   <div style="color:var(--muted);font-size:15px;padding-bottom:6px">${t('📝 Type here. Try Shift for a CAPITAL letter, Space, Backspace, and Enter.')}</div>
+   <textarea style="flex:1;font-size:22px;padding:12px;border-radius:10px;border:3px solid var(--line);background:#0f1420;color:#fff"
+     placeholder="${t('Type your name...')}"></textarea></div>`;
+  const ta=$('textarea',b);
+  ta.addEventListener('keydown',e=>{ if(e.key.length===1||['Backspace','Enter'].includes(e.key)) fire('type:any',{}); });
+}
+function appPaint(b){
+  b.innerHTML=`<div class="game-wrap">
+    <div class="paint-tools">
+      <span style="font-size:15px">${t('Hold the left button and drag to draw:')}</span>
+      <span class="swatch on" data-c="#ff5f5f" style="background:#ff5f5f"></span>
+      <span class="swatch" data-c="#3ea6ff" style="background:#3ea6ff"></span>
+      <span class="swatch" data-c="#3ddc84" style="background:#3ddc84"></span>
+      <span class="swatch" data-c="#ffd54a" style="background:#ffd54a"></span>
+      <button class="btn small ghost" id="pClear">${t('Clear')}</button>
+    </div>
+    <div class="game-area" style="background:#fff"><canvas id="pCanvas" style="position:absolute;inset:0"></canvas></div>
+  </div>`;
+  const cv=$('#pCanvas',b), area=$('.game-area',b);
+  const fit=()=>{ cv.width=area.clientWidth; cv.height=area.clientHeight; };
+  setTimeout(fit,30);
+  const ctx=cv.getContext('2d'); let drawing=false,color='#ff5f5f',dist=0,fired=false,lx=0,ly=0;
+  $$('.swatch',b).forEach(s=>s.onclick=()=>{ $$('.swatch',b).forEach(x=>x.classList.remove('on')); s.classList.add('on'); color=s.dataset.c; });
+  $('#pClear',b).onclick=()=>ctx.clearRect(0,0,cv.width,cv.height);
+  const pos=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
+  cv.addEventListener('mousedown',e=>{ drawing=true; const[x,y]=pos(e); lx=x; ly=y; ctx.beginPath(); ctx.moveTo(x,y); });
+  cv.addEventListener('mousemove',e=>{
+    if(!drawing) return;
+    const[x,y]=pos(e);
+    ctx.strokeStyle=color; ctx.lineWidth=6; ctx.lineCap='round'; ctx.lineTo(x,y); ctx.stroke();
+    dist+=Math.hypot(x-lx,y-ly); lx=x; ly=y;
+    if(dist>90&&!fired){ fired=true; fire('paint:draw',{}); }
+  });
+  window.addEventListener('mouseup',()=>drawing=false);
+}
+
+/* =====================================================================
+   SCREENSHOT HELPER — how to photograph the screen on Linux
+   ===================================================================== */
+function appShot(b){
+  let card=0;
+  const shotName=state.lang==='es'?'certificado.png':'certificate.png';
+  const cards=[
+    ()=>`<div class="card-step">
+      <div style="font-size:52px">📸</div>
+      <h3 style="margin:10px 0">${t('What is a screenshot?')}</h3>
+      <p>${t('A <b>screenshot</b> is a picture of what is on your screen. The computer saves it as a picture file you can share.')}</p>
+      <button class="btn" id="shotNext">${t('Next ▶')}</button></div>`,
+    ()=>`<div class="card-step">
+      <h3 style="margin:4px 0 0">${t('The screenshot keys on Linux')}</h3>
+      <div class="shot-keys">
+        <div class="shot-key"><b>PrtScn</b>${t('The whole screen')}</div>
+        <div class="shot-key"><b>Shift + PrtScn</b>${t('Pick one part with the mouse')}</div>
+        <div class="shot-key"><b>Alt + PrtScn</b>${t('Only the window you are using')}</div>
+      </div>
+      <p style="font-size:17px">${t('The key is at the top of the keyboard. It can say <b>PrtScn</b>, <b>PrtSc</b>, or <b>Print Screen</b>.')}</p>
+      <button class="btn" id="shotNext">${t('Next ▶')}</button></div>`,
+    ()=>`<div class="card-step">
+      <h3 style="margin:4px 0 0">${t('Where does it go?')}</h3>
+      <p>${t('Linux saves your picture in <b>Pictures → Screenshots</b>. You can open it in <b>Files</b> 📁 any time.')}</p>
+      <div class="realworld">${t('Some Linux computers open a little screenshot window instead. If that happens, click <b>Take Screenshot</b> or <b>Save</b> in that window — same job, one extra click.')}</div>
+      <button class="btn" id="shotNext">${t('I am ready to try ▶')}</button></div>`
+  ];
+  function drawCard(){
+    b.innerHTML=cards[card]();
+    $('#shotNext',b).onclick=()=>{
+      card++; beep('good');
+      if(card<cards.length) drawCard();
+      else { fire('shot:learned',{}); practice(); }
+    };
+  }
+  function practice(){
+    b.innerHTML=`<div class="card-step">
+      <div style="font-size:46px">🖥️📸</div>
+      <h3 style="margin:8px 0">${t('Your turn — take a screenshot')}</h3>
+      <p>${t('Your certificate is on the screen behind this window. Press <b>PrtScn</b> now to take a picture of it.')}</p>
+      <div class="shot-keys"><button class="shot-key" id="prtBtn" style="cursor:pointer"><b>PrtScn</b>${t('(or click here to practice)')}</button></div>
+      <div style="font-size:16px;color:var(--muted)">${t('Did the screen flash, or a window pop up? That means it worked.')}</div>
+      <div style="margin-top:12px">
+        <button class="btn good" id="shotOK">${t('✅ It worked!')}</button>
+        <button class="btn ghost small" id="shotHelp">${t('🤔 Nothing happened')}</button>
+      </div>
+      <div id="shotHelpBox"></div></div>`;
+    $('#prtBtn',b).onclick=takeIt;
+    $('#shotOK',b).onclick=takeIt;
+    $('#shotHelp',b).onclick=()=>{
+      $('#shotHelpBox',b).innerHTML=`<div class="realworld">${t('No problem. Try one of these: hold <b>Shift</b> and press <b>PrtScn</b>, or open the <b>Screenshot</b> app from the App Launcher 🚀 and click <b>Take Screenshot</b>. Then come back and click ✅.')}</div>`;
+    };
+    // a real PrtScn press counts too, when the computer lets the browser see it
+    keyShot=e=>{ if(e.key==='PrintScreen'){ e.preventDefault(); takeIt(); } };
+  }
+  function takeIt(){
+    if(state.shotTaken) return;
+    state.shotTaken=true; keyShot=null;
+    const fx=document.createElement('div'); fx.id='flashfx';
+    document.body.appendChild(fx); setTimeout(()=>fx.remove(),600);
+    beep('star');
+    b.innerHTML=`<div class="card-step">
+      <div style="font-size:52px">✅</div>
+      <h3 style="margin:8px 0">${t('Screenshot saved!')}</h3>
+      <div class="filecard" style="cursor:default">🖼️ ${shotName}</div>
+      <p style="font-size:17px;margin-top:12px">${t('It is saved in <b>Pictures → Screenshots</b>. Open <b>Files</b> 📁 and go find it.')}</p>
+      <div class="realworld">${t('Real life: this is how you hand work in. Take the screenshot, find it in Files, then upload it.')}</div></div>`;
+    fire('shot:taken',{});
+  }
+  drawCard();
+}
+let keyShot=null;
+document.addEventListener('keydown',e=>{ if(keyShot) keyShot(e); });
+
+/* =====================================================================
+   CLOUD UPLOAD — practice window that works like Google Drive
+   ===================================================================== */
+function appDrive(b){
+  const shotName=state.lang==='es'?'certificado.png':'certificate.png';
+  if(!state.shotTaken){
+    b.innerHTML=`<div class="card-step">
+      <div style="font-size:46px">☁️</div>
+      <p>${t('First take a screenshot with 📸 <b>Screenshot Helper</b>. Then come back here to upload it.')}</p></div>`;
+    return;
+  }
+  b.innerHTML=`<div style="padding:10px">
+    <div class="doc-bar" style="border-radius:10px">☁️ ${t('Class Folder — Practice Upload')}
+      <button class="btn small" id="dvNew">${t('+ New')}</button></div>
+    <div style="font-size:14px;color:var(--muted);padding:8px 4px">${t('This is a practice window. It works like Google Drive so you know what to do on the real one.')}</div>
+    <div style="text-align:center;padding:6px"><div class="filecard" id="dvFile" draggable="true">🖼️ ${shotName}</div></div>
+    <div class="drop" id="dvDrop">⬇️ ${t('Drag your screenshot here')}</div>
+    <div id="dvOut"></div></div>`;
+  const drop=$('#dvDrop',b), file=$('#dvFile',b);
+  file.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain',shotName); });
+  drop.addEventListener('dragover',e=>{ e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{ e.preventDefault(); drop.classList.remove('over'); upload(); });
+  $('#dvNew',b).onclick=()=>{
+    $('#dvOut',b).innerHTML=`<div class="realworld">
+      <b>${t('+ New → File upload')}</b><br>${t('Pick the file you want to send:')}
+      <div style="margin-top:8px"><button class="btn small" id="dvPick">🖼️ ${t('Pictures / Screenshots /')} ${shotName}</button></div></div>`;
+    $('#dvPick',b).onclick=upload;
+  };
+  function upload(){
+    if(state.uploaded) return;
+    state.uploaded=true; beep('pop');
+    $('#dvOut',b).innerHTML=`<div class="prog"><i id="dvBar"></i></div>
+      <div id="dvMsg" style="text-align:center;font-size:17px">${t('Uploading…')}</div>`;
+    const bar=$('#dvBar',b); let n=0;
+    const iv=setInterval(()=>{
+      n+=25; bar.style.width=Math.min(n,100)+'%';
+      if(n>=100){
+        clearInterval(iv); beep('star');
+        $('#dvMsg',b).innerHTML=`<div style="font-size:40px">✅</div><b>${t('Uploaded!')}</b>`;
+        $('#dvOut',b).insertAdjacentHTML('beforeend',`<div class="realworld">
+          <b>${t('On a real computer:')}</b><br>
+          1. ${t('Open your browser and go to <b>drive.google.com</b>.')}<br>
+          2. ${t('Sign in with your school account.')}<br>
+          3. ${t('Click <b>+ New → File upload</b>.')}<br>
+          4. ${t('Go to <b>Pictures → Screenshots</b> and pick your screenshot.')}<br>
+          5. ${t('Click <b>Open</b>. Wait for the ✓. Done!')}</div>`);
+        fire('drive:uploaded',{});
+      }
+    },260);
+  }
+}
+
+/* =====================================================================
+   GAME 1 — MOUSE MASTER  (click / select / double-click / right-click)
+   ===================================================================== */
+function gameMouse(b){
+  const N=state.support?{pop:5,sel:3,dbl:3,rc:1}:{pop:8,sel:3,dbl:5,rc:2};
+  b.innerHTML=`<div class="game-wrap">
+    <div class="game-head"><span id="mmTitle">Round 1</span><span id="mmScore"></span></div>
+    <div class="game-area" id="mmArea"></div></div>`;
+  const area=$('#mmArea',b), title=$('#mmTitle',b), score=$('#mmScore',b);
+  let misses=0, round=0;
+  const AW=()=>area.clientWidth-100, AH=()=>area.clientHeight-100;
+  const place=el=>{ el.style.left=rnd(10,Math.max(20,AW()))+'px'; el.style.top=rnd(10,Math.max(20,AH()))+'px'; };
+  area.addEventListener('click',e=>{
+    if(e.target===area){ misses++; if(misses%3===0) coachSay('Slow down 🐢 — put the arrow ON the picture, then click.'); }
+  });
+
+  function head(ttl,sc){ title.innerHTML=ttl; score.innerHTML=sc; }
+
+  function r1(){ // single click
+    let got=0; head(t('Round 1 of 4 — SINGLE CLICK ')+PIC.click(), `${t('Popped:')} <b>0/${N.pop}</b>`);
+    coachSay('Pop the balloons with <b>one click</b>.',[PIC.click]);
+    area.innerHTML='';
+    for(let i=0;i<N.pop;i++){
+      const el=document.createElement('button');
+      el.className='balloon'; el.textContent='🎈';
+      el.style.background=pick(['#e05b6a','#4a8fe0','#4bb87a','#c58ae0','#e0a54b']);
+      place(el);
+      el.onclick=ev=>{ ev.stopPropagation(); el.remove(); got++; beep('pop');
+        head(t('Round 1 of 4 — SINGLE CLICK ')+PIC.click(),`${t('Popped:')} <b>${got}/${N.pop}</b>`);
+        if(got===N.pop) done(r2); };
+      area.appendChild(el);
+    }
+  }
+  function r2(){ // select
+    let sel=0; head(t('Round 2 of 4 — SELECT with one click ')+PIC.click(),`${t('Chosen:')} <b>0/${N.sel}</b>`);
+    coachSay('<b>One click chooses</b> a thing. Click each shape one time — it turns blue.',[PIC.click]);
+    area.innerHTML='';
+    for(let i=0;i<N.sel;i++){
+      const el=document.createElement('button');
+      el.className='shape'; el.textContent=pick(['🔺','🟩','🟦','⬛','🟣']); place(el);
+      el.onclick=ev=>{ ev.stopPropagation();
+        if(el.classList.contains('sel')) return;
+        el.classList.add('sel'); sel++; beep('good');
+        head(t('Round 2 of 4 — SELECT with one click ')+PIC.click(),`${t('Chosen:')} <b>${sel}/${N.sel}</b>`);
+        if(sel===N.sel) done(r3); };
+      area.appendChild(el);
+    }
+  }
+  function r3(){ // double click
+    let op=0; head(t('Round 3 of 4 — DOUBLE-CLICK to open ')+PIC.double(),`${t('Opened:')} <b>0/${N.dbl}</b>`);
+    coachSay('<b>Two fast clicks</b> opens a thing. Double-click every box!',[PIC.double]);
+    area.innerHTML='';
+    for(let i=0;i<N.dbl;i++){
+      const el=document.createElement('button');
+      el.className='shape'; el.textContent='📦'; place(el);
+      el.onclick=ev=>{ ev.stopPropagation();
+        if(el.classList.contains('open')) return;
+        el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),320);
+        coachSay('One click only <b>chooses</b>. Click <b>two times fast</b> to open!',[PIC.double]); };
+      el.ondblclick=ev=>{ ev.stopPropagation();
+        if(el.classList.contains('open')) return;
+        el.classList.add('open'); el.textContent='🎁'; op++; beep('star');
+        head(t('Round 3 of 4 — DOUBLE-CLICK to open ')+PIC.double(),`${t('Opened:')} <b>${op}/${N.dbl}</b>`);
+        if(op===N.dbl) done(r4); };
+      area.appendChild(el);
+    }
+  }
+  function r4(){ // right click
+    let got=0; head(t('Round 4 of 4 — RIGHT-CLICK for the menu ')+PIC.right(),`${t('Menus:')} <b>0/${N.rc}</b>`);
+    coachSay('Press the <b>right</b> mouse button on the folder. A menu appears — then click <b>Open</b>.',[PIC.right]);
+    area.innerHTML='';
+    for(let i=0;i<N.rc;i++){
+      const el=document.createElement('button');
+      el.className='shape'; el.textContent='📁'; place(el);
+      el.oncontextmenu=ev=>{ ev.preventDefault(); ev.stopPropagation(); popMenu(ev,el); };
+      el.onclick=ev=>{ ev.stopPropagation(); coachSay('That is the LEFT button. Use the <b>RIGHT</b> button here.',[PIC.right]); };
+      area.appendChild(el);
+    }
+    function popMenu(ev,el){
+      $$('.mini-menu',area).forEach(m=>m.remove());
+      const r=area.getBoundingClientRect();
+      const m=document.createElement('div'); m.className='mini-menu';
+      m.style.cssText='position:absolute;background:#1b2130;border:3px solid #36445f;border-radius:10px;padding:6px;z-index:5';
+      m.style.left=(ev.clientX-r.left)+'px'; m.style.top=(ev.clientY-r.top)+'px';
+      ['Open','Copy','Rename'].forEach(lab=>{
+        const bt=document.createElement('button');
+        bt.textContent=t(lab);
+        bt.style.cssText='display:block;width:150px;text-align:left;background:transparent;border:none;color:#eef3ff;font-size:16px;padding:8px';
+        bt.onmouseenter=()=>bt.style.background='#3ea6ff'; bt.onmouseleave=()=>bt.style.background='transparent';
+        bt.onclick=e2=>{ e2.stopPropagation(); m.remove();
+          if(lab==='Open'){ el.classList.add('open'); el.textContent='📂'; el.oncontextmenu=null; got++; beep('star');
+            head(t('Round 4 of 4 — RIGHT-CLICK for the menu ')+PIC.right(),`${t('Menus:')} <b>${got}/${N.rc}</b>`);
+            if(got===N.rc) done(null);
+          } else coachSay('Almost! In the menu, click <b>Open</b>.',[PIC.right]);
+        };
+        m.appendChild(bt);
+      });
+      area.appendChild(m);
+      m.style.left=Math.max(2,Math.min(parseFloat(m.style.left),area.clientWidth-m.offsetWidth-4))+'px';
+      m.style.top=Math.max(2,Math.min(parseFloat(m.style.top),area.clientHeight-m.offsetHeight-4))+'px';
+      beep('pop');
+    }
+  }
+  function done(next){
+    if(next){ area.innerHTML='<div style="padding:30px;text-align:center;font-size:24px">'+t('⭐ Round complete! ⭐')+'</div>'; setTimeout(next,900); }
+    else{
+      area.innerHTML=`<div style="padding:30px;text-align:center">
+        <div style="font-size:52px">🏅</div>
+        <div style="font-size:24px;margin:10px 0">${t('Mouse Master finished!')}</div>
+        <div style="font-size:17px;color:var(--muted)">${t('Click • Select • Double-click • Right-click')}</div></div>`;
+      head(t('Finished 🎉'),'');
+      awardBadge('🖱️ Mouse Master'); fire('game:done',{id:'mouse'});
+    }
+  }
+  setTimeout(r1,80);
+}
+
+/* =====================================================================
+   GAME 2 — SCROLL QUEST
+   ===================================================================== */
+function gameScroll(b){
+  const tops=state.support?[520,1050,1580]:[460,940,1420,1900,2380];
+  const H=tops[tops.length-1]+420;
+  const para=[
+    '<b>The desktop</b> is the main screen of the computer. It is like the top of your school desk.',
+    '<b>Icons</b> are small pictures. Each icon stands for an app, a file, or a folder.',
+    'The <b>App Launcher</b> holds every app on the computer. Click it to see them all.',
+    '<b>Files</b> keeps your work. Folders hold files, the way a binder holds papers.',
+    'The <b>system menu</b> is in the top corner. It shows Wi-Fi, volume, battery, and the clock.',
+    '<b>One click</b> chooses. <b>Two fast clicks</b> opens. The <b>right button</b> shows a menu.',
+    '<b>Scrolling</b> moves the page up and down. Roll the wheel in the middle of the mouse.',
+    'To <b>close</b> an app, click the ✕ button in the corner of its window.',
+    'Careful hands: rest your hand on the mouse. Do not squeeze it or bang the keys.',
+    'You are doing great. Keep scrolling — more stars are hiding below!'
+  ];
+  b.innerHTML=`<div class="game-wrap">
+    <div class="game-head"><span>${t('⭐ Scroll Quest ')}${PIC.scroll()}</span><span id="sqScore">${t('Stars:')} <b>0/${tops.length}</b></span></div>
+    <div class="game-area" style="overflow:auto" id="sqScroll">
+      <div class="sq-page" id="sqPage" style="height:${H}px">
+        ${para.map((p,i)=>`<p style="position:absolute;top:${140+i*(H-260)/para.length}px;left:26px;right:26px">${t(p)}</p>`).join('')}
+        <div style="position:absolute;top:20px;left:26px;font-size:22px">${t('⬇️ Roll the wheel to scroll DOWN and find the stars.')}</div>
+        <div style="position:absolute;top:${H-70}px;left:26px;font-size:20px;color:var(--good)">${t('🏁 Bottom of the page!')}</div>
+      </div>
+    </div></div>`;
+  const page=$('#sqPage',b), sc=$('#sqScroll',b), out=$('#sqScore',b);
+  let got=0;
+  coachSay('Roll the mouse wheel to <b>scroll down</b>. Click every ⭐ you find.',[PIC.scroll,PIC.click]);
+  tops.forEach(top=>{
+    const s=document.createElement('button');
+    s.className='sq-star'; s.textContent='⭐';
+    s.style.top=top+'px'; s.style.left=rnd(40,Math.max(60,page.clientWidth-120))+'px';
+    s.onclick=()=>{ s.remove(); got++; beep('star'); out.innerHTML=`${t('Stars:')} <b>${got}/${tops.length}</b>`;
+      if(got===tops.length) finish(); };
+    page.appendChild(s);
+  });
+  function finish(){
+    const home=document.createElement('button');
+    home.className='sq-star'; home.textContent='🏠'; home.style.top='70px'; home.style.left='60px';
+    home.onclick=()=>{
+      home.remove(); beep('star');
+      $('#sqPage',b).innerHTML='<div style="position:absolute;top:40px;left:0;right:0;text-align:center">'+
+        '<div style="font-size:52px">🏅</div><div style="font-size:24px">'+t('Scroll Quest finished!')+'</div>'+
+        '<div style="color:var(--muted);font-size:17px">'+t('You scrolled down AND up.')+'</div></div>';
+      $('#sqPage',b).style.height='auto'; sc.scrollTop=0;
+      awardBadge('⭐ Scroll Star'); fire('game:done',{id:'scroll'});
+    };
+    page.appendChild(home);
+    coachSay('All stars found! Now <b>scroll UP</b> to the very top and click the 🏠 house.',[PIC.scroll]);
+    out.innerHTML=t('Now scroll <b>UP</b> ⬆️');
+  }
+}
+
+/* =====================================================================
+   GAME 3 — KEY HUNT
+   ===================================================================== */
+let keyGame=null;
+const KEY_ROWS=[
+  ['1','2','3','4','5','6','7','8','9','0'],
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['Z','X','C','V','B','N','M']
+];
+function keyLabel(k){
+  const en={SPACE:'Space bar',ENTER:'Enter ⏎',BACKSPACE:'Backspace ⌫',SHIFT:'Shift ⇧',
+    ARROWLEFT:'← Left arrow',ARROWRIGHT:'→ Right arrow',ARROWUP:'↑ Up arrow',ARROWDOWN:'↓ Down arrow'}[k];
+  return en?t(en):k;
+}
+function tokenOf(e){ return e.key===' '?'SPACE':e.key.toUpperCase(); }
+function gameKeys(b){
+  /* Three levels: 1 find the keys, 2 keyboard shortcuts, 3 timed typing. */
+  b.innerHTML=`<div class="game-wrap">
+    <div class="game-head">
+      <span id="khTitle">${t('⌨️ Key Hunt')}</span>
+      <span class="lvlbar">
+        <span class="lvl on" id="lvl1">1</span><span class="lvl" id="lvl2">2</span><span class="lvl" id="lvl3">3</span>
+      </span>
+      <span id="khScore">0</span></div>
+    <div style="flex:none" id="khPrompt" class="prompt-big">${t('Get ready…')}</div>
+    <div class="game-area" style="overflow:auto" id="khArea"></div></div>`;
+  const area=$('#khArea',b), prompt=$('#khPrompt',b), score=$('#khScore',b), title=$('#khTitle',b);
+  const setLevel=n=>{ [1,2,3].forEach(i=>$('#lvl'+i,b).classList.toggle('on',i===n)); };
+
+  /* ---------- shared keyboard picture ---------- */
+  function boardHTML(){
+    return `<div class="kb" id="khBoard">
+      ${KEY_ROWS.map(r=>`<div class="kb-row">${r.map(k=>`<div class="key" data-k="${k}">${k}</div>`).join('')}</div>`).join('')}
+      <div class="kb-row">
+        <div class="key wide" data-k="CONTROL">${t('Ctrl')}</div>
+        <div class="key wide" data-k="SHIFT">${t('⇧ Shift')}</div>
+        <div class="key xwide" data-k="SPACE">${t('Space')}</div>
+        <div class="key wide" data-k="BACKSPACE">${t('⌫ Backspace')}</div>
+        <div class="key wide" data-k="ENTER">${t('⏎ Enter')}</div>
+      </div>
+      <div class="kb-row">
+        <div class="key" data-k="ARROWLEFT">←</div><div class="key" data-k="ARROWUP">↑</div>
+        <div class="key" data-k="ARROWDOWN">↓</div><div class="key" data-k="ARROWRIGHT">→</div>
+      </div></div>`;
+  }
+  const flash=(k,cls)=>{ const el=$(`.key[data-k="${k}"]`,b); if(el){ el.classList.add(cls); setTimeout(()=>el.classList.remove(cls),260); } };
+
+  /* =================== LEVEL 1 — find the keys =================== */
+  function level1(){
+    setLevel(1); title.textContent=t('⌨️ Key Hunt');
+    const letters=[], L=state.support?4:6;
+    const pool='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    while(letters.length<L){ const c=pick(pool); if(!letters.includes(c)) letters.push(c); }
+    const digits=[]; const D=state.support?2:3;
+    while(digits.length<D){ const c=String(rnd(0,9)); if(!digits.includes(c)) digits.push(c); }
+    const extras=state.support?['SPACE','ENTER','BACKSPACE','ARROWLEFT','ARROWRIGHT']
+                              :['SPACE','ENTER','BACKSPACE','SHIFT','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'];
+    const seq=[...letters,...digits,...extras];
+    area.innerHTML=boardHTML();
+    let i=0, hintTimer=null;
+    coachSay('Look at the big word. Find that key on the real keyboard and press it.',[()=>PIC.key(t('press'))]);
+    function ask(){
+      clearTimeout(hintTimer);
+      $$('.key',b).forEach(k=>k.classList.remove('hot'));
+      if(i>=seq.length){ keyGame=null; return level2intro(); }
+      const k=seq[i];
+      prompt.innerHTML=t('Press &nbsp;')+'<b style="color:var(--star)">'+keyLabel(k)+'</b>';
+      score.textContent=i+'/'+seq.length;
+      const hot=()=>{ const el=$(`.key[data-k="${k}"]`,b); if(el) el.classList.add('hot'); };
+      if(state.support) hot(); else hintTimer=setTimeout(hot,600); /* QA: was 4000 */
+    }
+    keyGame={ onKey(e){
+      if(!openWins.keys){ keyGame=null; return; }
+      if(i>=seq.length) return;
+      const tok=tokenOf(e);
+      if(['SPACE','BACKSPACE','ARROWLEFT','ARROWRIGHT','ARROWUP','ARROWDOWN'].includes(tok)) e.preventDefault();
+      if(tok===seq[i]){ flash(tok,'hit'); i++; beep('key'); ask(); }
+      else if(tok.length===1||['SHIFT','ENTER','BACKSPACE','SPACE'].includes(tok)){
+        prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">'+t('not that one')+'</span>');
+        setTimeout(ask,600);
+      }
+    }};
+    ask();
+  }
+
+  /* =================== LEVEL 2 — shortcut school =================== */
+  function level2intro(){
+    setLevel(2); title.textContent=t('⌨️ Shortcut School');
+    prompt.innerHTML=t('Level 2 — Keyboard shortcuts');
+    score.textContent='';
+    area.innerHTML=`<div style="padding:22px;text-align:center">
+      <div style="font-size:46px">🎹</div>
+      <div style="font-size:21px;margin:10px 0">${t('A <b>shortcut</b> is two keys pressed together. Hold <b>Ctrl</b> down, then tap the letter.')}</div>
+      <div style="font-size:17px;color:var(--muted);margin-bottom:14px">${t('Shortcuts do jobs fast — copy, paste, undo, save.')}</div>
+      <button class="btn" id="khGo2">${t('Start Level 2 ▶')}</button></div>`;
+    $('#khGo2',b).onclick=level2;
+    beep('star');
+  }
+  function level2(){
+    const SENT=t('I can use a computer.');
+    const steps=state.support
+      ? [['A','select'],['C','copy'],['V','paste'],['S','save']]
+      : [['A','select'],['C','copy'],['V','paste'],['X','cut'],['Z','undo'],['S','save']];
+    const HOW={
+      select:'<b>Ctrl + A</b> — select ALL the text. It turns blue.',
+      copy:'<b>Ctrl + C</b> — copy the blue text. Now it is on the clipboard.',
+      paste:'<b>Ctrl + V</b> — paste. The words appear again.',
+      cut:'<b>Ctrl + X</b> — cut. The text goes away and waits on the clipboard.',
+      undo:'<b>Ctrl + Z</b> — undo. It brings back what you cut. Ctrl+Z is the fix-it key!',
+      save:'<b>Ctrl + S</b> — save your work. Do this a lot!'
+    };
+    let i=0, lines=[SENT], selected=false, clip='', cut=false;
+    area.innerHTML=`<div style="padding:12px">
+      <div class="doc-app">
+        <div class="doc-bar">📝 ${t('my-work.txt')} <span id="docSave" class="doc-save"></span></div>
+        <div class="doc-body" id="docBody"></div>
+      </div>
+      <div id="clipRow" class="clip-row"></div>
+      ${boardHTML()}</div>`;
+    const draw=()=>{
+      $('#docBody',b).innerHTML=lines.map(l=>`<div class="doc-line ${selected?'sel':''}">${l}</div>`).join('');
+      $('#clipRow',b).innerHTML=clip?`<span class="tag">📋 ${t('Clipboard:')} <b>${clip}</b></span>`:'';
+    };
+    function ask(){
+      $$('.key',b).forEach(k=>k.classList.remove('hot'));
+      if(i>=steps.length) return level3intro();
+      const [letter,what]=steps[i];
+      score.textContent=i+'/'+steps.length;
+      prompt.innerHTML=t('Press &nbsp;')+`<b style="color:var(--star)">Ctrl + ${letter}</b>`;
+      coachSay(HOW[what]);
+      const hot=()=>{ ['CONTROL',letter].forEach(k=>{const el=$(`.key[data-k="${k}"]`,b); if(el) el.classList.add('hot');}); };
+      if(state.support) hot(); else setTimeout(()=>{ if(steps[i]&&steps[i][0]===letter) hot(); },600); /* QA: was 3500 */
+      draw();
+    }
+    function apply(what){
+      if(what==='select') selected=true;
+      if(what==='copy'){ clip=SENT; }
+      if(what==='paste'){ lines=[...lines,SENT]; selected=false; }
+      if(what==='cut'){ clip=SENT; lines=lines.slice(0,-1); cut=true; if(!lines.length) lines=[]; }
+      if(what==='undo'&&cut){ lines=[...lines,SENT]; cut=false; }
+      if(what==='save'){ $('#docSave',b).textContent='✓ '+t('Saved'); }
+      draw();
+    }
+    keyGame={ onKey(e){
+      if(!openWins.keys){ keyGame=null; return; }
+      if(i>=steps.length) return;
+      const ctrl=e.ctrlKey||e.metaKey;
+      const letter=(e.key||'').toUpperCase();
+      if(ctrl&&['A','C','V','X','Z','S','P','F'].includes(letter)) e.preventDefault();  // keep the browser out of it
+      if(!ctrl) {
+        if(letter.length===1){ coachSay('Hold <b>Ctrl</b> down FIRST, then tap the letter.'); }
+        return;
+      }
+      flash('CONTROL','hit');
+      if(letter===steps[i][0]){
+        flash(letter,'hit'); beep('star');
+        apply(steps[i][1]); i++;
+        setTimeout(ask,520);
+      } else {
+        prompt.insertAdjacentHTML('beforeend',' <span style="color:var(--bad);font-size:18px">'+t('not that one')+'</span>');
+        setTimeout(ask,700);
+      }
+    }};
+    ask();
+  }
+
+  /* =================== LEVEL 3 — typing speed =================== */
+  function level3intro(){
+    setLevel(3); title.textContent=t('⌨️ Speed Typing');
+    prompt.innerHTML=t('Level 3 — Typing speed');
+    score.textContent='';
+    keyGame=null;
+    area.innerHTML=`<div style="padding:22px;text-align:center">
+      <div style="font-size:46px">⏱️</div>
+      <div style="font-size:21px;margin:10px 0">${t('Now for speed! Type what you see before the bar runs out.')}</div>
+      <div style="font-size:17px;color:var(--muted);margin-bottom:14px">${t('Three speeds: Warm Up, Faster, Speedy. Keep your eyes on the words.')}</div>
+      <button class="btn" id="khGo3">${t('Start Level 3 ▶')}</button></div>`;
+    $('#khGo3',b).onclick=()=>speedRound(0);
+    beep('star');
+  }
+  const SPEEDS=[
+    {name:'Warm Up',   secs:state.support?11:8, items:['cat dog','red bus','my desk','I can type']}, /* QA: was 16:12 */
+    {name:'Faster',    secs:state.support?10:6,  items:['click the icon','open the app','save my work','press the space bar']}, /* QA: was 14:9 */
+    {name:'Speedy',    secs:state.support?11:7, items:['I can use the mouse and keyboard','double click opens an app','Ctrl S saves my work']} /* QA: was 16:11 */
+  ];
+  function speedRound(r){
+    if(r>=SPEEDS.length) return finishKeys();
+    const set=SPEEDS[r];
+    const items=state.support?set.items.slice(0,3):set.items;
+    let idx=0, correct=0, started=0, totalChars=0, totalMs=0;
+    title.textContent=t('⌨️ Speed Typing')+' — '+t(set.name);
+    area.innerHTML=`<div style="padding:14px;text-align:center">
+      <div class="speed-badge">${t(set.name)} — ${items.length} ${t('lines')}</div>
+      <div class="target" id="spTarget"></div>
+      <input class="type-box" id="spInput" autocomplete="off" spellcheck="false">
+      <div class="timer-wrap"><div class="timer-bar" id="spBar"></div></div>
+      <div id="spMsg" style="font-size:17px;color:var(--muted);height:24px;margin-top:6px"></div></div>`;
+    const target=$('#spTarget',b), inp=$('#spInput',b), bar=$('#spBar',b), msg=$('#spMsg',b);
+    let timer=null, tick=null;
+    function show(){
+      const want=t(items[idx]);
+      score.textContent=(idx)+'/'+items.length;
+      prompt.innerHTML=t('Type it fast! &nbsp;')+`<b style="color:var(--star)">${set.secs} ${t('sec')}</b>`;
+      target.innerHTML=want.split('').map((c,n)=>`<span data-n="${n}">${c===' '?'&nbsp;':c}</span>`).join('');
+      inp.value=''; inp.focus(); msg.textContent='';
+      started=Date.now();
+      bar.style.transition='none'; bar.style.width='100%';
+      requestAnimationFrame(()=>{ bar.style.transition=`width ${set.secs}s linear`; bar.style.width='0%'; });
+      clearTimeout(timer);
+      timer=setTimeout(()=>{ msg.innerHTML='⏳ '+t('Time! Try that one again.'); beep('bad'); show(); }, set.secs*1000);
+    }
+    inp.addEventListener('input',()=>{
+      const want=t(items[idx]), got=inp.value;
+      $$('#spTarget span',b).forEach((sp,n)=>{
+        sp.className = n>=got.length ? '' : (got[n]===want[n] ? 'ok' : 'no');
+      });
+      if(got===want){
+        clearTimeout(timer);
+        const ms=Date.now()-started;
+        totalChars+=want.length; totalMs+=ms; correct++;
+        const wpm=Math.max(1,Math.min(180,Math.round((want.length/5)/(ms/60000))));
+        msg.innerHTML='✅ '+t('Nice! {wpm} words per minute',{wpm:wpm});
+        beep('star'); idx++;
+        if(idx>=items.length){
+          const avg=Math.max(1,Math.min(180,Math.round((totalChars/5)/(totalMs/60000))));
+          bar.style.transition='none'; bar.style.width='0%';
+          setTimeout(()=>roundDone(r,avg),700);
+        } else setTimeout(show,700);
+      }
+    });
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter') e.preventDefault(); });
+    show();
+  }
+  function roundDone(r,wpm){
+    prompt.innerHTML=t('Round finished! 🎉');
+    area.innerHTML=`<div style="padding:24px;text-align:center">
+      <div style="font-size:46px">${r===SPEEDS.length-1?'🏆':'⚡'}</div>
+      <div style="font-size:23px;margin:8px 0">${t('{name} complete!',{name:t(SPEEDS[r].name)})}</div>
+      <div class="wpm">${wpm} <span>${t('words per minute')}</span></div>
+      <button class="btn" id="khNextR">${r===SPEEDS.length-1?t('Finish ▶'):t('Next speed ▶')}</button></div>`;
+    $('#khNextR',b).onclick=()=>{ if(r===SPEEDS.length-1) finishKeys(wpm); else speedRound(r+1); };
+    beep('star');
+  }
+
+  function finishKeys(wpm){
+    prompt.innerHTML=t('Finished! 🎉');
+    area.innerHTML=`<div style="padding:26px;text-align:center">
+      <div style="font-size:52px">🏅</div><div style="font-size:24px">${t('Key Hunt finished!')}</div>
+      <div style="color:var(--muted);font-size:17px;margin-top:6px">${t('Letters • Numbers • Space • Enter • Backspace • Shift • Arrows')}</div>
+      <div style="color:var(--muted);font-size:17px">${t('Ctrl + A C V X Z S')}</div>
+      ${wpm?`<div class="wpm" style="margin-top:10px">${wpm} <span>${t('words per minute')}</span></div>`:''}</div>`;
+    score.textContent=t('Done');
+    keyGame=null;
+    awardBadge('⌨️ Key Finder'); awardBadge('🎹 Shortcut Pro'); awardBadge('⚡ Speed Typer');
+    fire('game:done',{id:'keys'});
+  }
+
+  level1();
+}
+document.addEventListener('keydown',e=>{ if(keyGame&&keyGame.onKey) keyGame.onKey(e); });
+
+/* =====================================================================
+   COACH / BADGES
+   ===================================================================== */
+let coachTimer=null;
+function coachSay(html,pics,params){
+  clearTimeout(coachTimer);
+  $('#coach').classList.remove('hidden');
+  $('#coachText').innerHTML=t(html,params);
+  $('#coachPics').innerHTML=(pics||[]).map(p=>typeof p==='function'?p():p).join('');
+  $('#coachNext').classList.add('hidden');
+  coachTimer=setTimeout(showCoach,5000);
+}
+function awardBadge(name){
+  if(state.badges.includes(name)) return;
+  state.badges.push(name);
+  renderBadges();
+}
+function renderBadges(){
+  $('#badges').innerHTML=state.badges.map(b=>`<span class="badge">${t(b)}</span>`).join('');
+}
+
+/* =====================================================================
+   PARTS
+   ===================================================================== */
+const PART_NAMES=['','Part 1 — Login &amp; Warm-Up','Part 2 — Teacher Modeling (Tour)',
+  'Part 3 — Mouse &amp; Keyboard Games','Part 4 — Desktop Scavenger Hunt','Part 5 — Screenshot &amp; Upload'];
+function setPart(n){ state.part=n; $('#hudPart').innerHTML=t(PART_NAMES[n]); }
+
+function showDesktop(){
+  $('#loginScreen').classList.add('hidden');
+  $('#desktopScreen').classList.remove('hidden');
+  if(state.support) $('#helper').classList.remove('hidden');
+}
+
+/* ---- Part 1 ---- */
+function startPart1(){
+  showDesktop(); setPart(1); clearWarmup();
+  const bubbles=state.support?4:6;
+  makeWarmup(bubbles);
+  setQuests([
+    {short:'Pop the warm-up bubbles', on:'warmup:done',
+     text:'Welcome, <b>{name}</b>! Warm up your mouse hand: pop all <b>{n}</b> bubbles with <b>one click</b> each.',
+     p:{name:state.name,n:bubbles}, pics:[PIC.click]},
+    {short:'Single-click the Files icon', on:'icon:click', match:d=>d.id==='files', spot:'#icon-files',
+     text:'<b>One click</b> on the <b>Files</b> icon. One click <b>chooses</b> — the icon turns blue.', pics:[PIC.click]},
+    {short:'Double-click Text Editor to open', on:'app:open', match:d=>d.id==='textedit', spot:'#icon-textedit',
+     text:'Now <b>double-click</b> the <b>Text Editor</b> icon — two fast clicks <b>opens</b> it.', pics:[PIC.double]},
+    {short:'Close Text Editor with ✕', on:'app:close', match:d=>d.id==='textedit',
+     text:'Close it: click the red <b>✕</b> in the corner of the window.', pics:[PIC.click]}
+  ]);
+}
+function makeWarmup(n){
+  const desk=$('#desk');
+  const wrap=document.createElement('div');
+  wrap.id='warmup'; wrap.style.cssText='position:absolute;inset:0;z-index:15;pointer-events:none';
+  let got=0;
+  for(let i=0;i<n;i++){
+    const b=document.createElement('button');
+    b.className='balloon'; b.textContent='🫧'; b.style.pointerEvents='auto';
+    b.style.left=rnd(110,Math.max(150,usableW()-150))+'px';
+    b.style.top=rnd(60,Math.max(100,desk.clientHeight-220))+'px';
+    b.style.background='rgba(62,166,255,.35)';
+    b.onclick=()=>{ b.remove(); got++; beep('pop'); if(got===n){ wrap.remove(); fire('warmup:done'); } };
+    wrap.appendChild(b);
+  }
+  desk.appendChild(wrap);
+}
+function clearWarmup(){ const w=$('#warmup'); if(w) w.remove(); }
+
+/* ---- Part 2 : guided tour ---- */
+function startPart2(){
+  showDesktop(); setPart(2); clearWarmup();
+  setQuests([
+    {short:'Meet the desktop', on:'next', spot:'#desk',
+     text:'This whole screen is the <b>DESKTOP</b>. It is like the top of your desk — your things sit here.'},
+    {short:'Meet the icons', on:'next', spot:'#iconLayer',
+     text:'These little pictures are <b>ICONS</b>. Each icon opens an app or a folder.'},
+    {short:'Open the App Launcher', on:'launcher:open', spot:'#btnLauncher',
+     text:'Click the <b>App Launcher</b> 🚀 at the bottom. Every app on the computer lives there.', pics:[PIC.click]},
+    {short:'Close the App Launcher', on:'launcher:close', spot:'#lchClose',
+     text:'Good! Now close the launcher with the <b>Close the Launcher</b> button.', pics:[PIC.click]},
+    {short:'Open the system menu', on:'sysmenu:open', spot:'#btnSys',
+     text:'Top right corner: click the <b>system menu</b> 📶🔊🔋. It shows Wi-Fi, volume, battery, and the clock.', pics:[PIC.click]},
+    {short:'Close the system menu', on:'sysmenu:close', spot:'#sysClose',
+     text:'Close the system menu with the <b>Close menu</b> button.', pics:[PIC.click]},
+    {short:'Single-click Files (choose)', on:'icon:click', match:d=>d.id==='files', spot:'#icon-files',
+     text:'<b>One click</b> on <b>Files</b>. Watch: it is only <b>chosen</b>, not opened.', pics:[PIC.click]},
+    {short:'Double-click Files (open)', on:'app:open', match:d=>d.id==='files', spot:'#icon-files',
+     text:'Now <b>two fast clicks</b> on <b>Files</b> to <b>open</b> it.', pics:[PIC.double]},
+    {short:'Scroll down in the file list', on:'scroll:files',
+     text:'Put the arrow inside the window and roll the mouse <b>wheel</b> to <b>scroll down</b> the file list.', pics:[PIC.scroll]},
+    {short:'Close Files with ✕', on:'app:close', match:d=>d.id==='files',
+     text:'Close the Files window with the red <b>✕</b>.', pics:[PIC.click]},
+    {short:'Return to the desktop', on:'desktop:click',
+     text:'Last one: click an <b>empty spot</b> on the desktop. You are back at the <b>desktop</b>! 🖥️', pics:[PIC.click]}
+  ]);
+}
+
+/* ---- Part 3 : the three games ---- */
+function startPart3(){
+  showDesktop(); setPart(3); clearWarmup();
+  setQuests([
+    {short:'Finish Mouse Master 🖱️', on:'game:done', match:d=>d.id==='mouse', spot:'#icon-mouse',
+     text:'<b>Double-click</b> the 🖱️ <b>Mouse Master</b> icon and finish all 4 rounds.', pics:[PIC.double]},
+    {short:'Finish Scroll Quest ⭐', on:'game:done', match:d=>d.id==='scroll', spot:'#icon-scroll',
+     text:'<b>Double-click</b> the ⭐ <b>Scroll Quest</b> icon and collect every star.', pics:[PIC.double,PIC.scroll]},
+    {short:'Finish Key Hunt ⌨️', on:'game:done', match:d=>d.id==='keys', spot:'#icon-keys',
+     text:'<b>Double-click</b> the ⌨️ <b>Key Hunt</b> icon and find the keys.', pics:[PIC.double,()=>PIC.key('keys')]}
+  ],'any');
+  coachSay('Three games are on the desktop. Do them in any order — <b>double-click</b> an icon to start.',[PIC.double]);
+}
+
+/* ---- Part 4 : scavenger hunt ---- */
+function startPart4(){
+  showDesktop(); setPart(4); clearWarmup();
+  Object.keys(openWins).forEach(closeApp);
+  setQuests([
+    {short:'Find the App Launcher', on:'launcher:open', text:'🔎 Find and open the <b>App Launcher</b>.', pics:[PIC.click]},
+    {short:'Find and open Files', on:'app:open', match:d=>d.id==='files', text:'🔎 Find and open the <b>Files</b> app.', pics:[PIC.double]},
+    {short:'Find the system menu', on:'sysmenu:open', text:'🔎 Find and open the <b>system menu</b> (top right).', pics:[PIC.click]},
+    {short:'Open the Paint app', on:'app:open', match:d=>d.id==='paint', text:'🔎 Open the assigned app: <b>Paint</b> 🎨.', pics:[PIC.double]},
+    {short:'Draw a line with the mouse', on:'paint:draw', text:'✏️ Hold the left button down and <b>drag</b> to draw in Paint.', pics:[PIC.click]},
+    {short:'Close Paint with ✕', on:'app:close', match:d=>d.id==='paint', text:'❌ Close <b>Paint</b> with the red ✕.', pics:[PIC.click]},
+    {short:'Show the desktop (close all)', on:'desktop:clear', text:'🖥️ Close every window so you can see the <b>desktop</b> again.', pics:[PIC.click]}
+  ],'any');
+  coachSay('Scavenger hunt! Find each item on the list. Any order is fine.',[PIC.click]);
+}
+
+/* ---- Part 5 : screenshot the certificate and hand it in ---- */
+function startPart5(){
+  showDesktop(); setPart(5); clearWarmup(); buildIcons(); buildLauncher();
+  setQuests([
+    {short:'Look at your certificate', on:'next',
+     text:'🏆 Great job, <b>{name}</b>! Your certificate is open on the desktop. Now let us save a picture of it — a <b>screenshot</b>.', p:{name:state.name}},
+    {short:'Open the Screenshot Helper', on:'app:open', match:d=>d.id==='shot', spot:'#icon-shot',
+     text:'<b>Double-click</b> the 📸 <b>Screenshot Helper</b> icon.', pics:[PIC.double]},
+    {short:'Learn the screenshot keys', on:'shot:learned',
+     text:'Read the three cards. Learn which key takes a picture of the screen.', pics:[()=>PIC.key('PrtScn')]},
+    {short:'Take the screenshot', on:'shot:taken',
+     text:'Now press <b>PrtScn</b> to take the picture.', pics:[()=>PIC.key('PrtScn')]},
+    {short:'Find it in Pictures → Screenshots', on:'files:shot',
+     text:'Open <b>Files</b> 📁 and <b>double-click</b> <b>Pictures</b>, then <b>Screenshots</b>, to find your picture.', pics:[PIC.double]},
+    {short:'Open Cloud Upload', on:'app:open', match:d=>d.id==='drive', spot:'#icon-drive',
+     text:'<b>Double-click</b> the ☁️ <b>Cloud Upload</b> icon — this is where you hand your work in.', pics:[PIC.double]},
+    {short:'Upload your screenshot', on:'drive:uploaded',
+     text:'Send it to the class folder: <b>drag</b> the file into the box, or use <b>+ New → File upload</b>.', pics:[PIC.click]}
+  ]);
+  coachSay('Last part! Take a picture of your certificate and hand it in.',[()=>PIC.key('PrtScn')]);
+}
+
+/* ---- the very end ---- */
+function finishAll(){
+  beep('star');
+  modal(`<h2>${t('🏆 You did it, {name}!',{name:state.name})}</h2>
+    <p style="color:var(--star);font-size:26px">${'⭐'.repeat(Math.min(state.stars,14))}</p>
+    <p style="font-size:18px">${t('You logged in, learned the desktop, mastered the mouse, learned keyboard shortcuts, typed for speed, took a screenshot, and handed it in.')}</p>
+    <div class="realworld" style="margin:14px 0">
+      <b>${t('Now do it for real:')}</b><br>
+      1. ${t('Press <b>PrtScn</b> to photograph your certificate.')}<br>
+      2. ${t('Open <b>Files → Pictures → Screenshots</b>.')}<br>
+      3. ${t('Go to <b>drive.google.com</b> and sign in.')}<br>
+      4. ${t('Click <b>+ New → File upload</b> and pick your screenshot.')}<br>
+      5. ${t('Put it in the folder your teacher named.')}
+    </div>
+    <button class="btn" id="fPrint">${t('🖨️ Print my certificate')}</button>
+    <button class="btn ghost" id="fAgain">${t('🔄 Play again')}</button>`);
+  $('#fPrint').onclick=()=>{ closeModal(); $('#certificate').classList.remove('hidden'); $('#certificate').innerHTML=certHTML(true);
+    $('#again').onclick=()=>location.reload();
+    $('#toShot').onclick=()=>{ $('#certificate').classList.add('hidden'); };
+    setTimeout(()=>window.print(),300); };
+  $('#fAgain').onclick=()=>location.reload();
+}
+
+/* ---- part transitions ---- */
+function partComplete(){
+  const p=state.part;
+  if(p===4){ exitTicket(); return; }
+  if(p===5){ finishAll(); return; }
+  const msg={
+    1:['🎉 Part 1 done!','You logged in and warmed up your mouse hand.','Next: a tour of the desktop with your teacher.'],
+    2:['🎉 Part 2 done!','You found the desktop, icons, App Launcher, Files, and the system menu.','Next: three games!'],
+    3:['🎉 Part 3 done!','Click, double-click, right-click, scroll, and keyboard — all practiced.','Next: the scavenger hunt.'],
+    4:['🎉 Part 4 done!','You found everything on the desktop.','Next: the exit question.']
+  }[p];
+  beep('star');
+  modal(`<h2>${t(msg[0])}</h2><p>${t(msg[1])}</p><p style="color:var(--star);font-size:24px">${'⭐'.repeat(Math.min(state.stars,12))}</p>
+    <p>${t(msg[2])}</p><button class="btn good" id="mNext">${t('Continue ▶')}</button>`);
+  $('#mNext').onclick=()=>{ closeModal(); [null,startPart2,startPart3,startPart4][p](); };
+}
+
+/* ---- exit ticket + certificate ---- */
+function exitTicket(){
+  beep('star');
+  const mouseOpts=[['click','I can <b>click</b> to choose something.'],
+                   ['double','I can <b>double-click</b> to open an app.'],
+                   ['right','I can <b>right-click</b> to see a menu.'],
+                   ['scroll','I can <b>scroll</b> to move up and down.']];
+  const keyOpts=[['letters','I can find <b>letters</b> and type my name.'],
+                 ['space','I can press the <b>Space bar</b> to make a space.'],
+                 ['enter','I can press <b>Enter</b> to go.'],
+                 ['backspace','I can press <b>Backspace</b> to erase.']];
+  const row=(arr,g)=>arr.map(([v,txt])=>`<button class="btn ghost small ex" data-g="${g}" data-v="${v}" style="text-align:left">${t(txt)}</button>`).join('');
+  modal(`<h2>${t('🎟️ Exit Question')}</h2>
+    <p style="font-size:18px">${t('Show me <b>one thing you can do with the mouse</b> and <b>one thing you can do with the keyboard</b>.')}</p>
+    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">${t('🖱️ Pick ONE mouse job:')}</div>
+    <div style="display:grid;gap:6px;margin:6px 0">${row(mouseOpts,'mouse')}</div>
+    <div style="text-align:left;font-size:15px;color:var(--star);margin-top:12px">${t('⌨️ Pick ONE keyboard job:')}</div>
+    <div style="display:grid;gap:6px;margin:6px 0">${row(keyOpts,'key')}</div>
+    <button class="btn good hidden" id="exDone">${t('Finish ▶')}</button>`);
+  $$('.ex').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g;
+    $$(`.ex[data-g="${g}"]`).forEach(x=>{x.classList.add('ghost');x.classList.remove('good');});
+    b.classList.remove('ghost'); b.classList.add('good');
+    state.exit[g]=b.innerHTML; beep('good');
+    if(state.exit.mouse&&state.exit.key) $('#exDone').classList.remove('hidden');
+  });
+  $('#exDone').onclick=()=>{ closeModal(); certificate(); };
+}
+function certHTML(showButtons){
+  return `<div class="cert">
+    <div style="font-size:44px">🐧 🖱️ ⌨️</div>
+    <h1>${t('Desktop Quest Certificate')}</h1>
+    <div>${t('This certifies that')}</div>
+    <div class="nm">${state.name}</div>
+    <div style="font-size:20px">${t('can navigate the Linux desktop and control the mouse and keyboard.')}</div>
+    <ul>
+      <li>${t('✔ Logged in and kept the password private')}</li>
+      <li>${t('✔ Found the desktop, icons, App Launcher, Files, and system menu')}</li>
+      <li>${t('✔ Clicked, double-clicked, right-clicked, and scrolled')}</li>
+      <li>${t('✔ Used letters, numbers, Space, Enter, Backspace, Shift, and arrows')}</li>
+      <li>${t('✔ Opened and closed an application')}</li>
+    </ul>
+    <p style="font-size:19px">${state.exit.mouse||''}<br>${state.exit.key||''}</p>
+    <p style="font-size:22px;color:#b8952f">${'⭐'.repeat(Math.min(state.stars,15))} &nbsp; ${state.stars} ${t('stars')}</p>
+    <p style="font-size:16px">${new Date().toLocaleDateString(state.lang==='es'?'es-MX':'en-US')} &nbsp;•&nbsp; ${state.badges.map(x=>t(x)).join('  ')}</p>
+    ${showButtons?`<div class="noprint" style="margin-top:14px">
+      <button class="btn good" id="toShot">${t('📸 Save my certificate')}</button>
+      <button class="btn" onclick="window.print()">${t('🖨️ Print')}</button>
+      <button class="btn ghost" id="again">${t('🔄 Play again')}</button>
+    </div>`:''}</div>`;
+}
+function certificate(){
+  state.stars+=2; updateStars();
+  const c=$('#certificate'); c.classList.remove('hidden');
+  c.innerHTML=certHTML(true);
+  $('#again').onclick=()=>location.reload();
+  $('#toShot').onclick=()=>{
+    c.classList.add('hidden');           // the certificate moves onto the desktop…
+    state.part=5; buildIcons();          // …so the last three icons can appear
+    openApp('cert');
+    startPart5();
+  };
+  beep('star');
+}
+function appCert(b){
+  b.innerHTML=`<div style="padding:10px">${certHTML(false)}</div>`;
+  $('.cert',b).style.cssText='width:auto;border-width:8px;padding:18px;font-size:15px';
+  $('.cert h1',b).style.fontSize='26px';
+  $('.cert .nm',b).style.fontSize='32px';
+}
+
+/* =====================================================================
+   HELPER SHEET (visual reference for SWIEP / ELL)
+   ===================================================================== */
+const HELP_ROWS=[
+  ['🖥️','Desktop','The main screen. Your icons live here.'],
+  ['🖼️','Icon','A small picture that opens an app or folder.'],
+  ['🚀','App Launcher','The button that shows all the apps.'],
+  ['📁','Files','The app that holds your work.'],
+  ['📶','System menu','Wi-Fi, sound, battery, clock (top right).'],
+  ['✕','Close','Closes the window / quits the app.']
+];
+function buildHelper(){
+  const h=$('#helper');
+  h.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;
+      background:#fffbe8;padding:4px 0 8px;margin:-4px 0 0"><h3 style="margin:0">${t('📖 Helper Sheet')}</h3>
+      <button class="btn small" id="hpCloseTop">${t('Close')}</button></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('click')}</span><span class="hp-tx"><b>${t('Click')}</b><div>${t('Press the LEFT button ONE time = choose.')}</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('double')}</span><span class="hp-tx"><b>${t('Double-click')}</b><div>${t('Press the LEFT button TWO times fast = open.')}</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('right')}</span><span class="hp-tx"><b>${t('Right-click')}</b><div>${t('Press the RIGHT button = a menu appears.')}</div></span></div>
+    <div class="hp-row"><span class="hp-em">${mousePic('scroll')}</span><span class="hp-tx"><b>${t('Scroll')}</b><div>${t('Roll the wheel = the page moves up and down.')}</div></span></div>
+    ${HELP_ROWS.map(([e,ttl,d])=>`<div class="hp-row"><span class="hp-em">${e}</span><span class="hp-tx"><b>${t(ttl)}</b><div>${t(d)}</div></span></div>`).join('')}
+    <div class="hp-row"><span class="hp-em">⌨️</span><span class="hp-tx"><b>${t('Keys')}</b><div>${t('Space = space · Enter ⏎ = go · Backspace ⌫ = erase · Shift ⇧ = CAPITAL · ← ↑ ↓ → = move')}</div></span></div>
+    <button class="btn small" id="hpClose" style="margin-top:10px">${t('Close')}</button>`;
+  $('#hpClose').onclick=()=>h.classList.add('hidden');
+  $('#hpCloseTop').onclick=()=>h.classList.add('hidden');
+}
+$('#btnHelper').onclick=()=>{ $('#helper').classList.toggle('hidden'); };
+
+/* =====================================================================
+   TOGGLES + TEACHER PANEL
+   ===================================================================== */
+$('#btnSupport').onclick=()=>{
+  state.support=!state.support;
+  document.body.classList.toggle('support',state.support);
+  $('#btnSupport').textContent=t('🖼️ Picture Mode: ')+(state.support?t('ON'):t('OFF'));
+  // keep the sheet out of the way of the login card; it opens with the desktop
+  if(state.support&&!$('#desktopScreen').classList.contains('hidden')) $('#helper').classList.remove('hidden');
+  if(!state.support) $('#helper').classList.add('hidden');
+  try{ localStorage.setItem('dq_support',state.support?'1':'0'); }catch(e){}  // file:// may block storage
+  renderPassLabel(); buildTeacher();
+};
+$('#btnSound').onclick=()=>{
+  state.sound=!state.sound;
+  $('#btnSound').textContent=t('🔊 Sound: ')+(state.sound?t('ON'):t('OFF'));
+};
+$('#btnTeacher').onclick=()=>{ $('#teacher').classList.toggle('hidden'); };
+function buildTeacher(){
+  $('#teacher').innerHTML=`<h3>${t('👩‍🏫 Teacher Panel')}</h3>
+    <p style="font-size:14px;color:var(--muted)">${t('Objective: SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.')}</p>
+    <div class="tch-row">
+      <button class="btn small ${state.lang==='en'?'':'ghost'}" data-setlang="en">🇺🇸 English</button>
+      <button class="btn small ${state.lang==='es'?'':'ghost'}" data-setlang="es">🇲🇽 Español</button>
+    </div>
+    <table>
+      <tr><th>${t('Time')}</th><th>${t('Part')}</th><th>${t('In the game')}</th></tr>
+      <tr><td>0:00–0:08</td><td>${t('Login &amp; Warm-Up')}</td><td>${t('Login routine, bubble pop, click vs. double-click')}</td></tr>
+      <tr><td>0:08–0:18</td><td>${t('Teacher Modeling')}</td><td>${t('Guided tour: desktop, icons, launcher, Files, system menu, scroll, open/close')}</td></tr>
+      <tr><td>0:18–0:38</td><td>${t('Mouse &amp; Keyboard Games')}</td><td>${t('Mouse Master (4 rounds), Scroll Quest, Key Hunt')}</td></tr>
+      <tr><td>0:38–0:46</td><td>${t('Scavenger Hunt / Closure')}</td><td>${t('7-item hunt, exit question, certificate')}</td></tr>
+      <tr><td>0:46–0:52</td><td>${t('Screenshot &amp; Hand-In')}</td><td>${t('PrtScn lesson, find it in Files, practice upload, real Drive steps')}</td></tr>
+    </table>
+    <div class="tch-row">
+      <button class="btn small ghost" data-p="1">${t('▶ Part 1')}</button>
+      <button class="btn small ghost" data-p="2">${t('▶ Part 2')}</button>
+      <button class="btn small ghost" data-p="3">${t('▶ Part 3')}</button>
+      <button class="btn small ghost" data-p="4">${t('▶ Part 4')}</button>
+      <button class="btn small ghost" data-p="5">${t('▶ Part 5')}</button>
+      <button class="btn small ghost" id="tchCert">${t('▶ Exit ticket')}</button>
+    </div>
+    <p style="font-size:14px">${t('<b>Picture Mode</b> (SWIEP/ELL): fewer targets, larger labels, key hints shown right away, Helper Sheet pinned open, shorter password ({word}).',{word:'<i>'+(state.lang==='es'?'sol':'cat')+'</i>'})}</p>
+    <div class="tch-row">
+      <button class="btn small ghost" id="tchReset">${t('🔄 Restart from login')}</button>
+      <button class="btn small" id="tchClose">${t('Close panel')}</button>
+    </div>`;
+  $$('#teacher [data-setlang]').forEach(b=>b.onclick=()=>setLang(b.dataset.setlang));
+  $$('#teacher [data-p]').forEach(b=>b.onclick=()=>{
+    $('#teacher').classList.add('hidden'); closeModal();
+    Object.keys(openWins).forEach(closeApp);
+    if(+b.dataset.p===5&&!openWins.cert){ state.part=5; buildIcons(); openApp('cert'); }
+    [null,startPart1,startPart2,startPart3,startPart4,startPart5][+b.dataset.p]();
+  });
+  $('#tchCert').onclick=()=>{ $('#teacher').classList.add('hidden'); exitTicket(); };
+  $('#tchReset').onclick=()=>location.reload();
+  $('#tchClose').onclick=()=>$('#teacher').classList.add('hidden');
+}
+
+/* =====================================================================
+   LANGUAGE SWITCHING
+   ===================================================================== */
+function setLang(lang){
+  if(lang!==state.lang){ state.lang=lang; try{ localStorage.setItem('dq_lang',lang); }catch(e){} }
+  applyLang();
+}
+function applyLang(){
+  document.documentElement.lang=state.lang;
+  document.title='[TEST BUILD] '+t('Desktop Quest — Mouse &amp; Keyboard Lab').replace('&amp;','&');
+  // static text marked with data-i18n / data-i18n-ph
+  $$('[data-i18n]').forEach(el=>{ el.innerHTML=t(el.dataset.i18n); });
+  $$('[data-i18n-ph]').forEach(el=>{ el.placeholder=t(el.dataset.i18nPh); });
+  $$('.langbtn').forEach(b=>b.classList.toggle('on',b.dataset.lang===state.lang));
+  $('#btnLang').textContent=state.lang==='en'?'🌐 Cambiar a Español':'🌐 Switch to English';
+  $('#btnSupport').textContent=t('🖼️ Picture Mode: ')+(state.support?t('ON'):t('OFF'));
+  $('#btnSound').textContent=t('🔊 Sound: ')+(state.sound?t('ON'):t('OFF'));
+  $('#btnHelper').textContent=t('📖 Helper Sheet');
+  $('#btnTeacher').textContent=t('👩‍🏫 Teacher');
+  $('#hudPart').innerHTML=t(PART_NAMES[state.part||1]);
+  if(!state.quests.length) $('#hudName').textContent=t('Player');
+  renderPassLabel();
+  // rebuild everything that is drawn from JS
+  buildIcons(); buildLauncher(); buildSys(); buildHelper(); buildTeacher(); renderBadges();
+  Object.keys(openWins).forEach(id=>{
+    const w=openWins[id], a=appById(id);
+    $('.win-bar b',w).textContent=a.em+' '+t(a.name);
+    buildAppBody(id,$('.win-body',w));   // games restart in the new language
+  });
+  refreshTaskbar();
+  if(state.quests.length){ renderQuests(); showCoach(); }
+}
+$('#btnLang').onclick=()=>setLang(state.lang==='en'?'es':'en');
+$$('.langbtn').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+buildIcons(); buildLauncher(); buildSys(); buildHelper(); buildTeacher();
+try{ if(localStorage.getItem('dq_support')==='1') $('#btnSupport').click(); }catch(e){}
+try{ const L=localStorage.getItem('dq_lang'); if(L==='es'||L==='en') state.lang=L; }catch(e){}
+applyLang();
+$('#lgName').focus();
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ toggleLauncher(false); toggleSys(false); hideCtx(); } });
+</script>
+</body>
+</html>

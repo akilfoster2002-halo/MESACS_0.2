@@ -9,6 +9,16 @@ No internet, no install, no server. To put it on lab machines, copy the one file
 (e.g. to `/home/student/Desktop/desktop-quest.html`) or host it on the school share.
 Best on a screen 1100px wide or more. Fullscreen with **F11**.
 
+## QA test build
+`desktop-quest.test.html` is a copy for testing — never hand this one to students.
+It has a red **TEST BUILD** ribbon and a **⚡ QA: Skip login** button that logs in as
+"QA" and opens the Teacher Panel automatically so you can jump straight to any part
+(**▶ Part 1–5**, **▶ Exit ticket**) instead of playing through from the top each time.
+Key Hunt's key-highlight hints and the Speed Typing round timers are also shortened so
+each pass is quicker to click through. Everything else — content, translations, quest
+logic — is identical to `desktop-quest.html`; re-copy it from that file after any future
+lesson changes to keep the two in sync.
+
 ## How the game maps to the lesson
 
 | Lesson part | In the game |
