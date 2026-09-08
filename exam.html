@@ -242,9 +242,9 @@ const ES = {
  'Computer navigation — mouse and keyboard':'Navegación en la computadora — ratón y teclado',
  'Type your first name':'Escribe tu nombre',
  'Start the test ▶':'Empezar el examen ▶',
- 'This is a test, not a lesson. You will get a task, but <b>no hints</b> and <b>nothing will be highlighted</b>. Wrong tries are counted, so think before you click. If you are stuck you may press <b>Skip</b> — that task scores zero.':'Esto es un examen, no una lección. Verás una tarea, pero <b>sin pistas</b> y <b>nada se iluminará</b>. Los intentos incorrectos se cuentan, así que piensa antes de hacer clic. Si te atoras puedes presionar <b>Saltar</b> — esa tarea vale cero.',
+ 'This is a test, not a lesson. You will get a task, but <b>no hints</b> and <b>nothing will be highlighted</b>. If you get it wrong, <b>try again</b> — trying again does not lower your score. If you are stuck you may press <b>Skip</b> — that task scores zero.':'Esto es un examen, no una lección. Verás una tarea, pero <b>sin pistas</b> y <b>nada se iluminará</b>. Si te equivocas, <b>inténtalo otra vez</b> — volver a intentar no baja tu puntaje. Si te atoras puedes presionar <b>Saltar</b> — esa tarea vale cero.',
  'TASK':'TAREA','Task {n} of {t}':'Tarea {n} de {t}','Skip this task':'Saltar esta tarea',
- 'Not correct.':'No es correcto.','Not correct. ({n} tries)':'No es correcto. ({n} intentos)',
+ 'Not correct — try again.':'No es correcto — inténtalo otra vez.','Not correct — try again. ({n} tries)':'No es correcto — inténtalo otra vez. ({n} intentos)',
  'App Launcher':'Lanzador de Apps',
  /* items */
  'Click on the desktop itself — not on any icon, bar or button.':'Haz clic en el escritorio — no en un icono, ni en una barra, ni en un botón.',
@@ -268,11 +268,11 @@ const ES = {
  'Screenshot key':'Tecla de captura de pantalla',
  /* report */
  'Result':'Resultado','Skill':'Habilidad','Score':'Puntos','Tries':'Intentos','Time':'Tiempo',
- 'first try':'a la primera','after {n}':'tras {n}','skipped':'saltada',
+ 'done':'completada','not done':'no completada','skipped':'saltada',
  'Test finished':'Examen terminado','out of':'de','Print this report':'Imprimir este reporte',
  'Take the test again':'Hacer el examen otra vez','Copy result line':'Copiar la línea de resultado',
  'Copied.':'Copiado.',
- 'Scoring: 2 points for correct on the first try, 1 point after a wrong try, 0 for skipped.':'Puntaje: 2 puntos si acierta a la primera, 1 punto tras un error, 0 si la salta.',
+ 'Scoring: 1 point for each task completed. Trying again does not lower the score — only a skipped task scores zero.':'Puntaje: 1 punto por cada tarea completada. Volver a intentar no baja el puntaje — solo una tarea saltada vale cero.',
  'Not measured by this test: arrow keys and the space bar.':'No se mide en este examen: las flechas y la barra espaciadora.',
  'Files':'Archivos','Text Editor':'Editor de Texto','Paint':'Pintura','Music':'Música',
  'Photos':'Fotos','Trash':'Papelera','Calculator':'Calculadora','Notes':'Notas',
@@ -508,14 +508,14 @@ function fire(type,data){
   if(it.pass && it.pass(ev)){ scoreItem(true); return; }
   if(it.wrong && it.wrong(ev)){
     rec.tries++;
-    $('#qFeedback').textContent = rec.tries===1 ? t('Not correct.') : t('Not correct. ({n} tries)',{n:rec.tries});
+    $('#qFeedback').textContent = rec.tries===1 ? t('Not correct — try again.') : t('Not correct — try again. ({n} tries)',{n:rec.tries});
   }
 }
 function scoreItem(passed){
   const rec=S.results[S.i];
   rec.done=true; rec.passed=passed;
   rec.secs=Math.round((performance.now()-S.itemStart)/1000);
-  rec.points = !passed ? 0 : (rec.tries===0 ? 2 : 1);
+  rec.points = passed ? 1 : 0;
   const it=ITEMS[S.i];
   if(it.after) try{ it.after(); }catch(e){}
   paintMeter();
@@ -543,7 +543,7 @@ function showChoice(it){
     if(i===it.answer){ box.classList.add('hidden'); scoreItem(true); }
     else{
       const rec=S.results[S.i]; rec.tries++;
-      $('#qFeedback').textContent=t('Not correct. ({n} tries)',{n:rec.tries});
+      $('#qFeedback').textContent = rec.tries===1 ? t('Not correct — try again.') : t('Not correct — try again. ({n} tries)',{n:rec.tries});
       b.style.borderColor='var(--bad)';
     }
   });
@@ -562,7 +562,7 @@ function paintMeter(){
   $('#meter').innerHTML=ITEMS.map((it,i)=>{
     const r=S.results[i];
     let c='pip';
-    if(r.done) c+= r.points===2?' ok' : r.points===1?' part':' no';
+    if(r.done) c+= r.points ? ' ok' : ' no';
     if(i===S.i && !S.done) c+=' now';
     return `<div class="${c}" title="${t(it.skill)}"></div>`;
   }).join('');
@@ -578,13 +578,12 @@ setInterval(tick,1000);
 /* --------------------------------------------------------- report */
 function finish(){
   S.done=true;
-  const total=S.results.reduce((a,r)=>a+r.points,0), max=ITEMS.length*2;
+  const total=S.results.reduce((a,r)=>a+r.points,0), max=ITEMS.length;
   const pct=Math.round(total/max*100);
   const secs=Math.round((performance.now()-S.started)/1000);
-  const mark=r=> r.skipped ? `<span class="m-no">✗ ${t('skipped')}</span>`
-              : r.points===2 ? `<span class="m-ok">✓ ${t('first try')}</span>`
-              : r.points===1 ? `<span class="m-part">✓ ${t('after {n}',{n:r.tries})}</span>`
-              : `<span class="m-no">✗</span>`;
+  const mark=r=> r.points ? `<span class="m-ok">✓ ${t('done')}</span>`
+              : r.skipped ? `<span class="m-no">✗ ${t('skipped')}</span>`
+              : `<span class="m-no">✗ ${t('not done')}</span>`;
   const rows=ITEMS.map((it,i)=>{
     const r=S.results[i];
     return `<tr><td>${i+1}. ${t(it.skill)}</td><td class="mark">${mark(r)}</td>
@@ -609,7 +608,7 @@ function finish(){
         <th>${t('Tries')}</th><th>${t('Time')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <div class="foot">${t('Scoring: 2 points for correct on the first try, 1 point after a wrong try, 0 for skipped.')}<br>
+    <div class="foot">${t('Scoring: 1 point for each task completed. Trying again does not lower the score — only a skipped task scores zero.')}<br>
       ${t('Not measured by this test: arrow keys and the space bar.')}</div>
     <div class="center noprint" style="margin-top:16px">
       <button class="btn" onclick="window.print()">🖨️ ${t('Print this report')}</button>
@@ -630,7 +629,7 @@ function setLang(l){
   $('#sTitle').textContent=t('Desktop Skills Test');
   $('#sSub').textContent=t('Computer navigation — mouse and keyboard');
   $('#sNameLbl').textContent=t('Type your first name');
-  $('#sRules').innerHTML=t('This is a test, not a lesson. You will get a task, but <b>no hints</b> and <b>nothing will be highlighted</b>. Wrong tries are counted, so think before you click. If you are stuck you may press <b>Skip</b> — that task scores zero.');
+  $('#sRules').innerHTML=t('This is a test, not a lesson. You will get a task, but <b>no hints</b> and <b>nothing will be highlighted</b>. If you get it wrong, <b>try again</b> — trying again does not lower your score. If you are stuck you may press <b>Skip</b> — that task scores zero.');
   $('#sStart').textContent=t('Start the test ▶');
   $('#btnSkip').textContent=t('Skip this task');
   $('#hTitle').textContent=t('Desktop Skills Test');

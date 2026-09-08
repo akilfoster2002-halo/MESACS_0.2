@@ -25,11 +25,13 @@ lesson changes to keep the two in sync.
 `exam.html` is a **separate, assessment-only build** of the same navigation skills. It is not a copy of
 the game with the hints turned off — it is written from scratch as a test:
 
-- **No coach, no spotlight, no hints, no retry coaching.** A wrong answer says only *"Not correct."*
+- **No coach, no spotlight, no hints.** A wrong answer says only *"Not correct — try again."*
   The student has to work out what to try next.
-- **12 items, 24 points.** 2 points if correct on the first try, 1 point after a wrong try, 0 if skipped.
-- Each item is scored independently and the student can **Skip** anything they cannot do, so one stuck
-  item never blocks the rest of the test.
+- **They can try again as many times as they need, at no cost.** Scoring is by completion:
+  **12 items, 1 point each, 12 points total.** Getting it wrong first does not lower the score.
+- Only a **skipped** task scores zero. Skip exists so one stuck item never blocks the rest of the test.
+- Wrong tries are still *recorded* on the report — useful to see where a student struggled — but they
+  do not affect the grade.
 - Runs about **5–8 minutes**.
 
 | # | Skill tested |
@@ -51,8 +53,8 @@ The desktop has eight icons, so every click item has real distractors — the te
 the answer the way the lesson does.
 
 **The report.** At the end the student gets a printable report with their name, the date, the score
-and percentage, the total time, and one row per skill showing ✓/✗, points, number of wrong tries, and
-seconds spent. There is a one-line copyable result (name, score, percent, time) for the gradebook, and
+and percentage, the total time, and one row per skill showing done / skipped, the point, number of tries taken,
+and seconds spent. There is a one-line copyable result (name, score, percent, time) for the gradebook, and
 a footer noting what the test does *not* measure (arrow keys, the space bar). **🖨️ Print** produces a
 clean page to hand in.
 
