@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desktop Skills Test — Computer Navigation</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#0d1017; --panel:#1b2130; --panel2:#232c40; --line:#36445f;
+  --accent:#3ea6ff; --good:#3ddc84; --warn:#ffb020; --bad:#ff6b6b; --star:#ffd54a;
+  --text:#eef3ff; --muted:#9fb0cc;
+  --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+html,body{height:100%;margin:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden;
+  -webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+.hidden{display:none !important}
+button{font-family:var(--font);cursor:pointer}
+.btn{background:var(--accent);color:#04121f;border:none;border-radius:14px;padding:13px 22px;
+  font-size:18px;font-weight:bold;box-shadow:0 4px 0 #1f6fb0}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1f6fb0}
+.btn.small{font-size:14px;padding:8px 13px;box-shadow:0 3px 0 #1f6fb0}
+.btn.ghost{background:var(--panel2);color:var(--text);box-shadow:0 3px 0 #0d1320}
+.btn.good{background:var(--good);color:#052414;box-shadow:0 4px 0 #219a5b}
+
+#app{display:flex;height:100vh;width:100vw}
+#stage{flex:1;position:relative;min-width:0}
+
+/* ---------------- start / report screens ---------------- */
+.screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(1100px 700px at 30% 20%,#20304d 0%,#0e1420 60%,#080b12 100%);overflow:auto;z-index:50}
+.card{width:min(680px,96%);background:var(--panel);border:3px solid var(--line);border-radius:20px;
+  padding:26px;box-shadow:0 30px 70px rgba(0,0,0,.55)}
+.card h1{margin:4px 0 6px;font-size:30px;text-align:center}
+.card .sub{color:var(--muted);font-size:16px;text-align:center;margin-bottom:16px}
+.card label{display:block;font-size:16px;margin:14px 0 6px}
+.card input[type=text]{width:100%;padding:14px 16px;font-size:20px;border-radius:12px;
+  border:3px solid var(--line);background:#0f1420;color:var(--text);text-align:center;outline:none}
+.card input[type=text]:focus{border-color:var(--accent)}
+.langrow{display:flex;gap:8px;justify-content:center;margin-bottom:8px}
+.langbtn{background:var(--panel2);border:3px solid var(--line);color:var(--text);border-radius:12px;
+  padding:8px 16px;font-size:16px}
+.langbtn.on{background:var(--accent);color:#04121f;border-color:#fff}
+.rules{background:#131a28;border-left:5px solid var(--warn);border-radius:10px;padding:12px 14px;
+  font-size:15px;line-height:1.55;color:var(--muted);margin:14px 0}
+.rules b{color:var(--text)}
+.center{text-align:center}
+
+/* ---------------- desktop ---------------- */
+#deskScreen{position:absolute;inset:0;display:flex;flex-direction:column}
+#topbar{height:36px;flex:none;background:rgba(8,12,20,.92);border-bottom:2px solid #000;
+  display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:15px}
+.tb-btn{background:transparent;border:2px solid transparent;color:var(--text);font-size:15px;
+  padding:4px 12px;border-radius:9px}
+.tb-btn:hover{background:rgba(255,255,255,.12)}
+#desk{flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(900px 600px at 20% 15%,#2c4f6e 0%,transparent 60%),
+             radial-gradient(800px 600px at 85% 80%,#3b2f6b 0%,transparent 60%),
+             linear-gradient(160deg,#12324a 0%,#101a2c 55%,#0b1120 100%)}
+#iconLayer{position:absolute;inset:0;padding:16px;display:grid;
+  grid-template-columns:repeat(auto-fill,108px);grid-auto-rows:108px;gap:6px;
+  align-content:start;justify-content:start}
+.icon{width:108px;height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;border-radius:14px;border:3px solid transparent;background:transparent;color:#fff;text-align:center}
+.icon .em{font-size:44px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.icon .nm{font-size:13.5px;text-shadow:0 2px 4px #000;padding:0 4px;line-height:1.15}
+.icon:hover{background:rgba(255,255,255,.10)}
+.icon.sel{background:rgba(62,166,255,.30);border-color:var(--accent)}
+#dock{height:60px;flex:none;background:rgba(8,12,20,.92);border-top:2px solid #000;display:flex;
+  align-items:center;gap:10px;padding:0 12px}
+.dock-launch{display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3ea6ff,#2b7fd0);
+  color:#04121f;border:none;border-radius:14px;padding:10px 16px;font-size:16px;font-weight:bold;
+  box-shadow:0 4px 0 #17588f}
+#taskbtns{display:flex;gap:8px;flex:1;overflow:hidden}
+.taskbtn{background:var(--panel2);border:2px solid var(--line);color:var(--text);border-radius:10px;
+  padding:7px 12px;font-size:14px;white-space:nowrap}
+
+#launcher{position:absolute;inset:0;background:rgba(8,12,20,.9);padding:36px;display:flex;
+  flex-direction:column;align-items:center;gap:16px;z-index:60}
+#launcher h2{margin:0;font-size:24px}
+.lch-grid{display:grid;grid-template-columns:repeat(4,124px);gap:12px}
+.lch{background:var(--panel2);border:3px solid var(--line);border-radius:16px;padding:12px 8px;
+  color:var(--text);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13.5px}
+.lch .em{font-size:34px}
+#sysmenu{position:absolute;right:10px;top:8px;width:250px;background:var(--panel);border:3px solid var(--line);
+  border-radius:16px;padding:14px;z-index:70;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+#sysmenu .row{display:flex;justify-content:space-between;padding:8px 4px;font-size:16px;
+  border-bottom:1px solid var(--line)}
+#sysmenu .row:last-child{border:none}
+#ctxmenu{position:absolute;z-index:90;background:var(--panel);border:3px solid var(--line);border-radius:12px;
+  padding:6px;min-width:180px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+#ctxmenu button{display:block;width:100%;text-align:left;background:transparent;border:none;color:var(--text);
+  padding:10px 12px;font-size:16px;border-radius:8px}
+#ctxmenu button:hover{background:var(--accent);color:#04121f}
+
+.win{position:absolute;background:var(--panel);border:3px solid var(--line);border-radius:14px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden;z-index:20}
+.win-bar{height:42px;flex:none;background:#2a3550;display:flex;align-items:center;justify-content:space-between;
+  padding:0 8px 0 14px;border-bottom:2px solid #161e2e}
+.win-bar b{font-size:16px}
+.win-x{width:32px;height:32px;border-radius:9px;border:none;background:#b23b3b;color:#fff;
+  font-size:17px;font-weight:bold}
+.win-x:hover{background:#e04b4b}
+.win-body{flex:1;overflow:auto;position:relative;background:#151b28}
+.filerow{display:flex;gap:10px;align-items:center;padding:9px 12px;font-size:16px}
+.filerow:hover{background:#1e293c}
+
+/* ---------------- exam HUD ---------------- */
+#hud{width:330px;flex:none;background:var(--panel);border-left:4px solid var(--line);
+  display:flex;flex-direction:column;padding:14px;gap:12px;overflow:auto}
+.hud-top{display:flex;justify-content:space-between;align-items:baseline}
+.hud-title{font-size:19px;font-weight:bold}
+.hud-who{color:var(--muted);font-size:14px}
+.qcount{background:var(--accent2,#7c5cff);background:#7c5cff;color:#fff;border-radius:10px;
+  padding:7px 11px;font-size:15px;font-weight:bold;text-align:center}
+.qbox{background:var(--panel2);border:3px solid var(--accent);border-radius:14px;padding:14px}
+.qbox .lbl{font-size:11.5px;letter-spacing:1.6px;color:var(--accent);font-weight:bold}
+#qText{font-size:19px;margin-top:7px;line-height:1.35}
+#qFeedback{min-height:22px;font-size:15px;margin-top:8px;color:var(--bad)}
+.meter{display:flex;gap:4px;flex-wrap:wrap}
+.pip{width:20px;height:20px;border-radius:6px;background:#1b2438;border:2px solid var(--line)}
+.pip.ok{background:var(--good);border-color:var(--good)}
+.pip.part{background:var(--warn);border-color:var(--warn)}
+.pip.no{background:var(--bad);border-color:var(--bad)}
+.pip.now{border-color:#fff}
+.hud-foot{margin-top:auto;display:flex;flex-direction:column;gap:7px}
+.timer{font-size:14px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+
+/* choice question */
+#choiceBox{position:absolute;inset:0;background:rgba(8,12,20,.86);z-index:80;display:flex;
+  align-items:center;justify-content:center;padding:20px}
+.choice-card{width:min(560px,94%);background:var(--panel);border:3px solid var(--line);border-radius:18px;padding:22px}
+.choice-card h3{margin:0 0 14px;font-size:21px;text-align:center}
+.choice{display:block;width:100%;text-align:left;background:var(--panel2);border:3px solid var(--line);
+  color:var(--text);border-radius:12px;padding:13px 16px;font-size:18px;margin-bottom:9px}
+.choice:hover{border-color:var(--accent)}
+
+/* ---------------- report ---------------- */
+.rep{width:min(820px,96%);background:#fffdf6;color:#151515;border:12px double #b8952f;border-radius:10px;
+  padding:26px;max-height:92vh;overflow:auto}
+.rep h1{margin:2px 0 4px;font-size:27px;text-align:center;color:#151515}
+.rep .who{text-align:center;font-size:19px;margin-bottom:4px}
+.rep .when{text-align:center;font-size:14px;color:#5a5a5a;margin-bottom:14px}
+.scorebar{display:flex;align-items:center;gap:14px;background:#f2ecd8;border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.scorebig{font-size:38px;font-weight:bold;color:#1d5f3a}
+.rep table{width:100%;border-collapse:collapse;font-size:14.5px}
+.rep th,.rep td{border-bottom:1px solid #ddd6bd;padding:7px 6px;text-align:left;vertical-align:top}
+.rep th{font-size:12px;letter-spacing:1px;color:#6b6244;text-transform:uppercase}
+.rep td.mark{white-space:nowrap;font-weight:bold}
+.m-ok{color:#1d7a45}.m-part{color:#9a6b00}.m-no{color:#a32b2b}
+.rep .foot{margin-top:14px;font-size:13.5px;color:#5a5a5a;line-height:1.5}
+@media print{
+  body{overflow:visible;background:#fff}
+  #app,#reportScreen{position:static}
+  .screen{position:static;background:#fff;display:block;padding:0}
+  .rep{border-color:#b8952f;max-height:none;width:100%}
+  .noprint{display:none !important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+
+    <section id="deskScreen" class="hidden">
+      <div id="topbar">
+        <button id="btnActivities" class="tb-btn">☰ Activities</button>
+        <div style="color:var(--muted);font-size:14px" id="tbTitle">🐧 Linux Lab</div>
+        <button id="btnSys" class="tb-btn">📶 🔊 🔋 <span id="clock">--:--</span> ▾</button>
+      </div>
+      <div id="desk">
+        <div id="iconLayer"></div>
+        <div id="windows"></div>
+        <div id="launcher" class="hidden"></div>
+        <div id="sysmenu" class="hidden"></div>
+        <div id="ctxmenu" class="hidden"></div>
+      </div>
+      <div id="dock">
+        <button id="btnLauncher" class="dock-launch">🚀 <span id="lbLauncher">App Launcher</span></button>
+        <div id="taskbtns"></div>
+      </div>
+    </section>
+
+    <div id="choiceBox" class="hidden"></div>
+  </div>
+
+  <aside id="hud" class="hidden">
+    <div class="hud-top">
+      <div>
+        <div class="hud-title" id="hTitle">Desktop Skills Test</div>
+        <div class="hud-who" id="hWho"></div>
+      </div>
+    </div>
+    <div class="qcount" id="qCount"></div>
+    <div class="qbox">
+      <div class="lbl" id="qLbl">TASK</div>
+      <div id="qText"></div>
+      <div id="qFeedback"></div>
+    </div>
+    <div class="meter" id="meter"></div>
+    <div class="hud-foot">
+      <div class="timer" id="timer">0:00</div>
+      <button class="btn small ghost" id="btnSkip"></button>
+    </div>
+  </aside>
+</div>
+
+<section id="startScreen" class="screen">
+  <div class="card">
+    <div class="langrow">
+      <button class="langbtn on" data-lang="en">🇺🇸 English</button>
+      <button class="langbtn" data-lang="es">🇲🇽 Español</button>
+    </div>
+    <div class="center" style="font-size:52px">📝🖱️</div>
+    <h1 id="sTitle">Desktop Skills Test</h1>
+    <div class="sub" id="sSub"></div>
+    <label id="sNameLbl" for="sName"></label>
+    <input type="text" id="sName" maxlength="18" autocomplete="off">
+    <div class="rules" id="sRules"></div>
+    <div class="center"><button class="btn good" id="sStart"></button></div>
+  </div>
+</section>
+
+<section id="reportScreen" class="screen hidden"></section>
+
+<script>
+/* =====================================================================
+   DESKTOP SKILLS TEST — assessment build.
+   Deliberately has none of the lesson's scaffolding: no coach, no
+   spotlight, no highlighting, and prompts that say WHAT to achieve and
+   never WHERE to click or WHICH button to press. Wrong actions are
+   recorded, never corrected.
+   ===================================================================== */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+
+/* ---------------------------------------------------------- language */
+const ES = {
+ 'Desktop Skills Test':'Examen de Manejo del Escritorio',
+ 'Computer navigation — mouse and keyboard':'Navegación en la computadora — ratón y teclado',
+ 'Type your first name':'Escribe tu nombre',
+ 'Start the test ▶':'Empezar el examen ▶',
+ 'This is a test, not a lesson. You will get a task, but <b>no hints</b> and <b>nothing will be highlighted</b>. Wrong tries are counted, so think before you click. If you are stuck you may press <b>Skip</b> — that task scores zero.':'Esto es un examen, no una lección. Verás una tarea, pero <b>sin pistas</b> y <b>nada se iluminará</b>. Los intentos incorrectos se cuentan, así que piensa antes de hacer clic. Si te atoras puedes presionar <b>Saltar</b> — esa tarea vale cero.',
+ 'TASK':'TAREA','Task {n} of {t}':'Tarea {n} de {t}','Skip this task':'Saltar esta tarea',
+ 'Not correct.':'No es correcto.','Not correct. ({n} tries)':'No es correcto. ({n} intentos)',
+ 'App Launcher':'Lanzador de Apps',
+ /* items */
+ 'Click on the desktop itself — not on any icon, bar or button.':'Haz clic en el escritorio — no en un icono, ni en una barra, ni en un botón.',
+ 'Select the Files icon. Do not open it.':'Escoge el icono Archivos. No lo abras.',
+ 'Open the Text Editor.':'Abre el Editor de Texto.',
+ 'Close the Text Editor window.':'Cierra la ventana del Editor de Texto.',
+ 'Show all of the applications on this computer.':'Muestra todas las aplicaciones de esta computadora.',
+ 'Find where this computer shows the Wi-Fi, the battery and the clock.':'Encuentra dónde muestra esta computadora el Wi-Fi, la batería y el reloj.',
+ 'Open Files and move down to the end of the file list.':'Abre Archivos y baja hasta el final de la lista.',
+ 'Make a menu appear on the Paint icon using the other mouse button.':'Haz que aparezca un menú en el icono Pintura usando el otro botón del ratón.',
+ 'Type your first name in the box, then press the key that means “go”.':'Escribe tu nombre en la casilla y presiona la tecla que significa “continuar”.',
+ 'Make the box show exactly: CAT (capital letters).':'Haz que la casilla muestre exactamente: CAT (letras mayúsculas).',
+ 'Now make the box show exactly: CA':'Ahora haz que la casilla muestre exactamente: CA',
+ 'Which key takes a picture of the screen?':'¿Qué tecla toma una foto de la pantalla?',
+ /* skills */
+ 'Identify the desktop':'Identificar el escritorio','Select an icon (single click)':'Escoger un icono (un clic)',
+ 'Open an application (double-click)':'Abrir una aplicación (doble clic)','Close an application':'Cerrar una aplicación',
+ 'Find the App Launcher':'Encontrar el Lanzador de Apps','Find the system menu':'Encontrar el menú del sistema',
+ 'Scroll':'Desplazar','Right-click':'Clic derecho','Keyboard — Enter':'Teclado — Enter',
+ 'Keyboard — Shift (capitals)':'Teclado — Shift (mayúsculas)','Keyboard — Backspace':'Teclado — Backspace',
+ 'Screenshot key':'Tecla de captura de pantalla',
+ /* report */
+ 'Result':'Resultado','Skill':'Habilidad','Score':'Puntos','Tries':'Intentos','Time':'Tiempo',
+ 'first try':'a la primera','after {n}':'tras {n}','skipped':'saltada',
+ 'Test finished':'Examen terminado','out of':'de','Print this report':'Imprimir este reporte',
+ 'Take the test again':'Hacer el examen otra vez','Copy result line':'Copiar la línea de resultado',
+ 'Copied.':'Copiado.',
+ 'Scoring: 2 points for correct on the first try, 1 point after a wrong try, 0 for skipped.':'Puntaje: 2 puntos si acierta a la primera, 1 punto tras un error, 0 si la salta.',
+ 'Not measured by this test: arrow keys and the space bar.':'No se mide en este examen: las flechas y la barra espaciadora.',
+ 'Files':'Archivos','Text Editor':'Editor de Texto','Paint':'Pintura','Music':'Música',
+ 'Photos':'Fotos','Trash':'Papelera','Calculator':'Calculadora','Notes':'Notas',
+ 'Open':'Abrir','Rename':'Cambiar nombre','Properties':'Propiedades','Close menu':'Cerrar menú',
+ 'Wi-Fi':'Wi-Fi','Connected':'Conectado','Volume':'Volumen','Battery':'Batería','Clock':'Reloj',
+ 'Power / Log Out':'Apagar / Cerrar sesión','Type here':'Escribe aquí','Typing box':'Casilla para escribir',
+ 'Home — {n} files':'Mi carpeta — {n} archivos','End of the list':'Final de la lista'
+};
+let LANG='en';
+function t(s,p){
+  let out=(LANG==='es'&&ES[s]!==undefined)?ES[s]:s;
+  if(p) for(const k in p) out=out.split('{'+k+'}').join(p[k]);
+  return out;
+}
+
+/* ------------------------------------------------------------- state */
+const S = { name:'', i:0, started:0, itemStart:0, results:[], done:false };
+
+const APPS=[
+ {id:'files',    em:'📁', name:'Files'},
+ {id:'textedit', em:'📝', name:'Text Editor'},
+ {id:'paint',    em:'🎨', name:'Paint'},
+ {id:'music',    em:'🎵', name:'Music'},
+ {id:'photos',   em:'🖼️', name:'Photos'},
+ {id:'notes',    em:'🗒️', name:'Notes'},
+ {id:'calc',     em:'🧮', name:'Calculator'},
+ {id:'trash',    em:'🗑️', name:'Trash'}
+];
+const FILES=['my-story.txt','dog.png','math-notes.txt','beach.jpg','song.mp3','robot.png',
+ 'homework.txt','cat.jpg','rocket.png','recipe.txt','map.png','science.txt','puzzle.jpg',
+ 'letters.txt','space.png','soccer.jpg','colors.png','poem.txt','tree.jpg','clouds.png'];
+
+/* ------------------------------------------------------- the desktop */
+function buildIcons(){
+  const layer=$('#iconLayer'); layer.innerHTML='';
+  APPS.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='icon'; d.dataset.id=a.id; d.id='icon-'+a.id;
+    d.innerHTML=`<div class="em">${a.em}</div><div class="nm">${t(a.name)}</div>`;
+    d.addEventListener('click',e=>{ e.stopPropagation(); select(a.id); fire('click',{id:a.id}); });
+    d.addEventListener('dblclick',e=>{ e.stopPropagation(); openApp(a.id); fire('open',{id:a.id}); });
+    d.addEventListener('contextmenu',e=>{ e.preventDefault(); e.stopPropagation();
+      showCtx(e.clientX,e.clientY,a.id); fire('rightclick',{id:a.id}); });
+    layer.appendChild(d);
+  });
+}
+function select(id){ $$('.icon').forEach(i=>i.classList.toggle('sel',i.dataset.id===id)); }
+function buildLauncher(){
+  $('#launcher').innerHTML=`<h2>🚀 ${t('App Launcher')}</h2>
+    <div class="lch-grid">${APPS.map(a=>`<button class="lch" data-id="${a.id}">
+      <span class="em">${a.em}</span>${t(a.name)}</button>`).join('')}</div>
+    <button class="btn ghost small" id="lchClose">✖</button>`;
+  $$('#launcher .lch').forEach(b=>b.onclick=()=>{ toggleLauncher(false); openApp(b.dataset.id); fire('open',{id:b.dataset.id}); });
+  $('#lchClose').onclick=()=>toggleLauncher(false);
+}
+function buildSys(){
+  const clock=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  $('#sysmenu').innerHTML=`
+    <div class="row"><span>📶 ${t('Wi-Fi')}</span><span>${t('Connected')}</span></div>
+    <div class="row"><span>🔊 ${t('Volume')}</span><span>60%</span></div>
+    <div class="row"><span>🔋 ${t('Battery')}</span><span>92%</span></div>
+    <div class="row"><span>🕐 ${t('Clock')}</span><span>${clock}</span></div>
+    <div class="row"><span>⏻ ${t('Power / Log Out')}</span><span>—</span></div>
+    <button class="btn small ghost" id="sysClose" style="width:100%;margin-top:10px">${t('Close menu')}</button>`;
+  $('#sysClose').onclick=()=>toggleSys(false);
+}
+function toggleLauncher(force){
+  const l=$('#launcher'), was=!l.classList.contains('hidden');
+  const open = force!==undefined ? force : !was;
+  if(open===was) return;
+  l.classList.toggle('hidden',!open);
+  if(open) fire('launcher',{});
+}
+function toggleSys(force){
+  const s=$('#sysmenu'), was=!s.classList.contains('hidden');
+  const open = force!==undefined ? force : !was;
+  if(open===was) return;
+  s.classList.toggle('hidden',!open);
+  if(open){ buildSys(); fire('sysmenu',{}); }
+}
+function showCtx(x,y,id){
+  const m=$('#ctxmenu'), r=$('#desk').getBoundingClientRect();
+  m.innerHTML='';
+  [t('Open'),t('Rename'),t('Properties')].forEach(lab=>{
+    const b=document.createElement('button'); b.textContent=lab;
+    b.onclick=e=>{ e.stopPropagation(); hideCtx(); };
+    m.appendChild(b);
+  });
+  m.classList.remove('hidden');
+  m.style.left=Math.max(2,Math.min(x-r.left, r.width-m.offsetWidth-6))+'px';
+  m.style.top =Math.max(2,Math.min(y-r.top,  r.height-m.offsetHeight-6))+'px';
+}
+function hideCtx(){ $('#ctxmenu').classList.add('hidden'); }
+
+/* windows */
+const wins={}; let zTop=20;
+function openApp(id){
+  if(wins[id]){ wins[id].style.zIndex=++zTop; return; }
+  const a=APPS.find(x=>x.id===id) || {em:'🗔',name:id};
+  const w=document.createElement('div');
+  w.className='win'; w.id='win-'+id;
+  const r=$('#desk').getBoundingClientRect();
+  w.style.width=Math.min(430,r.width-40)+'px';
+  w.style.height=Math.min(320,r.height-60)+'px';
+  w.style.left=Math.max(10, 90+Math.random()*90)+'px';
+  w.style.top =Math.max(10, 50+Math.random()*60)+'px';
+  w.style.zIndex=++zTop;
+  w.innerHTML=`<div class="win-bar"><b>${a.em} ${t(a.name)}</b><button class="win-x">✕</button></div>
+    <div class="win-body"></div>`;
+  $('#windows').appendChild(w); wins[id]=w;
+  $('.win-x',w).onclick=()=>{ closeApp(id); fire('close',{id}); };
+  const body=$('.win-body',w);
+  if(id==='files'){
+    body.innerHTML=`<div style="padding:8px 12px;color:var(--muted);font-size:14px">${t('Home — {n} files',{n:FILES.length})}</div>`+
+      FILES.map(f=>`<div class="filerow">${f.endsWith('.txt')?'📄':f.endsWith('.mp3')?'🎵':'🖼️'} ${f}</div>`).join('')+
+      `<div class="filerow" style="color:var(--good)">🏁 ${t('End of the list')}</div>`;
+    body.onscroll=()=>{
+      if(body.scrollTop + body.clientHeight >= body.scrollHeight - 8) fire('scrolledEnd',{});
+    };
+  } else if(id==='typebox'){
+    body.innerHTML=`<div style="padding:14px">
+      <input id="typeIn" type="text" autocomplete="off" placeholder="${t('Type here')}"
+       style="width:100%;padding:14px;font-size:22px;border-radius:10px;border:3px solid var(--line);
+              background:#0f1420;color:var(--text);text-align:center;outline:none"></div>`;
+    const inp=$('#typeIn',body);
+    setTimeout(()=>inp.focus(),40);
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); fire('enter',{value:inp.value}); } });
+    inp.addEventListener('input',()=>fire('typed',{value:inp.value}));
+  } else {
+    body.innerHTML=`<div style="padding:20px;font-size:17px;color:var(--muted)">${t(a.name)}</div>`;
+  }
+  refreshTaskbar();
+  return w;
+}
+function closeApp(id){
+  const w=wins[id]; if(!w) return;
+  w.remove(); delete wins[id]; refreshTaskbar();
+}
+function refreshTaskbar(){
+  const bar=$('#taskbtns'); bar.innerHTML='';
+  Object.keys(wins).forEach(id=>{
+    const a=APPS.find(x=>x.id===id)||{em:'🗔',name:id};
+    const b=document.createElement('button'); b.className='taskbtn';
+    b.textContent=a.em+' '+t(a.name);
+    b.onclick=()=>{ wins[id].style.zIndex=++zTop; };
+    bar.appendChild(b);
+  });
+}
+
+/* =====================================================================
+   THE TEST ITEMS
+   `pass` returns true when the task is achieved.
+   `wrong` returns true when the student did something that counts as a
+   failed attempt — never used to tell them what the right answer was.
+   ===================================================================== */
+const ITEMS=[
+ { skill:'Identify the desktop',
+   ask:'Click on the desktop itself — not on any icon, bar or button.',
+   pass:(e)=>e.type==='desktop',
+   wrong:(e)=>['click','open','launcher','sysmenu','rightclick'].includes(e.type) },
+
+ { skill:'Select an icon (single click)',
+   ask:'Select the Files icon. Do not open it.',
+   setup:()=>{ select(null); },
+   pass:(e)=>e.type==='click'&&e.id==='files',
+   wrong:(e)=>(e.type==='click'&&e.id!=='files')||e.type==='open' },
+
+ { skill:'Open an application (double-click)',
+   ask:'Open the Text Editor.',
+   pass:(e)=>e.type==='open'&&e.id==='textedit',
+   wrong:(e)=>e.type==='open'&&e.id!=='textedit',
+   after:()=>{ Object.keys(wins).forEach(id=>{ if(id!=='textedit') closeApp(id); }); } },
+
+ { skill:'Close an application',
+   ask:'Close the Text Editor window.',
+   setup:()=>{ if(!wins.textedit) openApp('textedit'); },
+   pass:(e)=>e.type==='close'&&e.id==='textedit',
+   wrong:(e)=>e.type==='open' },
+
+ { skill:'Find the App Launcher',
+   ask:'Show all of the applications on this computer.',
+   pass:(e)=>e.type==='launcher',
+   wrong:(e)=>e.type==='sysmenu'||e.type==='open',
+   after:()=>toggleLauncher(false) },
+
+ { skill:'Find the system menu',
+   ask:'Find where this computer shows the Wi-Fi, the battery and the clock.',
+   pass:(e)=>e.type==='sysmenu',
+   wrong:(e)=>e.type==='launcher'||e.type==='open',
+   after:()=>toggleSys(false) },
+
+ { skill:'Scroll',
+   ask:'Open Files and move down to the end of the file list.',
+   pass:(e)=>e.type==='scrolledEnd',
+   wrong:()=>false,
+   after:()=>closeApp('files') },
+
+ { skill:'Right-click',
+   ask:'Make a menu appear on the Paint icon using the other mouse button.',
+   pass:(e)=>e.type==='rightclick'&&e.id==='paint',
+   wrong:(e)=>(e.type==='rightclick'&&e.id!=='paint')||(e.type==='click'&&e.id==='paint'),
+   after:()=>hideCtx() },
+
+ { skill:'Keyboard — Enter',
+   ask:'Type your first name in the box, then press the key that means “go”.',
+   setup:()=>{ openApp('typebox'); },
+   pass:(e)=>e.type==='enter'&&e.value.trim().length>0,
+   wrong:(e)=>e.type==='enter'&&e.value.trim().length===0 },
+
+ { skill:'Keyboard — Shift (capitals)',
+   ask:'Make the box show exactly: CAT (capital letters).',
+   setup:()=>{ const i=$('#typeIn'); if(i){ i.value=''; i.focus(); } },
+   pass:(e)=>e.type==='typed'&&e.value==='CAT',
+   wrong:(e)=>e.type==='typed'&&e.value.length>=3&&e.value.toUpperCase()==='CAT'&&e.value!=='CAT' },
+
+ { skill:'Keyboard — Backspace',
+   ask:'Now make the box show exactly: CA',
+   pass:(e)=>e.type==='typed'&&e.value==='CA',
+   wrong:(e)=>e.type==='typed'&&e.value.length<2,
+   after:()=>closeApp('typebox') },
+
+ { skill:'Screenshot key', choice:true,
+   ask:'Which key takes a picture of the screen?',
+   options:['PrtScn','Enter','Shift','Esc'], answer:0 }
+];
+
+/* --------------------------------------------------------- the exam */
+function fire(type,data){
+  if(S.done) return;
+  const it=ITEMS[S.i]; if(!it) return;
+  const ev={type, ...(data||{})};
+  const rec=S.results[S.i];
+  if(it.pass && it.pass(ev)){ scoreItem(true); return; }
+  if(it.wrong && it.wrong(ev)){
+    rec.tries++;
+    $('#qFeedback').textContent = rec.tries===1 ? t('Not correct.') : t('Not correct. ({n} tries)',{n:rec.tries});
+  }
+}
+function scoreItem(passed){
+  const rec=S.results[S.i];
+  rec.done=true; rec.passed=passed;
+  rec.secs=Math.round((performance.now()-S.itemStart)/1000);
+  rec.points = !passed ? 0 : (rec.tries===0 ? 2 : 1);
+  const it=ITEMS[S.i];
+  if(it.after) try{ it.after(); }catch(e){}
+  paintMeter();
+  S.i++;
+  setTimeout(nextItem, 420);
+}
+function nextItem(){
+  if(S.i>=ITEMS.length) return finish();
+  const it=ITEMS[S.i];
+  S.itemStart=performance.now();
+  $('#qCount').textContent=t('Task {n} of {t}',{n:S.i+1,t:ITEMS.length});
+  $('#qText').textContent=t(it.ask);
+  $('#qFeedback').textContent='';
+  paintMeter();
+  if(it.setup) try{ it.setup(); }catch(e){}
+  if(it.choice) showChoice(it); else $('#choiceBox').classList.add('hidden');
+}
+function showChoice(it){
+  const box=$('#choiceBox');
+  box.classList.remove('hidden');
+  box.innerHTML=`<div class="choice-card"><h3>${t(it.ask)}</h3>
+    ${it.options.map((o,i)=>`<button class="choice" data-i="${i}">${o}</button>`).join('')}</div>`;
+  $$('.choice',box).forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    if(i===it.answer){ box.classList.add('hidden'); scoreItem(true); }
+    else{
+      const rec=S.results[S.i]; rec.tries++;
+      $('#qFeedback').textContent=t('Not correct. ({n} tries)',{n:rec.tries});
+      b.style.borderColor='var(--bad)';
+    }
+  });
+}
+function skip(){
+  if(S.done||S.i>=ITEMS.length) return;
+  const it=ITEMS[S.i];
+  $('#choiceBox').classList.add('hidden');
+  if(it.after) try{ it.after(); }catch(e){}
+  const rec=S.results[S.i];
+  rec.done=true; rec.passed=false; rec.skipped=true; rec.points=0;
+  rec.secs=Math.round((performance.now()-S.itemStart)/1000);
+  paintMeter(); S.i++; setTimeout(nextItem,300);
+}
+function paintMeter(){
+  $('#meter').innerHTML=ITEMS.map((it,i)=>{
+    const r=S.results[i];
+    let c='pip';
+    if(r.done) c+= r.points===2?' ok' : r.points===1?' part':' no';
+    if(i===S.i && !S.done) c+=' now';
+    return `<div class="${c}" title="${t(it.skill)}"></div>`;
+  }).join('');
+}
+function tick(){
+  if(S.done) return;
+  const s=Math.round((performance.now()-S.started)/1000);
+  $('#timer').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  $('#clock').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+}
+setInterval(tick,1000);
+
+/* --------------------------------------------------------- report */
+function finish(){
+  S.done=true;
+  const total=S.results.reduce((a,r)=>a+r.points,0), max=ITEMS.length*2;
+  const pct=Math.round(total/max*100);
+  const secs=Math.round((performance.now()-S.started)/1000);
+  const mark=r=> r.skipped ? `<span class="m-no">✗ ${t('skipped')}</span>`
+              : r.points===2 ? `<span class="m-ok">✓ ${t('first try')}</span>`
+              : r.points===1 ? `<span class="m-part">✓ ${t('after {n}',{n:r.tries})}</span>`
+              : `<span class="m-no">✗</span>`;
+  const rows=ITEMS.map((it,i)=>{
+    const r=S.results[i];
+    return `<tr><td>${i+1}. ${t(it.skill)}</td><td class="mark">${mark(r)}</td>
+      <td>${r.points}</td><td>${r.tries}</td><td>${r.secs}s</td></tr>`;
+  }).join('');
+  const line=`${S.name} — ${total}/${max} (${pct}%) — ${Math.floor(secs/60)}m${secs%60}s`;
+  $('#deskScreen').classList.add('hidden');
+  $('#hud').classList.add('hidden');
+  const rep=$('#reportScreen');
+  rep.classList.remove('hidden');
+  rep.innerHTML=`<div class="rep">
+    <h1>${t('Desktop Skills Test')}</h1>
+    <div class="who"><b>${S.name||'—'}</b></div>
+    <div class="when">${new Date().toLocaleString(LANG==='es'?'es-MX':'en-US')}</div>
+    <div class="scorebar">
+      <div class="scorebig">${total}<span style="font-size:18px;color:#5a5a5a">/${max}</span></div>
+      <div><div style="font-size:20px;font-weight:bold">${pct}%</div>
+        <div style="font-size:13.5px;color:#5a5a5a">${t('Time')}: ${Math.floor(secs/60)}m ${secs%60}s</div></div>
+    </div>
+    <table>
+      <thead><tr><th>${t('Skill')}</th><th>${t('Result')}</th><th>${t('Score')}</th>
+        <th>${t('Tries')}</th><th>${t('Time')}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="foot">${t('Scoring: 2 points for correct on the first try, 1 point after a wrong try, 0 for skipped.')}<br>
+      ${t('Not measured by this test: arrow keys and the space bar.')}</div>
+    <div class="center noprint" style="margin-top:16px">
+      <button class="btn" onclick="window.print()">🖨️ ${t('Print this report')}</button>
+      <button class="btn ghost small" id="copyLine">📋 ${t('Copy result line')}</button>
+      <button class="btn ghost small" onclick="location.reload()">🔄 ${t('Take the test again')}</button>
+    </div></div>`;
+  $('#copyLine').onclick=()=>{
+    navigator.clipboard && navigator.clipboard.writeText(line);
+    $('#copyLine').textContent='✓ '+t('Copied.');
+  };
+}
+
+/* ----------------------------------------------------------- start */
+function setLang(l){
+  LANG=l;
+  document.documentElement.lang=l;
+  $$('.langbtn').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  $('#sTitle').textContent=t('Desktop Skills Test');
+  $('#sSub').textContent=t('Computer navigation — mouse and keyboard');
+  $('#sNameLbl').textContent=t('Type your first name');
+  $('#sRules').innerHTML=t('This is a test, not a lesson. You will get a task, but <b>no hints</b> and <b>nothing will be highlighted</b>. Wrong tries are counted, so think before you click. If you are stuck you may press <b>Skip</b> — that task scores zero.');
+  $('#sStart').textContent=t('Start the test ▶');
+  $('#btnSkip').textContent=t('Skip this task');
+  $('#hTitle').textContent=t('Desktop Skills Test');
+  $('#qLbl').textContent=t('TASK');
+  $('#lbLauncher').textContent=t('App Launcher');
+  buildIcons(); buildLauncher();
+}
+$$('.langbtn').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+$('#btnSkip').onclick=skip;
+$('#sName').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#sStart').click(); });
+$('#sStart').onclick=()=>{
+  const n=$('#sName').value.trim();
+  if(!n){ $('#sName').focus(); return; }
+  S.name=n.charAt(0).toUpperCase()+n.slice(1);
+  S.results=ITEMS.map(()=>({tries:0,points:0,done:false,passed:false,skipped:false,secs:0}));
+  $('#startScreen').classList.add('hidden');
+  $('#deskScreen').classList.remove('hidden');
+  $('#hud').classList.remove('hidden');
+  $('#hWho').textContent=S.name;
+  S.started=performance.now();
+  nextItem(); tick();
+};
+
+/* clicks that are not on anything are "the desktop" */
+$('#desk').addEventListener('mousedown',e=>{
+  if(e.target.id==='desk'||e.target.id==='iconLayer'){ select(null); hideCtx(); fire('desktop',{}); }
+});
+$('#topbar').addEventListener('mousedown',e=>{ if(e.target.id==='topbar') fire('bar',{}); });
+$('#dock').addEventListener('mousedown',e=>{ if(e.target.id==='dock') fire('bar',{}); });
+$('#btnLauncher').onclick=()=>toggleLauncher();
+$('#btnActivities').onclick=()=>toggleLauncher();
+$('#btnSys').onclick=()=>toggleSys();
+document.addEventListener('click',e=>{ if(!e.target.closest('#ctxmenu')) hideCtx(); });
+document.addEventListener('contextmenu',e=>{ if(e.target.closest('#app')&&!e.target.matches('input')) e.preventDefault(); });
+setLang('en');
+$('#sName').focus();
+</script>
+</body>
+</html>

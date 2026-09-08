@@ -4,7 +4,8 @@ A single-file browser game for the lesson **"Computer navigation and mouse/keybo
 SWBAT identify basic Linux desktop features and demonstrate accurate mouse and keyboard control.
 
 ## Running it
-Double-click `desktop-quest.html` — it opens in any browser (Firefox, Chrome, Chromium).
+Double-click `desktop-quest.html` for the lesson, or `exam.html` for the test — either opens in any
+browser (Firefox, Chrome, Chromium).
 No internet, no install, no server. To put it on lab machines, copy the one file
 (e.g. to `/home/student/Desktop/desktop-quest.html`) or host it on the school share.
 Best on a screen 1100px wide or more. Fullscreen with **F11**.
@@ -18,6 +19,45 @@ Key Hunt's key-highlight hints and the Speed Typing round timers are also shorte
 each pass is quicker to click through. Everything else — content, translations, quest
 logic — is identical to `desktop-quest.html`; re-copy it from that file after any future
 lesson changes to keep the two in sync.
+
+## The test — `exam.html` (no walkthrough)
+
+`exam.html` is a **separate, assessment-only build** of the same navigation skills. It is not a copy of
+the game with the hints turned off — it is written from scratch as a test:
+
+- **No coach, no spotlight, no hints, no retry coaching.** A wrong answer says only *"Not correct."*
+  The student has to work out what to try next.
+- **12 items, 24 points.** 2 points if correct on the first try, 1 point after a wrong try, 0 if skipped.
+- Each item is scored independently and the student can **Skip** anything they cannot do, so one stuck
+  item never blocks the rest of the test.
+- Runs about **5–8 minutes**.
+
+| # | Skill tested |
+|---|---|
+| 1 | Identify the desktop (click the desktop, not an icon or a bar) |
+| 2 | Select an icon with one click — without opening it |
+| 3 | Open an application with a double-click |
+| 4 | Close an application window |
+| 5 | Find the App Launcher |
+| 6 | Find the system menu (Wi-Fi, battery, clock) |
+| 7 | Scroll to the bottom of a file list |
+| 8 | Right-click to bring up a context menu |
+| 9 | Keyboard — Enter |
+| 10 | Keyboard — Shift for capitals |
+| 11 | Keyboard — Backspace |
+| 12 | Which key takes a screenshot (multiple choice) |
+
+The desktop has eight icons, so every click item has real distractors — the test does not point at
+the answer the way the lesson does.
+
+**The report.** At the end the student gets a printable report with their name, the date, the score
+and percentage, the total time, and one row per skill showing ✓/✗, points, number of wrong tries, and
+seconds spent. There is a one-line copyable result (name, score, percent, time) for the gradebook, and
+a footer noting what the test does *not* measure (arrow keys, the space bar). **🖨️ Print** produces a
+clean page to hand in.
+
+The test is bilingual EN/ES like the lesson, and is a single self-contained file with no internet, no
+install and no server — same as the game.
 
 ## How the game maps to the lesson
 
@@ -98,3 +138,10 @@ The robot coach corrects the two most common problems by itself: clicking too fa
 ## Exit question
 "Show me one thing you can do with the mouse and one thing you can do with the keyboard."
 Students pick one of each; their answers print on the certificate (🖨️ Print).
+
+## Links
+
+| | URL |
+|---|---|
+| **Lesson** (guided walkthrough) | https://mesacs-0-2.onrender.com/ |
+| **Test** (no walkthrough) | https://mesacs-0-2.onrender.com/exam.html |
