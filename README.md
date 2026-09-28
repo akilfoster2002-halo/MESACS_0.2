@@ -151,9 +151,9 @@ Students pick one of each; their answers print on the certificate (🖨️ Print
 
 ## `4/` — Dino Run, built out of blocks
 
-The dinosaur runner game as a blank page: every time it opens there is a Dino, a Cactus and the
-Ground with **no code**, and students build the game in blocks (the start card lists the five things
-to build, in English and Spanish). Teachers can open it with `?answer` to load the finished game. It
+The dinosaur runner game as a nearly blank page: every time it opens there is a Dino, a Cactus and
+the Ground, and only the Ground has code (it slides, so the Dino looks like it runs). Students build
+the rest in blocks (the start card lists what to build, in English and Spanish). Teachers can open it with `?answer` to load the finished game. It
 runs on the MESACS 0.2a block-coding framework, like Pong and Asteroid Dodge. Unlike the lesson above
 it is a folder, not one file: copy the whole `4/` folder and double-click `4/index.html`, or use the
 link above. See [`4/README.md`](4/README.md).
