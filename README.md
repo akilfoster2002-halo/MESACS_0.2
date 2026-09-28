@@ -147,7 +147,7 @@ Students pick one of each; their answers print on the certificate (🖨️ Print
 |---|---|
 | **Lesson** (guided walkthrough) | https://mesacs-0-2.onrender.com/ |
 | **Test** (no walkthrough) | https://mesacs-0-2.onrender.com/exam.html |
-| **Dino Run** (folder `4/`) | https://dino-run-sepia.vercel.app · https://mesacs-0-2.onrender.com/4/ |
+| **Dino Run** (folder `4/`, also [its own repo](https://github.com/akilfoster2002-halo/dino-run)) | https://dino-run-sepia.vercel.app · https://mesacs-0-2.onrender.com/4/ |
 
 ## `4/` — Dino Run, built out of blocks
 
